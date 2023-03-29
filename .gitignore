@@ -1,0 +1,6 @@
+*.txt
+!CMakeLists.txt
+*.log*
+build
+CMakeFiles
+replay
