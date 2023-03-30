@@ -13,13 +13,10 @@ class ActionModel
 {
 
 private:
-    Robot rb;
+    Robot *rb; // 机器人指针
 
 public:
-    ActionModel(Robot &rb)
-    {
-        this->rb = rb;
-    }
+    void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针
 
     /* 产生动作序列 */
     void generate()

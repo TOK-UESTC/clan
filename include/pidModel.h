@@ -30,7 +30,9 @@ private:
 
 public:
     PIDModel();
+
     void set(const PIDModel &s);
+    void set(double KpDist, double KiDist, double KdDist, double KpDistLoad, double KiDistLoad, double KdDistLoad);
 };
 
 #endif

@@ -1,43 +1,145 @@
 #include "workbench.h"
 
-class Workbench
+Workbench::Workbench(int id, double x, double y, int type)
 {
-private:
-    int id;                 // 工作台ID
-    int type;               // 工作台类型 [1-9]
-    int rest;               // 生产剩余时间 -1表示没有生产；0表示生产因输出格满而受阻塞；>=0 表示剩余生产帧数
-    int productStatus;      // 产品格状态 0 表示无 1 表示有
-    int planProductStatus;  // 规划产品格状态，由选手程序维护；不仅包含环境目前的状态，还包括预测状态。
-    int materialStatus;     // 原材料格状态；二进制为表示，例如 48(110000),表示拥有物品4和5
-    int lastMaterialStatus; //
-    int planMaterialStatus; // 规划原材料格状态；不仅包含环境目前的状态，还包括预测状态。
-    Vec pos;                // 工作台位置
+    this->type = type;
+    this->pos.set(x, y);
+    this->id = id;
+    this->rest = getRestTime(type);
+    this->productStatus = 0;
+    this->lastMaterialStatus = 0;
+    this->planProductStatus = 0;
+    this->planMaterialStatus = 0;
+}
 
-public:
-    Workbench(double x, double y, int type, int id)
+/* 初始化时返回工作台剩余生产时间 */
+int Workbench::getRestTime(int type)
+{
+    if (type == 1 || type == 2 || type == 3)
     {
-        this->type = type;
-        this->pos.set(x, y);
-        this->id = id;
-        this->rest = getRestTime(type);
-        this->productStatus = 0;
-        this->lastMaterialStatus = 0;
-        this->planProductStatus = 0;
-        this->planMaterialStatus = 0;
+        return 50;
+    }
+    return -1;
+}
+
+/** 只更新剩余生产时间，原材料状态以及产品格状态 */
+void Workbench::update()
+{
+    // 空白变量，用于接受用不到的内容
+    int id;
+    double x, y;
+    this->lastMaterialStatus = this->materialStatus;
+    scanf("%d %f %f %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
+}
+
+/** 查看是否含有某个原材料 */
+bool Workbench::hasMaterial(int type)
+{
+    if (this->type == 8 || this->type == 9)
+    {
+        return false;
     }
 
-    /* 初始化时返回工作台剩余生产时间 */
-    int getRestTime(int type)
+    return ((1 << type) & materialStatus) != 0;
+}
+
+/** 查看是否规划中已经占用该工作台原料格 */
+bool Workbench::hasPlanMaterial(int type)
+{
+    if (this->type == 8 || this->type == 9)
     {
-        if (type == 1 || type == 2 || type == 3)
+        return false;
+    }
+    return ((1 << type) & planMaterialStatus) != 0;
+}
+
+/**
+ * 更新原料格状态
+ *
+ * @param type: 原材料类型
+ * @param sell: type类规划原材料格置0
+ */
+void Workbench::updatePlanMaterialStatus(int type, bool Sell)
+{
+    if (Sell)
+    {
+        planMaterialStatus = planMaterialStatus & (~(1 << type));
+    }
+    else
+    {
+        planMaterialStatus |= (1 << type);
+    }
+}
+
+/** 是否空闲，rest==-1 */
+bool Workbench::isFree()
+{
+    return (rest == -1) && (productStatus == 0);
+}
+
+/** 是否已经有产物, productStatus==1 */
+bool Workbench::isReady()
+{
+    return productStatus == 1;
+}
+
+/** 获取工作台类型 */
+int Workbench::getType()
+{
+    return type;
+}
+
+/** 获取工作台位置 */
+Vec Workbench::getPos() const
+{
+    return pos;
+}
+
+/** 获取工作台剩余工作时间 */
+int Workbench::getRest()
+{
+    return rest;
+}
+
+/** 获取工作台index */
+int Workbench::getId()
+{
+    return id;
+}
+
+/** 当前工作台是否拥塞 */
+bool Workbench::isBlocked()
+{
+    bool ret = false;
+    switch (type)
+    {
+    case 4:
+        if (planMaterialStatus == 0b110)
         {
-            return 50;
+            ret = true;
         }
-        return -1;
+        break;
+    case 5:
+        if (planMaterialStatus == 0b1010)
+        {
+            ret = true;
+        }
+        break;
+    case 6:
+        if (planMaterialStatus == 0b1100)
+        {
+            ret = true;
+        }
+        break;
+    case 7:
+        if (planMaterialStatus == 0b1110000)
+        {
+            ret = true;
+        }
+        break;
+    default:
+        ret = false;
+        break;
     }
-
-    void update(std::vector<std::string> info)
-    {
-        this->rest = std::stoi(info[3]);
-    }
-};
+    return ret;
+}

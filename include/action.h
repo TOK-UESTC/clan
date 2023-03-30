@@ -34,13 +34,13 @@ public:
         this->value = 0;
     }
 
-    void copy(ActionType type, double value)
+    void set(ActionType type, double value)
     {
         this->type = type;
         this->value = value;
     }
 
-    void copy(ActionType type)
+    void set(ActionType type)
     {
         this->type = type;
         this->value = 0;
