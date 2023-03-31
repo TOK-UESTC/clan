@@ -1,15 +1,19 @@
 #include "includeAll.h"
 
+Context::Context()
+{
+}
+
 void Context::init()
 {
     int row = 0;
     double x, y;            // 地图坐标
     int workbenchCount = 0; // 工作台数量
     int robotCount = 0;     // 机器人数量
+    char **m = maps.getMap();
 
     while (true)
     {
-        char **m = maps.getMap();
         readLine();
 
         // 地图数据读取完毕
@@ -61,6 +65,12 @@ void Context::init()
             }
         }
         row++;
+    }
+
+    for (int i = 0; i < sizeof(m) / sizeof(m[0]); i++)
+    {
+        fprintf(stderr, "%s\n", m[i]);
+        fflush(stderr);
     }
 
     // sortRobotList.addAll(robotList);

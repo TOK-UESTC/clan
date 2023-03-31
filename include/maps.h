@@ -39,7 +39,9 @@ public:
         return map05;
     }
 
-    char **convert025(); // 地图转换, 详情见实现
+    char **convert025();                                                              // 地图转换, 详情见实现
+    int16_t **accessible(char **map, int8_t **mapRoadWidthH, int8_t **mapRoadWidthV); // 得到地图上的元素可访问性
+    int8_t **mapRoadWidth(char **map, bool isHorizon);                                // 得到地图元素的
 };
 
 #endif

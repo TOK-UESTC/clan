@@ -24,6 +24,8 @@ private:
     Vec pos;                      // 机器人坐标位置
     Vec velocity;                 // 线速度， 二维向量描述, m/s
     ActionModel actionModel;      // 机器人动作模型
+    Task *task;                   // 机器人任务
+    vector<Action *> actions;     // 机器人动作序列
 
 public:
     Robot(int id, double x, double y);
@@ -32,11 +34,16 @@ public:
     double getPriority() const;
     Vec getPos() const;
     Vec getVelocity() const;
+    Task *getTask();
+    int getProductType() const;
+    int getLastProductType() const;
+    int getWorkbenchIdx() const;
 
     void checkDeal();
     void update(int leftFrame);
     void updatePid(int count);
     void control();
+    void addAction(Action *action);
 
     bool isLoaded();
     bool operator<(const Robot &o) const; // 重载为降序排列

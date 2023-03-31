@@ -48,12 +48,21 @@ bool MotionState::isLoaded()
     return loaded;
 }
 
-Vec MotionState::getPos() const
+Vec *MotionState::getPos()
 {
-    return pos;
+    return &pos;
 }
 
-Vec MotionState::getVelocity() const
+Vec *MotionState::getVelocity()
 {
-    return velocity;
+    return &velocity;
+}
+
+void MotionState::Update(Robot *rb)
+{
+    pos.set(rb->pos);
+    velocity.set(rb->velocity);
+    heading = rb->heading;
+    w = rb->w;
+    loaded = rb->loaded;
 }

@@ -4,8 +4,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "const.h"
-#include "context.h"
+#include "include/includeAll.h"
 
 using namespace std;
 

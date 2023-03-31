@@ -18,12 +18,12 @@ char **Maps::convert025()
     for (int i = 0; i < MAP_HEIGHT * 2 + 1; i++)
     {
         map025[i][0] = '#';
-        map025[i][MAP_WIDTH * 2] = '#';
+        // map025[i][MAP_WIDTH * 2] = '#';
     }
     for (int j = 0; j < MAP_WIDTH * 2 + 1; j++)
     {
         map025[0][j] = '#';
-        map025[MAP_HEIGHT * 2][j] = '#';
+        // map025[MAP_HEIGHT * 2][j] = '#';
     }
 
     int col = sizeof(map05[0]) / sizeof(map05[0][0]);
@@ -64,4 +64,97 @@ char **Maps::convert025()
     }
 
     return map025;
+}
+
+/*
+ * @brief 获取给定地图的通道宽度
+ * @param map: 给定地图，默认是map025
+ * @param isHorizon: true 计算水平方向的宽度 false 计算垂直方向的宽度
+ *
+ * @return 返回的地图交给使用方释放
+ */
+int8_t **Maps::mapRoadWidth(char **map, bool isHorizon)
+{
+    int row = sizeof(map) / sizeof(map[0]);
+    int col = sizeof(map[0]) / sizeof(map[0][0]);
+    if (isHorizon)
+    {
+        int8_t **mapRoadWidthH = new int8_t *[row];
+        for (int i = 0; i < row; i++)
+        {
+            mapRoadWidthH[i] = new int8_t[col];
+        }
+        for (int i = 0; i < row; i++)
+        {
+            int left = 0, right = 0;
+            while (right != col)
+            {
+                right++;
+                if (map[i][right] != '#')
+                {
+                    right++;
+                    continue;
+                }
+
+                int8_t width = right - left;
+                if (width == 1)
+                {
+                    // 相邻两个点都在障碍上，那么之间也在障碍上
+                    mapRoadWidthH[i][left] = 0;
+                    mapRoadWidthH[i][left + 1] = 0;
+                }
+                else
+                {
+                    mapRoadWidthH[i][left] = 0;
+                    for (int k = left + 1; k < right; k++)
+                    {
+                        mapRoadWidthH[i][k] = width;
+                    }
+                    mapRoadWidthH[i][right] = 0;
+                }
+                left = right;
+            }
+        }
+        return mapRoadWidthH;
+    }
+    else
+    {
+        int8_t **mapRoadWidthV = new int8_t *[row];
+        for (int i = 0; i < row; i++)
+        {
+            mapRoadWidthV[i] = new int8_t[col];
+        }
+        for (int j = 0; j < col; j++)
+        {
+            int left = 0, right = 0;
+            while (right != row)
+            {
+                right++;
+                if (map[right][j] != '#')
+                {
+                    right++;
+                    continue;
+                }
+
+                int8_t width = right - left;
+                if (width == 1)
+                {
+                    // 相邻两个点都在障碍上，那么之间也在障碍上
+                    mapRoadWidthV[left][j] = 0;
+                    mapRoadWidthV[left + 1][j] = 0;
+                }
+                else
+                {
+                    mapRoadWidthV[left][j] = 0;
+                    for (int k = left + 1; k < right; k++)
+                    {
+                        mapRoadWidthV[k][j] = width;
+                    }
+                    mapRoadWidthV[right][j] = 0;
+                }
+                left = right;
+            }
+        }
+        return mapRoadWidthV;
+    }
 }

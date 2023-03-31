@@ -25,8 +25,8 @@ public:
 
     bool isLoaded();
 
-    Vec getPos() const;
-    Vec getVelocity() const;
+    Vec *getPos();
+    Vec *getVelocity();
 };
 
 #endif

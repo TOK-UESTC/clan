@@ -1,4 +1,4 @@
-#include "workbench.h"
+#include "include/includeAll.h"
 
 Workbench::Workbench(int id, double x, double y, int type)
 {
@@ -20,6 +20,16 @@ int Workbench::getRestTime(int type)
         return 50;
     }
     return -1;
+}
+
+void Workbench::setPlanProductStatus(int planProductStatus)
+{
+    this->planMaterialStatus = planMaterialStatus;
+}
+
+int Workbench::getPlanProductStatus()
+{
+    return this->planMaterialStatus;
 }
 
 /** 只更新剩余生产时间，原材料状态以及产品格状态 */
@@ -90,9 +100,9 @@ int Workbench::getType()
 }
 
 /** 获取工作台位置 */
-Vec Workbench::getPos() const
+Vec *Workbench::getPos()
 {
-    return pos;
+    return &pos;
 }
 
 /** 获取工作台剩余工作时间 */
@@ -142,4 +152,9 @@ bool Workbench::isBlocked()
         break;
     }
     return ret;
+}
+
+int Workbench::getWorkbenchIdx()
+{
+    return id;
 }

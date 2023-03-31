@@ -15,6 +15,7 @@
 #include "vec.h"
 #include "workbench.h"
 #include "utils.h"
+#include "objectPool.h"
 
 #include <string>
 #include <sstream>

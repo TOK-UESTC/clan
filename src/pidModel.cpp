@@ -31,19 +31,19 @@ void PIDModel::set(double KpDist, double KiDist, double KdDist, double KpDistLoa
     this->KdDistLoad = KdDistLoad;
 }
 
-void PIDModel::control(MotionState ms, Vec targetPos)
+void PIDModel::control(MotionState *ms, Vec *targetPos)
 {
-    Vec pos = ms.getPos();
-    double posX = pos.getX();
-    double posY = pos.getY();
-    double heading = ms.getHeading();
+    Vec *pos = ms->getPos();
+    double posX = pos->getX();
+    double posY = pos->getY();
+    double heading = ms->getHeading();
 
     // 获取距离误差
     double distErr = computeDist(pos, targetPos);
 
     // 计算角度误差，根据两者的坐标
-    double diffX = targetPos.getX() - posX;
-    double diffY = targetPos.getY() - posY;
+    double diffX = targetPos->getX() - posX;
+    double diffY = targetPos->getY() - posY;
     double quadrant = 1.; // 象限
     if (diffY < 0)
     {
@@ -55,7 +55,7 @@ void PIDModel::control(MotionState ms, Vec targetPos)
         angle = quadrant * acos(diffX / distErr);
     }
 
-    double angleErr = angle - ms.getHeading();
+    double angleErr = angle - ms->getHeading();
     angleErr = getAngleRanged(angleErr);
 
     /// 判断离墙是否太近

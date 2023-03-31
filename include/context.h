@@ -15,14 +15,14 @@ private:
     char line[1024];
     int frameId = 0;
     int money = 0;
-    int leftFrame = 0;
-    Maps maps; // 存放地图信息
+    // int leftFrame = 0;
     std::vector<Workbench> workbenchList;
     std::vector<Robot> robotList;
+    Maps maps; // 存放地图信息
 
 public:
-    Context(){};  // 构造函数
-    ~Context(){}; // 析构函数
+    Context();  // 构造函数
+    ~Context(); // 析构函数
 
     int getFrameId();
 
@@ -34,6 +34,8 @@ public:
     void readLine();
     void printLine(char *out);
     void endStep();
+
+    static int leftFrame; // 剩余帧数
 };
 
 #endif

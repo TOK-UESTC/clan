@@ -1,10 +1,7 @@
 #include "robot.h"
 
-Robot::Robot(int id, double x, double y)
+Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this)
 {
-    this->id = id;
-    this->pos.set(x, y);
-    this->actionModel.setRobot(this);
 }
 
 // 根据地图更改PID？？？
@@ -34,6 +31,7 @@ void Robot::update(int leftFrame)
     velocity.set(x, y);
 }
 
+// TODO
 void Robot::checkDeal()
 {
 }
@@ -57,4 +55,28 @@ double Robot::getPriority() const
 bool Robot::operator<(const Robot &o) const
 {
     return this->getPriority() < o.getPriority();
+}
+
+Task *Robot::getTask()
+{
+    return task;
+}
+
+int Robot::getProductType() const
+{
+    return productType;
+}
+
+int Robot::getLastProductType() const
+{
+    return lastProductType;
+}
+
+int Robot::getWorkbenchIdx() const
+{
+    return workbenchIdx;
+}
+void Robot::addAction(Action *action)
+{
+    actions.push_back(action);
 }

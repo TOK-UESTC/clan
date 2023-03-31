@@ -4,10 +4,10 @@
 #include "includeAll.h"
 
 // 计算坐标距离
-double computeDist(Vec left, Vec right)
+double computeDist(Vec *left, Vec *right)
 {
-    double x = right.getX() - left.getX();
-    double y = right.getY() - left.getY();
+    double x = right->getX() - left->getX();
+    double y = right->getY() - left->getY();
 
     return sqrt(x * x + y * y);
 }

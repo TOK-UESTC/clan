@@ -26,18 +26,21 @@ public:
     Workbench(int id, double x, double y, int type);
 
     int getRestTime(int type);
-    Vec getPos() const;
+    Vec *getPos();
 
     void update();
     bool hasMaterial(int type);
     bool hasPlanMaterial(int type);
     void updatePlanMaterialStatus(int type, bool Sell);
+    void setPlanProductStatus(int planProductStatus);
+    int getPlanProductStatus();
     bool isFree();
     bool isReady();
     int getType();
     int getRest();
     int getId();
     bool isBlocked();
+    int getWorkbenchIdx();
 };
 
 #endif

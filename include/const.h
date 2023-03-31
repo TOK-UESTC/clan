@@ -23,8 +23,8 @@
 #define MAP_LENGTH 50.0                                           // 地图长度
 #define TOTAL_FRAME DURATION_OF_GAME *FRAME_PER_SECOND            // 总时长
 #define MAX_FORWARD_FRAME MAX_FORWARD_VELOCITY / FRAME_PER_SECOND // 机器人最大前进速度/frame
-#define MAP_HEIGHT 100
-#define MAP_WIDTH 100
+#define MAP_HEIGHT 100                                            // 字符地图高度
+#define MAP_WIDTH 100                                             // 字符地图宽度
 
 enum ActionType
 {

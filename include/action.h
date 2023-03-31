@@ -12,11 +12,11 @@
 class Action
 {
 private:
-    ActionType type;
+    enum ActionType type;
     double value;
 
 public:
-    Action(ActionType type, double value)
+    Action(enum ActionType type, double value)
     {
         this->type = type;
         this->value = value;
@@ -72,6 +72,18 @@ public:
         }
 
         return ss.str();
+    }
+    Action *update(ActionType type, double value)
+    {
+        this->type = type;
+        this->value = value;
+        return this;
+    }
+    Action *update(ActionType type)
+    {
+        this->type = type;
+        this->value = 0;
+        return this;
     }
 };
 

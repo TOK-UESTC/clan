@@ -35,7 +35,7 @@ public:
     void set(const PIDModel &s);
     void set(double KpDist, double KiDist, double KdDist, double KpDistLoad, double KiDistLoad, double KdDistLoad);
 
-    void control(MotionState ms, Vec targetPos);
+    void control(MotionState *ms, Vec *targetPos);
 };
 
 #endif
