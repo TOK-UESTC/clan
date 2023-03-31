@@ -1,4 +1,4 @@
-#include "include/includeAll.h"
+#include "include/workbench.h"
 
 Workbench::Workbench(int id, double x, double y, int type)
 {

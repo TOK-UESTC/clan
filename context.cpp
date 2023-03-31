@@ -1,4 +1,4 @@
-#include "includeAll.h"
+#include "include/context.h"
 
 Context::Context()
 {
@@ -37,17 +37,24 @@ void Context::init()
             {
             // 空地
             case '.':
+            {
                 break;
+            }
             // 机器人
             case 'A':
+            {
                 Robot *robot = new Robot(robotCount++, x, y);
                 robotList.push_back(robot);
                 break;
+            }
             // 障碍
             case '#':
+            {
                 break;
+            }
             // 工作台
             default:
+            {
                 int workbenchType = line[col] - '0';
                 Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
@@ -64,6 +71,7 @@ void Context::init()
                 //     workbenchTypeMap.put(workbenchType, storage);
                 // }
                 break;
+            }
             }
         }
         row++;

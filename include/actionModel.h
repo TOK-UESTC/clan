@@ -2,6 +2,9 @@
 #define ACTION_MODEL_H
 
 #include "includeAll.h"
+
+// 前向引用，避免回环引用报错，并不美观
+class Robot;
 /*
  * @brief 管理机器人动作
  *
@@ -17,6 +20,7 @@ private:
     Action sellAction;
     ObjectPool<MotionState> motionStatePool; // 动作状态池
     ObjectPool<Vec> coordinatePool;          // 坐标池
+    Robot *rb;
 
 public:
     ActionModel(ObjectPool<MotionState> &motionStatePool, ObjectPool<Vec> &coordinatePool)

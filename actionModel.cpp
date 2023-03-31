@@ -1,4 +1,4 @@
-#include "includeAll.h"
+#include "include/actionModel.h"
 
 void ActionModel::generateMoveActions()
 {

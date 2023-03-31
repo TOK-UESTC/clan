@@ -1,4 +1,4 @@
-#include "includeAll.h"
+#include "include/motionState.h"
 
 MotionState::MotionState()
 {
@@ -56,13 +56,4 @@ Vec *MotionState::getPos()
 Vec *MotionState::getVelocity()
 {
     return &velocity;
-}
-
-void MotionState::Update(Robot *rb)
-{
-    pos.set(rb->pos);
-    velocity.set(rb->velocity);
-    heading = rb->heading;
-    w = rb->w;
-    loaded = rb->loaded;
 }

@@ -1,4 +1,4 @@
-#include "includeAll.h"
+#include "include/taskChain.h"
 
 TaskChain::TaskChain(double totalFrame)
 {
@@ -56,5 +56,5 @@ void TaskChain::addTask(Task *task)
 // 删除Task，同时删除take的时间
 void TaskChain::removeTask(int index)
 {
-    this->taskChain.
+    this->taskChain.erase(this->taskChain.begin() + index);
 }
