@@ -1,9 +1,7 @@
 #ifndef WORKBENCH_H
 #define WORKBENCH_H
 
-#include <vector>
-#include <string>
-#include "vec.h"
+#include "includeAll.h"
 
 /*
  * @brief 工作台代理类

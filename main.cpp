@@ -30,7 +30,8 @@ int main()
         // 显示时间
         if (showTime)
         {
-            cerr << (double)(end - start) / CLOCKS_PER_SEC * 1000.0 << " at frame " << ctx.getFrameId() << endl;
+            double cost = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
+            fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
             fflush(stderr);
         }
     }

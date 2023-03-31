@@ -1,9 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <vector>
-#include "vec.h"
-#include "workbench.h"
+#include "includeAll.h"
 
 /*
  * @brief 基础任务类

@@ -1,7 +1,7 @@
 #ifndef MAPS_H
 #define MAPS_H
 
-#include "const.h"
+#include "includeAll.h"
 
 /*
  * @brief 管理比赛地图
@@ -38,12 +38,8 @@ public:
     {
         return map05;
     }
-    /* 原始的map每个元素表示0.5x0.5, 经分析元素表示0.25对今后的路径规划有好处
-       下面的convert025就是将原图转换成元素表示0.25的地图
-    */
-    char **convert025()
-    {
-    }
+
+    char **convert025(); // 地图转换, 详情见实现
 };
 
 #endif

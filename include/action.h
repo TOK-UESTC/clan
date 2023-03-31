@@ -1,12 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include <string>
-#include <sstream>
-#include <iostream>
-#include "const.h"
-
-using namespace std;
+#include "includeAll.h"
 
 /*
  * @brief 机器人基础动作
@@ -47,9 +42,9 @@ public:
     }
 
     /** 输出为字符串，方便直接调用 */
-    string toString(int robotId)
+    std::string toString(int robotId)
     {
-        stringstream ss;
+        std::stringstream ss;
         switch (type)
         {
         case FORWARD:

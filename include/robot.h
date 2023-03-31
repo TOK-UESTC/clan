@@ -1,10 +1,7 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include <string>
-#include <vector>
-#include "vec.h"
-#include "actionModel.h"
+#include "includeAll.h"
 /*
  * @brief 机器人代理类
  *
@@ -41,6 +38,7 @@ public:
     void updatePid(int count);
     void control();
 
+    bool isLoaded();
     bool operator<(const Robot &o) const; // 重载为降序排列
 };
 #endif

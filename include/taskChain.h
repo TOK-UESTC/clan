@@ -1,20 +1,18 @@
 #ifndef TASK_CHAIN_H
 #define TASK_CHAIN_H
 
-#include <vector>
-#include "task.h"
+#include "includeAll.h"
 /*
  * @brief 组织任务构成任务链
  *
  *
  */
-using namespace std;
 class TaskChain
 {
 
 private:
-    vector<Task> taskChain; // 用来存储任务链中的任务
-    double totalFrame;      // 在已有任务链的条件下，完成任务所需最快帧数
+    std::vector<Task> taskChain; // 用来存储任务链中的任务
+    double totalFrame;           // 在已有任务链的条件下，完成任务所需最快帧数
 
 public:
     TaskChain(double totalFrame); // 通过任务总时间初始化任务链

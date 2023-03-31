@@ -1,8 +1,7 @@
 #ifndef ACTION_MODEL_H
 #define ACTION_MODEL_H
 
-#include "robot.h"
-
+#include "includeAll.h"
 /*
  * @brief 管理机器人动作
  *

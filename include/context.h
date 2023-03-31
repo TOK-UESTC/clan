@@ -1,14 +1,7 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include <iostream>
-#include <cstring>
-#include <vector>
-
-#include "const.h"
-#include "workbench.h"
-#include "robot.h"
-#include "maps.h"
+#include "includeAll.h"
 
 /*
  * @brief 用于管理程序运行的上下文信息

@@ -1,8 +1,7 @@
 #ifndef MOTION_STATE_H
 #define MOTION_STATE_H
 
-#include <cmath>
-#include "vec.h"
+#include "includeAll.h"
 
 class MotionState
 {
@@ -12,6 +11,7 @@ private:
     bool loaded;    // 时刻t机器人负载状态， true: 负载
     double heading; // 时刻t机器人位置朝向
     double w;       // 时刻t机器人角速度
+
 public:
     MotionState();
 

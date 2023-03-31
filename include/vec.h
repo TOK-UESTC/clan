@@ -1,7 +1,7 @@
 #ifndef VEC_H
 #define VEC_H
 
-#include <cmath>
+#include "includeAll.h"
 
 /*
  * @brief 与矢量相关的基类
@@ -38,6 +38,16 @@ public:
     {
         this->x = x;
         this->y = y;
+    }
+
+    double getX()
+    {
+        return x;
+    }
+
+    double getY()
+    {
+        return y;
     }
 
     double mod()

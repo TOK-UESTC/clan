@@ -1,4 +1,4 @@
-#include "motionState.h"
+#include "includeAll.h"
 
 MotionState::MotionState()
 {

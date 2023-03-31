@@ -13,8 +13,14 @@ void Robot::updatePid(int count)
     // PID.set(5.5, 0.07, 1.3, 5.5, 0.07, 1.3);
 }
 
+bool Robot::isLoaded()
+{
+    return productType != 0;
+}
+
 void Robot::update(int leftFrame)
 {
+
     int id;
     double x, y, vx, vy;
     // 读取信息

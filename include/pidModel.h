@@ -27,12 +27,15 @@ private:
     double intDist;
     // 积分值上限
     double intMaxDist;
+    Robot *rb;
 
 public:
-    PIDModel();
+    PIDModel(){};
 
     void set(const PIDModel &s);
     void set(double KpDist, double KiDist, double KdDist, double KpDistLoad, double KiDistLoad, double KdDistLoad);
+
+    void control(MotionState ms, Vec targetPos);
 };
 
 #endif
