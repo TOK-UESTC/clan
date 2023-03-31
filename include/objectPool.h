@@ -1,16 +1,14 @@
 #ifndef OBJECT_POOL_H
 #define OBJECT_POOL_H
 
-#include <vector>
-#include <unordered_set>
 #include <functional>
+#include <vector>
 
 template <typename T>
 class ObjectPool
 {
 private:
     std::vector<T> pool;
-    std::unordered_set<T> used;
     std::function<T()> supplier;
 
 public:
@@ -36,26 +34,17 @@ public:
             t = pool.back();
             pool.pop_back();
         }
-        used.insert(t);
         return t;
     }
 
     void release(T t)
     {
-        if (used.erase(t))
-        {
-            pool.push_back(t);
-        }
+        pool.push_back(t);
     }
 
     int availableSize()
     {
         return pool.size();
-    }
-
-    int usedSize()
-    {
-        return used.size();
     }
 };
 

@@ -12,11 +12,11 @@
 class Action
 {
 private:
-    enum ActionType type;
+    ActionType type;
     double value;
 
 public:
-    Action(enum ActionType type, double value)
+    Action(ActionType type, double value)
     {
         this->type = type;
         this->value = value;
@@ -44,7 +44,7 @@ public:
     /** 输出为字符串，方便直接调用 */
     std::string toString(int robotId)
     {
-        std::stringstream ss;
+        std::stringstream ss = std::stringstream();
         switch (type)
         {
         case FORWARD:

@@ -4,6 +4,8 @@ Context::Context()
 {
 }
 
+Context::~Context() {}
+
 void Context::init()
 {
     int row = 0;
@@ -38,7 +40,7 @@ void Context::init()
                 break;
             // 机器人
             case 'A':
-                Robot robot = Robot(robotCount++, x, y);
+                Robot *robot = new Robot(robotCount++, x, y);
                 robotList.push_back(robot);
                 break;
             // 障碍
@@ -47,7 +49,7 @@ void Context::init()
             // 工作台
             default:
                 int workbenchType = line[col] - '0';
-                Workbench workbench = Workbench(workbenchCount++, x, y, workbenchType);
+                Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
 
                 // 将同一型号的工作台放置到map中
@@ -109,15 +111,15 @@ void Context::update()
     // 更新工作台信息
     int k;
     scanf("%d\n", &k);
-    for (Workbench wb : workbenchList)
+    for (Workbench *wb : workbenchList)
     {
-        wb.update();
+        wb->update();
     }
 
     // 更新机器人信息
-    for (Robot rb : robotList)
+    for (Robot *rb : robotList)
     {
-        rb.update(leftFrame);
+        rb->update(leftFrame);
     }
 }
 

@@ -7,12 +7,10 @@
  *
  *
  */
-
 class ActionModel
 {
 
 private:
-    Robot *rb; // 机器人指针
     Action rotateAction;
     Action forwardAction;
     Action buyAction;
@@ -21,8 +19,8 @@ private:
     ObjectPool<Vec> coordinatePool;          // 坐标池
 
 public:
-    ActionModel(Robot *rb, ObjectPool<MotionState> &motionStatePool, ObjectPool<Vec> &coordinatePool)
-        : rb(rb), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL), motionStatePool(motionStatePool), coordinatePool(coordinatePool)
+    ActionModel(ObjectPool<MotionState> &motionStatePool, ObjectPool<Vec> &coordinatePool)
+        : rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL), motionStatePool(motionStatePool), coordinatePool(coordinatePool)
     {
     } // 构造函数
     // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针

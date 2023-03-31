@@ -16,8 +16,8 @@ private:
     int frameId = 0;
     int money = 0;
     // int leftFrame = 0;
-    std::vector<Workbench> workbenchList;
-    std::vector<Robot> robotList;
+    std::vector<Workbench *> workbenchList;
+    std::vector<Robot *> robotList;
     Maps maps; // 存放地图信息
 
 public:

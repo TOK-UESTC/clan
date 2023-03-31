@@ -1,9 +1,3 @@
-#include <iostream>
-#include <ctime>
-// 方便调试
-#include <signal.h>
-#include <unistd.h>
-
 #include "include/includeAll.h"
 
 using namespace std;
