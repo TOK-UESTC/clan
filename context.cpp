@@ -77,11 +77,11 @@ void Context::init()
         row++;
     }
 
-    for (int i = 0; i < sizeof(m) / sizeof(m[0]); i++)
-    {
-        fprintf(stderr, "%s\n", m[i]);
-        fflush(stderr);
-    }
+    // for (int i = 0; i < sizeof(m) / sizeof(m[0]); i++)
+    // {
+    //     fprintf(stderr, "%s\n", m[i]);
+    //     fflush(stderr);
+    // }
 
     // sortRobotList.addAll(robotList);
 
@@ -148,7 +148,7 @@ void Context::step(bool init)
     {
         // printLine
     }
-
+    printf("%d\n", frameId);
     // 告知判题器操作结束
     endStep();
 }
