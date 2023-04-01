@@ -1,13 +1,19 @@
 #ifndef CONTEXT_H
 #define CONTEXT_H
 
-#include "includeAll.h"
+#include "common.h"
+#include "workbench.h"
+#include "robot.h"
+#include "maps.h"
 
 /*
  * @brief 用于管理程序运行的上下文信息
  *
  *
  */
+class Robot;
+class Workbench;
+
 class Context
 {
 
@@ -15,7 +21,6 @@ private:
     char line[1024];
     int frameId = 0;
     int money = 0;
-    // int leftFrame = 0;
     std::vector<Workbench *> workbenchList;
     std::vector<Robot *> robotList;
     Maps maps; // 存放地图信息
@@ -34,8 +39,6 @@ public:
     void readLine();
     void printLine(char *out);
     void endStep();
-
-    static int leftFrame; // 剩余帧数
 };
 
 #endif

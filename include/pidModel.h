@@ -1,7 +1,8 @@
 #ifndef PID_MODEL_H
 #define PID_MODEL_H
 
-#include "includeAll.h"
+#include "common.h"
+#include "robot.h"
 
 class PIDModel
 {

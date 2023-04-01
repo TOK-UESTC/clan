@@ -17,6 +17,11 @@ else
     executor="../Robot.exe"
 fi
 
+if [ -e "/proc/sys/fs/binfmt_misc/WSLInterop" ]
+then
+    executor="../Robot.exe"
+fi
+
 if [ $# -eq 1 ]
 then
     name=$1

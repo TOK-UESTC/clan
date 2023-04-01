@@ -1,7 +1,9 @@
 #include "include/includeAll.h"
 
-using namespace std;
+// 全局变量
+int leftFrame = TOTAL_FRAME;
 
+using namespace std;
 static bool showTime = false;
 int main()
 {

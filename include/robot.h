@@ -1,12 +1,15 @@
 #ifndef ROBOT_H
 #define ROBOT_H
 
-#include "includeAll.h"
+#include "common.h"
+#include "task.h"
+#include "actionModel.h"
 /*
  * @brief 机器人代理类
  *
  *
  */
+class ActionModel;
 
 class Robot
 {
@@ -20,7 +23,6 @@ private:
     double collisionCoefficients;  // 碰撞价值系数 [0.8, 1]
     double w;                      // 角速度 单位：弧度每秒， 正数表示顺时针， 负数表示逆时针
     double heading;                // 朝向 [-pi, pi] 0 表示右方向, pi/2表示上方向
-    int leftFrame;                 // 剩余帧数
     Vec pos;                       // 机器人坐标位置
     Vec velocity;                  // 线速度， 二维向量描述, m/s
     ActionModel *actionModel;      // 机器人动作模型
@@ -40,7 +42,7 @@ public:
     int getWorkbenchIdx() const;
 
     void checkDeal();
-    void update(int leftFrame);
+    void update();
     void updatePid(int count);
     void control();
     void addAction(Action *action);

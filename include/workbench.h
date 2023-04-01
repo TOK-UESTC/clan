@@ -1,7 +1,7 @@
 #ifndef WORKBENCH_H
 #define WORKBENCH_H
 
-#include "includeAll.h"
+#include "common.h"
 
 /*
  * @brief 工作台代理类

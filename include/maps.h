@@ -1,8 +1,9 @@
 #ifndef MAPS_H
 #define MAPS_H
 
-#include "includeAll.h"
+#include <cstdint>
 
+#include "const.h"
 /*
  * @brief 管理比赛地图
  *

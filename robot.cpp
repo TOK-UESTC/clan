@@ -15,18 +15,17 @@ bool Robot::isLoaded()
     return productType != 0;
 }
 
-void Robot::update(int leftFrame)
+void Robot::update()
 {
 
     int id;
     double x, y, vx, vy;
     // 读取信息
-    scanf("%d %d %f %f %f %f %f %f %f %f\n",
-          &id, &productType, &timeCoefficients, &collisionCoefficients,
-          &w, &vx, &vy, &heading, &x, &y);
+    (void)!scanf("%d %d %f %f %f %f %f %f %f %f\n",
+                 &id, &productType, &timeCoefficients, &collisionCoefficients,
+                 &w, &vx, &vy, &heading, &x, &y);
 
     // 更新
-    this->leftFrame = leftFrame;
     pos.set(x, y);
     velocity.set(x, y);
 }

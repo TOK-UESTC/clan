@@ -1,7 +1,7 @@
 #ifndef MOTION_STATE_H
 #define MOTION_STATE_H
 
-#include "includeAll.h"
+#include "common.h"
 
 class MotionState
 {
@@ -14,6 +14,7 @@ private:
 
 public:
     MotionState();
+    ~MotionState();
 
     // void set(Robot rb);
     void set(const MotionState &s);

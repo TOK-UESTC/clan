@@ -1,7 +1,7 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "includeAll.h"
+#include "common.h"
 
 /*
  * @brief 机器人基础动作

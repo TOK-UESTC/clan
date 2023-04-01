@@ -113,12 +113,12 @@ void Context::update()
 {
     // readLine();
     // 快速读入
-    scanf("%d %d\n", &frameId, &money);
+    (void)!scanf("%d %d\n", &frameId, &money);
     leftFrame = TOTAL_FRAME - frameId;
 
     // 更新工作台信息
     int k;
-    scanf("%d\n", &k);
+    (void)!scanf("%d\n", &k);
     for (Workbench *wb : workbenchList)
     {
         wb->update();
@@ -127,7 +127,7 @@ void Context::update()
     // 更新机器人信息
     for (Robot *rb : robotList)
     {
-        rb->update(leftFrame);
+        rb->update();
     }
 }
 
@@ -160,7 +160,7 @@ int Context::getFrameId()
 
 void Context::readLine()
 {
-    fgets(line, sizeof line, stdin);
+    (void)!fgets(line, sizeof line, stdin);
 }
 
 void Context::printLine(char *out)

@@ -44,7 +44,7 @@ void ActionModel::generateShopActions()
         wb = rb->getTask()->getFrom();
         Workbench *to = rb->getTask()->getTo();
         // 判断是否在目标工作台附近，并且当前已经调转，开始朝向下一个工作台
-        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx() && computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
+        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx() && Utils::computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < leftFrame)
         {
             // 购买行为
             rb->addAction(this->buyAction.update(ActionType::BUY));

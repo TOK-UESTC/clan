@@ -1,29 +1,35 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "includeAll.h"
+#include <cmath>
+#include "const.h"
+#include "vec.h"
 
-// 计算坐标距离
-double computeDist(Vec *left, Vec *right)
+class Utils
 {
-    double x = right->getX() - left->getX();
-    double y = right->getY() - left->getY();
-
-    return sqrt(x * x + y * y);
-}
-
-// 将w映射到题目范围内
-double getAngleRanged(double angle)
-{
-    if (angle > PI)
+    // 计算坐标距离
+public:
+    static double computeDist(Vec *left, Vec *right)
     {
-        angle = angle - 2 * PI;
+        double x = right->getX() - left->getX();
+        double y = right->getY() - left->getY();
+
+        return std::sqrt(x * x + y * y);
     }
-    else if (angle < -PI)
+
+    // 将w映射到题目范围内
+    static double getAngleRanged(double angle)
     {
-        angle = angle + 2 * PI;
+        if (angle > PI)
+        {
+            angle = angle - 2 * PI;
+        }
+        else if (angle < -PI)
+        {
+            angle = angle + 2 * PI;
+        }
+        return angle;
     }
-    return angle;
-}
+};
 
 #endif

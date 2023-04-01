@@ -1,7 +1,8 @@
 #ifndef TASK_CHAIN_H
 #define TASK_CHAIN_H
 
-#include "includeAll.h"
+#include "common.h"
+#include "task.h"
 /*
  * @brief 组织任务构成任务链
  *

@@ -1,7 +1,11 @@
 #ifndef ACTION_MODEL_H
 #define ACTION_MODEL_H
 
-#include "includeAll.h"
+#include "common.h"
+#include "action.h"
+#include "robot.h"
+#include "motionState.h"
+#include "context.h"
 
 // 前向引用，避免回环引用报错，并不美观
 class Robot;

@@ -1,8 +1,8 @@
 #ifndef OBJECT_POOL_H
 #define OBJECT_POOL_H
 
-#include <functional>
 #include <vector>
+#include <functional>
 
 template <typename T>
 class ObjectPool
