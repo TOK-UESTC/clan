@@ -1,4 +1,4 @@
-#include "robot.h"
+#include "include/includeAll.h"
 
 Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this)
 {
