@@ -4,7 +4,8 @@
 
 # cmake编译项目并将可执行文件与过程文件放在build文件夹中
 # cmake build project and put executable file and process file in build folder
-cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release 
+rm -r build
+cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
 make -C build -j24
 
 

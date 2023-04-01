@@ -2,6 +2,7 @@
 #define ACTION_MODEL_H
 
 #include "includeAll.h"
+class Robot; // 前向声明, 只能通过指针或者引用访问
 /*
  * @brief 管理机器人动作
  *
@@ -17,12 +18,11 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    ObjectPool<MotionState> motionStatePool; // 动作状态池
-    ObjectPool<Vec> coordinatePool;          // 坐标池
+    // ObjectPool<MotionState> motionStatePool; // 动作状态池
+    // ObjectPool<Vec> coordinatePool;          // 坐标池
 
 public:
-    ActionModel(Robot *rb, ObjectPool<MotionState> &motionStatePool, ObjectPool<Vec> &coordinatePool)
-        : rb(rb), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL), motionStatePool(motionStatePool), coordinatePool(coordinatePool)
+    ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
     } // 构造函数
     // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针

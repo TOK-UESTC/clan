@@ -25,7 +25,7 @@ private:
     Vec velocity;                 // 线速度， 二维向量描述, m/s
     ActionModel actionModel;      // 机器人动作模型
     Task *task;                   // 机器人任务
-    vector<Action *> actions;     // 机器人动作序列
+    std::vector<Action *> actions;     // 机器人动作序列
 
 public:
     Robot(int id, double x, double y);

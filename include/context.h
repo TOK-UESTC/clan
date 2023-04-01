@@ -12,16 +12,18 @@ class Context
 {
 
 private:
+    int leftFrame; // 剩余帧数
     char line[1024];
     int frameId = 0;
     int money = 0;
     // int leftFrame = 0;
-    std::vector<Workbench> workbenchList;
-    std::vector<Robot> robotList;
+    std::vector<Workbench*> workbenchList;
+    std::vector<Robot*> robotList;
+    char **map05;
     Maps maps; // 存放地图信息
 
 public:
-    Context();  // 构造函数
+    // Context();  // 构造函数
     ~Context(); // 析构函数
 
     int getFrameId();
@@ -35,7 +37,6 @@ public:
     void printLine(char *out);
     void endStep();
 
-    static int leftFrame; // 剩余帧数
 };
 
 #endif

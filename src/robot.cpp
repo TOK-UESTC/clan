@@ -24,6 +24,7 @@ void Robot::update(int leftFrame)
     scanf("%d %d %f %f %f %f %f %f %f %f\n",
           &id, &productType, &timeCoefficients, &collisionCoefficients,
           &w, &vx, &vy, &heading, &x, &y);
+    getchar();
 
     // 更新
     this->leftFrame = leftFrame;

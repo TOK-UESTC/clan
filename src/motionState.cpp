@@ -58,11 +58,11 @@ Vec *MotionState::getVelocity()
     return &velocity;
 }
 
-void MotionState::Update(Robot *rb)
-{
-    pos.set(rb->pos);
-    velocity.set(rb->velocity);
-    heading = rb->heading;
-    w = rb->w;
-    loaded = rb->loaded;
-}
+// void MotionState::Update(Robot *rb)
+// {
+//     pos.set(rb->pos);
+//     velocity.set(rb->velocity);
+//     heading = rb->heading;
+//     w = rb->w;
+//     loaded = rb->loaded;
+// }

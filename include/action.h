@@ -9,14 +9,23 @@
  *
  */
 
+enum ActionType
+{
+    FORWARD,
+    ROTATE,
+    BUY,
+    SELL,
+    DESTROY
+};
+
 class Action
 {
 private:
-    enum ActionType type;
+    ActionType type;
     double value;
 
 public:
-    Action(enum ActionType type, double value)
+    Action(ActionType type, double value)
     {
         this->type = type;
         this->value = value;
