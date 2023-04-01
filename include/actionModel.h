@@ -1,34 +1,28 @@
 #ifndef ACTION_MODEL_H
 #define ACTION_MODEL_H
 
-#include "common.h"
-#include "action.h"
-#include "robot.h"
-#include "motionState.h"
-#include "context.h"
-
-// 前向引用，避免回环引用报错，并不美观
-class Robot;
+#include "includeAll.h"
+class Robot; // 前向声明, 只能通过指针或者引用访问
 /*
  * @brief 管理机器人动作
  *
  *
  */
+
 class ActionModel
 {
 
 private:
+    Robot *rb; // 机器人指针
     Action rotateAction;
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    ObjectPool<MotionState> motionStatePool; // 动作状态池
-    ObjectPool<Vec> coordinatePool;          // 坐标池
-    Robot *rb;
+    // ObjectPool<MotionState> motionStatePool; // 动作状态池
+    // ObjectPool<Vec> coordinatePool;          // 坐标池
 
 public:
-    ActionModel(ObjectPool<MotionState> &motionStatePool, ObjectPool<Vec> &coordinatePool)
-        : rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL), motionStatePool(motionStatePool), coordinatePool(coordinatePool)
+    ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
     } // 构造函数
     // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针

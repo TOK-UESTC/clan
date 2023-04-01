@@ -1,17 +1,30 @@
 #ifndef INCLUDE_ALL_H
 #define INCLUDE_ALL_H
 
-#include "common.h"
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include <sstream>
 
-#include "action.h"
+#include "vec.h"
+#include "const.h"
+#include "utils.h"
 #include "workbench.h"
-#include "task.h"
-#include "motionState.h"
+#include "action.h"
 #include "actionModel.h"
-#include "robot.h"
-#include "context.h"
+#include "maps.h"
+#include "motionState.h"
 #include "pathPlan.h"
 #include "pidModel.h"
+#include "task.h"
+#include "robot.h"
 #include "taskChain.h"
+#include "objectPool.h"
+#include "context.h"
+
 
 #endif

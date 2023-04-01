@@ -1,4 +1,4 @@
-#include "include/pidModel.h"
+#include "include/includeAll.h"
 
 void PIDModel::set(const PIDModel &s)
 {
@@ -39,7 +39,7 @@ void PIDModel::control(MotionState *ms, Vec *targetPos)
     double heading = ms->getHeading();
 
     // 获取距离误差
-    double distErr = Utils::computeDist(pos, targetPos);
+    double distErr = computeDist(pos, targetPos);
 
     // 计算角度误差，根据两者的坐标
     double diffX = targetPos->getX() - posX;
@@ -56,7 +56,7 @@ void PIDModel::control(MotionState *ms, Vec *targetPos)
     }
 
     double angleErr = angle - ms->getHeading();
-    angleErr = Utils::getAngleRanged(angleErr);
+    angleErr = getAngleRanged(angleErr);
 
     /// 判断离墙是否太近
     double minWallDist = 4;

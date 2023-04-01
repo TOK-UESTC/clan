@@ -1,7 +1,8 @@
 #ifndef VEC_H
 #define VEC_H
 
-#include <cmath>
+#include "includeAll.h"
+
 /*
  * @brief 与矢量相关的基类
  *

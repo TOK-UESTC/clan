@@ -14,6 +14,7 @@ fi
 
 # 编译项目
 # build project
+rm -r build
 cmake . -Bbuild -DCMAKE_BUILD_TYPE=Debug  -G "Unix Makefiles" -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_FLAGS="-g -O0" -DCMAKE_C_FLAGS="-g -O0"
 make -C build -j4
 
@@ -29,7 +30,7 @@ fi
 
 
 # 与答题器交互
-$executor "./build/main" -f -d -m ../maps/$name.txt -l DBG
+$executor "./build/main.exe" -d -m ../maps/$name.txt
 # 搜索main程序的PID号
 # search main process id
 # pid=`ps -ef | grep "./CodeCraft2023/build/main" | grep -v "grep" | awk '{print $2}'`

@@ -1,4 +1,4 @@
-#include "include/maps.h"
+#include "include/includeAll.h"
 
 /*
  * @brief 地图转换
@@ -26,8 +26,8 @@ char **Maps::convert025()
         // map025[MAP_HEIGHT * 2][j] = '#';
     }
 
-    int col = sizeof(map05[0]) / sizeof(map05[0][0]);
-    int row = sizeof(map05) / sizeof(map05[0]);
+    int col = _msize(map05[0]);
+    int row = _msize(map05) / 8;
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
@@ -75,8 +75,8 @@ char **Maps::convert025()
  */
 int8_t **Maps::mapRoadWidth(char **map, bool isHorizon)
 {
-    int row = sizeof(map) / sizeof(map[0]);
-    int col = sizeof(map[0]) / sizeof(map[0][0]);
+    int col = _msize(map[0]);
+    int row = _msize(map) / 8;
     if (isHorizon)
     {
         int8_t **mapRoadWidthH = new int8_t *[row];

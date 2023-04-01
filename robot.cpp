@@ -1,6 +1,6 @@
-#include "include/robot.h"
+#include "include/includeAll.h"
 
-Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel()
+Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this)
 {
 }
 
@@ -15,17 +15,19 @@ bool Robot::isLoaded()
     return productType != 0;
 }
 
-void Robot::update()
+void Robot::update(int leftFrame)
 {
 
     int id;
     double x, y, vx, vy;
     // 读取信息
-    (void)!scanf("%d %d %f %f %f %f %f %f %f %f\n",
-                 &id, &productType, &timeCoefficients, &collisionCoefficients,
-                 &w, &vx, &vy, &heading, &x, &y);
+    scanf("%d %d %f %f %f %f %f %f %f %f\n",
+          &id, &productType, &timeCoefficients, &collisionCoefficients,
+          &w, &vx, &vy, &heading, &x, &y);
+    getchar();
 
     // 更新
+    this->leftFrame = leftFrame;
     pos.set(x, y);
     velocity.set(x, y);
 }

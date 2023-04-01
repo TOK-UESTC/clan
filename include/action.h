@@ -1,13 +1,22 @@
 #ifndef ACTION_H
 #define ACTION_H
 
-#include "common.h"
+#include "includeAll.h"
 
 /*
  * @brief 机器人基础动作
  *
  *
  */
+
+enum ActionType
+{
+    FORWARD,
+    ROTATE,
+    BUY,
+    SELL,
+    DESTROY
+};
 
 class Action
 {
@@ -44,7 +53,7 @@ public:
     /** 输出为字符串，方便直接调用 */
     std::string toString(int robotId)
     {
-        std::stringstream ss = std::stringstream();
+        std::stringstream ss;
         switch (type)
         {
         case FORWARD:

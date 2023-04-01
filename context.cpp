@@ -1,10 +1,20 @@
-#include "include/context.h"
+#include "include/includeAll.h"
 
-Context::Context()
+Context::~Context()
 {
-}
+    // 释放机器人内存
+    for (Robot* rb : robotList)
+    {
+        delete rb;
+    }
 
-Context::~Context() {}
+    // 释放工作台内存
+    for (Workbench* wb : workbenchList)
+    {
+        delete wb;
+    }
+
+}
 
 void Context::init()
 {
@@ -12,7 +22,7 @@ void Context::init()
     double x, y;            // 地图坐标
     int workbenchCount = 0; // 工作台数量
     int robotCount = 0;     // 机器人数量
-    char **m = maps.getMap();
+    map05 = maps.getMap();
 
     while (true)
     {
@@ -25,10 +35,10 @@ void Context::init()
         }
 
         // 坐标
-        for (int col = 0; col < strlen(line); col++)
+        for (int col = 0; col < strlen(line)-1; col++)
         {
             // 存储地图信息
-            m[row][col] = line[col];
+            map05[row][col] = line[col];
             // 第一行第一列为(0.25, 49.75)
             x = col * 0.5 + 0.25;
             y = 49.75 - row * 0.5;
@@ -37,26 +47,21 @@ void Context::init()
             {
             // 空地
             case '.':
-            {
                 break;
-            }
             // 机器人
             case 'A':
-            {
-                Robot *robot = new Robot(robotCount++, x, y);
-                robotList.push_back(robot);
-                break;
-            }
+                {
+                    Robot* robot = new Robot(robotCount++, x, y);
+                    robotList.push_back(robot);
+                    break;
+                }
             // 障碍
             case '#':
-            {
                 break;
-            }
             // 工作台
             default:
-            {
                 int workbenchType = line[col] - '0';
-                Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
+                Workbench* workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
 
                 // 将同一型号的工作台放置到map中
@@ -72,16 +77,15 @@ void Context::init()
                 // }
                 break;
             }
-            }
         }
+
+        // for(int i=0; i<_msize(map05[0]); i++){
+        //     fprintf(stderr, "%c", map05[row][i]);
+        // }
+        // fprintf(stderr, "\n");
         row++;
     }
 
-    // for (int i = 0; i < sizeof(m) / sizeof(m[0]); i++)
-    // {
-    //     fprintf(stderr, "%s\n", m[i]);
-    //     fflush(stderr);
-    // }
 
     // sortRobotList.addAll(robotList);
 
@@ -113,26 +117,31 @@ void Context::update()
 {
     // readLine();
     // 快速读入
-    (void)!scanf("%d %d\n", &frameId, &money);
+    scanf("%d %d", &frameId, &money);
+    getchar();
     leftFrame = TOTAL_FRAME - frameId;
 
     // 更新工作台信息
     int k;
-    (void)!scanf("%d\n", &k);
-    for (Workbench *wb : workbenchList)
+    scanf("%d\n", &k);
+    getchar();
+    for (Workbench* wb : workbenchList)
     {
         wb->update();
     }
 
     // 更新机器人信息
-    for (Robot *rb : robotList)
+    for (Robot* rb : robotList)
     {
-        rb->update();
+        rb->update(leftFrame);
     }
+
+    readLine();
 }
 
 void Context::step(bool init)
 {
+    printf("%d\n", frameId);
     if (frameId == 0)
     {
         int i = 0;
@@ -148,9 +157,11 @@ void Context::step(bool init)
     {
         // printLine
     }
-    printf("%d\n", frameId);
+
     // 告知判题器操作结束
-    endStep();
+    printf("OK\n");
+    fflush(stdout);
+    // endStep();
 }
 
 int Context::getFrameId()
@@ -160,7 +171,7 @@ int Context::getFrameId()
 
 void Context::readLine()
 {
-    (void)!fgets(line, sizeof line, stdin);
+    fgets(line, sizeof line, stdin);
 }
 
 void Context::printLine(char *out)

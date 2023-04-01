@@ -1,13 +1,18 @@
-#include "include/includeAll.h"
+#include <iostream>
+#include <ctime>
+// 方便调试
+#include <signal.h>
+#include <unistd.h>
 #include <Windows.h>
-// 全局变量
-int leftFrame = TOTAL_FRAME;
+
+#include "include/includeAll.h"
 
 using namespace std;
+
 static bool showTime = false;
 int main()
 {
-    // 打开调试器附加对话框
+     // 打开调试器附加对话框
     LPCWSTR waitMessage = L"等待附加调试器";
     LPCWSTR title = L"调试器";
 
@@ -23,27 +28,25 @@ int main()
 
     delete[] message;
     delete[] caption;
-
     clock_t start, end;
 
     Context ctx;
     ctx.init();
-    ctx.step(true); // 预热
-
+    ctx.endStep(); // 预热
     while (ctx.getFrameId() < TOTAL_FRAME)
     {
-        start = clock();
+        // start = clock();
         ctx.update();
         ctx.step(false);
-        end = clock();
+        // end = clock();
 
         // 显示时间
-        if (showTime)
-        {
-            double cost = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
-            fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
-            fflush(stderr);
-        }
+        // if (showTime)
+        // {
+        //     double cost = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
+        //     fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
+        //     fflush(stderr);
+        // }
     }
     return 0;
 }

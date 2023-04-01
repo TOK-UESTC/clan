@@ -1,8 +1,7 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "common.h"
-#include "workbench.h"
+#include "includeAll.h"
 
 /*
  * @brief 基础任务类
@@ -38,7 +37,7 @@ public:
 
     double getDist()
     {
-        return Utils::computeDist(from->getPos(), to->getPos());
+        return computeDist(from->getPos(), to->getPos());
     }
 };
 #endif

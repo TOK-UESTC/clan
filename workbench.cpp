@@ -1,4 +1,4 @@
-#include "include/workbench.h"
+#include "include/includeAll.h"
 
 Workbench::Workbench(int id, double x, double y, int type)
 {
@@ -39,7 +39,8 @@ void Workbench::update()
     int id;
     double x, y;
     this->lastMaterialStatus = this->materialStatus;
-    (void)!scanf("%d %f %f %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
+    scanf("%d %f %f %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
+    getchar();
 }
 
 /** 查看是否含有某个原材料 */

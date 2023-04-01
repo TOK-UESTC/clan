@@ -26,13 +26,4 @@
 #define MAP_HEIGHT 100                                            // 字符地图高度
 #define MAP_WIDTH 100                                             // 字符地图宽度
 
-enum ActionType
-{
-    FORWARD,
-    ROTATE,
-    BUY,
-    SELL,
-    DESTROY
-};
-
 #endif
