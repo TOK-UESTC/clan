@@ -1,5 +1,5 @@
 #include "include/includeAll.h"
-
+#include <Windows.h>
 // 全局变量
 int leftFrame = TOTAL_FRAME;
 
@@ -7,8 +7,23 @@ using namespace std;
 static bool showTime = false;
 int main()
 {
+    // 打开调试器附加对话框
+    LPCWSTR waitMessage = L"等待附加调试器";
+    LPCWSTR title = L"调试器";
 
-    // kill(getpid(), SIGSTOP);
+    int len = WideCharToMultiByte(CP_ACP, 0, waitMessage, -1, NULL, 0, NULL, NULL);
+    char *message = new char[len];
+    WideCharToMultiByte(CP_ACP, 0, waitMessage, -1, message, len, NULL, NULL);
+
+    len = WideCharToMultiByte(CP_ACP, 0, title, -1, NULL, 0, NULL, NULL);
+    char *caption = new char[len];
+    WideCharToMultiByte(CP_ACP, 0, title, -1, caption, len, NULL, NULL);
+
+    MessageBox(nullptr, message, caption, MB_OK);
+
+    delete[] message;
+    delete[] caption;
+
     clock_t start, end;
 
     Context ctx;
