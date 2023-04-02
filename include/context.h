@@ -16,11 +16,12 @@ private:
     char line[1024];
     int frameId = 0;
     int money = 0;
-    // int leftFrame = 0;
-    std::vector<Workbench*> workbenchList;
-    std::vector<Robot*> robotList;
-    char **map05;
-    Maps maps; // 存放地图信息
+    std::vector<Workbench *> workbenchList;
+    std::vector<Robot *> robotList;
+    char **map05;       // 原图
+    char **map025;      // 转换后地图
+    int **mapRoadWidth; // 路宽图
+    Maps maps;          // 存放地图信息
 
 public:
     // Context();  // 构造函数
@@ -36,7 +37,6 @@ public:
     void readLine();
     void printLine(char *out);
     void endStep();
-
 };
 
 #endif

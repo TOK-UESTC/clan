@@ -3,17 +3,21 @@
 Context::~Context()
 {
     // 释放机器人内存
-    for (Robot* rb : robotList)
+    for (Robot *rb : robotList)
     {
         delete rb;
     }
 
     // 释放工作台内存
-    for (Workbench* wb : workbenchList)
+    for (Workbench *wb : workbenchList)
     {
         delete wb;
     }
 
+    // 释放地图内存
+    maps.releaseMap(map05);
+    maps.releaseMap(map025);
+    maps.releaseMap(mapRoadWidth);
 }
 
 void Context::init()
@@ -35,7 +39,7 @@ void Context::init()
         }
 
         // 坐标
-        for (int col = 0; col < strlen(line)-1; col++)
+        for (int col = 0; col < strlen(line) - 1; col++)
         {
             // 存储地图信息
             map05[row][col] = line[col];
@@ -50,18 +54,18 @@ void Context::init()
                 break;
             // 机器人
             case 'A':
-                {
-                    Robot* robot = new Robot(robotCount++, x, y);
-                    robotList.push_back(robot);
-                    break;
-                }
+            {
+                Robot *robot = new Robot(robotCount++, x, y);
+                robotList.push_back(robot);
+                break;
+            }
             // 障碍
             case '#':
                 break;
             // 工作台
             default:
                 int workbenchType = line[col] - '0';
-                Workbench* workbench = new Workbench(workbenchCount++, x, y, workbenchType);
+                Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
 
                 // 将同一型号的工作台放置到map中
@@ -85,8 +89,15 @@ void Context::init()
         // fprintf(stderr, "\n");
         row++;
     }
+    // 获得转换后地图
+    map025 = maps.convert025();
+    // 获得路宽地图
+    mapRoadWidth = maps.mapRoadWidth(map025);
 
-
+    // 将地图写入log
+    maps.writeMaptoFile("log/map05.txt", map05);
+    maps.writeMaptoFile("log/map025.txt", map025);
+    maps.writeMaptoFile("log/mapRoadWidth.txt", mapRoadWidth);
     // sortRobotList.addAll(robotList);
 
     // for (int t = 1; t <= 9; t++)
@@ -125,13 +136,13 @@ void Context::update()
     int k;
     scanf("%d\n", &k);
     getchar();
-    for (Workbench* wb : workbenchList)
+    for (Workbench *wb : workbenchList)
     {
         wb->update();
     }
 
     // 更新机器人信息
-    for (Robot* rb : robotList)
+    for (Robot *rb : robotList)
     {
         rb->update(leftFrame);
     }

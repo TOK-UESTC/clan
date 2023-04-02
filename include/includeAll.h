@@ -2,7 +2,8 @@
 #define INCLUDE_ALL_H
 
 #include <string>
-#include <sstream>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <cstring>
 #include <cmath>

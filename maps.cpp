@@ -73,30 +73,29 @@ char **Maps::convert025()
  *
  * @return 返回的地图交给使用方释放
  */
-int8_t **Maps::mapRoadWidth(char **map, bool isHorizon)
+int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
 {
-    int col = _msize(map[0]);
     int row = _msize(map) / 8;
+    int col = _msize(map[0]);
     if (isHorizon)
     {
-        int8_t **mapRoadWidthH = new int8_t *[row];
+        int **mapRoadWidthH = new int *[row];
         for (int i = 0; i < row; i++)
         {
-            mapRoadWidthH[i] = new int8_t[col];
+            mapRoadWidthH[i] = new int[col];
         }
         for (int i = 0; i < row; i++)
         {
             int left = 0, right = 0;
-            while (right != col)
+            while (right != col - 1)
             {
                 right++;
                 if (map[i][right] != '#')
                 {
-                    right++;
                     continue;
                 }
 
-                int8_t width = right - left;
+                int width = right - left;
                 if (width == 1)
                 {
                     // 相邻两个点都在障碍上，那么之间也在障碍上
@@ -119,24 +118,23 @@ int8_t **Maps::mapRoadWidth(char **map, bool isHorizon)
     }
     else
     {
-        int8_t **mapRoadWidthV = new int8_t *[row];
+        int **mapRoadWidthV = new int *[row];
         for (int i = 0; i < row; i++)
         {
-            mapRoadWidthV[i] = new int8_t[col];
+            mapRoadWidthV[i] = new int[col];
         }
         for (int j = 0; j < col; j++)
         {
             int left = 0, right = 0;
-            while (right != row)
+            while (right != row - 1)
             {
                 right++;
                 if (map[right][j] != '#')
                 {
-                    right++;
                     continue;
                 }
 
-                int8_t width = right - left;
+                int width = right - left;
                 if (width == 1)
                 {
                     // 相邻两个点都在障碍上，那么之间也在障碍上
@@ -157,4 +155,106 @@ int8_t **Maps::mapRoadWidth(char **map, bool isHorizon)
         }
         return mapRoadWidthV;
     }
+}
+
+int **Maps::mapRoadWidth(char **map)
+{
+
+    int **mapH = mapRoadWidthHV(map, true);
+    int **mapV = mapRoadWidthHV(map, false);
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]);
+
+    int **mapRoadWidth = new int *[row];
+    for (int i = 0; i < row; i++)
+    {
+        mapRoadWidth[i] = new int[col];
+    }
+    for(int i=0; i<row; i++){
+        for(int j=0; j<col; j++){
+            mapRoadWidth[i][j] = mapH[i][j]<mapV[i][j]?mapH[i][j]:mapV[i][j];
+        }
+    }
+    // 释放临时路宽图
+    releaseMap(mapH);
+    releaseMap(mapV);
+
+    return mapRoadWidth;
+}
+
+/*
+ * @brief 将map数据写入file文件检查
+ */
+void Maps::writeMaptoFile(const char *file, char **map)
+{
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]);
+
+    std::ofstream outfile;
+    // 打开文件
+    outfile.open(file);
+    // 写入文件
+    for (int i = 0; i < row; i++)
+    {
+        // 写入前刷新缓冲区
+        outfile.flush();
+        for (int j = 0; j < col; j++)
+        {
+            outfile << map[i][j];
+        }
+        outfile << std::endl;
+        // 写入后刷新缓冲区
+        outfile.flush();
+    }
+    // 关闭文件
+    outfile.close();
+}
+
+void Maps::writeMaptoFile(const char *file, int **map)
+{
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]) / (sizeof(map[0][0]));
+
+    std::ofstream outfile;
+    // 打开文件
+    outfile.open(file);
+    // 写入文件
+    for (int i = 0; i < row; i++)
+    {
+        // 写入前刷新缓冲区
+        outfile.flush();
+        for (int j = 0; j < col; j++)
+        {
+            outfile << std::setw(4) << map[i][j];
+        }
+        outfile << std::endl;
+        // 写入后刷新缓冲区
+        outfile.flush();
+    }
+    // 关闭文件
+    outfile.close();
+}
+/*
+ * @brief 释放堆内存
+ */
+void Maps::releaseMap(char **map)
+{
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]);
+    for (int i = 0; i < row; i++)
+    {
+        delete[] map[i];
+    }
+    delete[] map;
+}
+
+void Maps::releaseMap(int **map)
+{
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]);
+    for (int i = 0; i < row; i++)
+    {
+        delete[] map[i];
+    }
+    delete[] map;
 }
