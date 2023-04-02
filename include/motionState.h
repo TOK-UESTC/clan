@@ -2,7 +2,7 @@
 #define MOTION_STATE_H
 
 #include "includeAll.h"
-
+class Robot;
 class MotionState
 {
 private:
@@ -18,6 +18,7 @@ public:
     // void set(Robot rb);
     void set(const MotionState &s);
     void set(double x, double y, double vx, double vy, double heading, double w);
+    void update(Robot *rb);
 
     double vMod();
     double getHeading();

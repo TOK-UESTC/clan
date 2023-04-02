@@ -2,7 +2,8 @@
 #define ACTION_MODEL_H
 
 #include "includeAll.h"
-class Robot; // 前向声明, 只能通过指针或者引用访问
+class Robot;       // 前向声明, 只能通过指针或者引用访问
+class MotionState; // 前向声明, 只能通过指针或者引用访问
 /*
  * @brief 管理机器人动作
  *
@@ -18,24 +19,30 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    // ObjectPool<MotionState> motionStatePool; // 动作状态池
+    ObjectPool<MotionState> *statePool; // 动作状态池
     // ObjectPool<Vec> coordinatePool;          // 坐标池
 
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
-    } // 构造函数
+        statePool = new ObjectPool<MotionState>(100);
+    }
+    // 构造函数
     // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针
 
     /* 产生动作序列 */
-    void generate()
+    void
+    generate()
     {
-        generateShopActions();
+        // generateShopActions();
         generateMoveActions();
     }
 
     void generateMoveActions(); // 产生移动动作序列
     void generateShopActions(); // 产生交易动作序列
+private:
+    double eval_spline(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &a, double xi);
+    void spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a);
 };
 
 #endif

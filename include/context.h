@@ -2,7 +2,7 @@
 #define CONTEXT_H
 
 #include "includeAll.h"
-
+#include <iostream>
 /*
  * @brief 用于管理程序运行的上下文信息
  *
@@ -23,6 +23,8 @@ private:
     int **mapRoadWidth; // 路宽图
     int **accessMap;    // 机器人可访问标志图
     Maps maps;          // 存放地图信息
+    char **map05;
+    Maps maps; // 存放地图信息
 
 public:
     // Context();  // 构造函数
@@ -36,7 +38,9 @@ public:
 
     // 辅助方法，直接在context定义
     void readLine();
-    void printLine(char *out);
+    void printLine(const char *out);
+    void printLine(const std::string &out);
+    void printLineErr(const std::string &out);
     void endStep();
 };
 

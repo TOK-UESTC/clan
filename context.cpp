@@ -170,13 +170,32 @@ void Context::step(bool init)
     if (init)
     {
         // dispatcher->dispatch();
-        // for(Robot rb : robotList){
-        //     rb->step();
-        // }
+        for (Robot *rb : robotList)
+        {
+            rb->step();
+        }
     }
     else
     {
         // printLine
+
+        Robot *rb = robotList[0];
+        rb->step();
+        for (Action *action : rb->getActions())
+        {
+            printLine(action->toString(rb->getId()));
+        }
+        // for (Robot *rb : robotList)
+        // {
+        //     rb->step();
+        // }
+        // for (Robot *rb : robotList)
+        // {
+        //     for (Action *action : rb->getActions())
+        //     {
+        //         printLine(action->toString(rb->getId()));
+        //     }
+        // }
     }
 
     // 告知判题器操作结束
@@ -195,11 +214,20 @@ void Context::readLine()
     fgets(line, sizeof line, stdin);
 }
 
-void Context::printLine(char *out)
+void Context::printLine(const char *out)
 {
     printf("%s\n", out);
 }
-
+void Context::printLine(const std::string &out)
+{
+    printf("%s\n", out.c_str());
+}
+// 打印到标准错误
+void Context::printLineErr(const std::string &out)
+{
+    fprintf(stderr, "%s\n", out.c_str());
+    fflush(stderr);
+}
 void Context::endStep()
 {
     puts("OK");

@@ -2,6 +2,7 @@
 #define TASK_CHAIN_H
 
 #include "includeAll.h"
+class Robot;
 /*
  * @brief 组织任务构成任务链
  *

@@ -15,7 +15,7 @@ then
     name=$1
     # 与答题器交互
     # interact with discriminator
-    ../Robot.exe "./build/main" -f -m ../maps/$name.txt
+    ../Robot "./build/main" -f -d -m ../maps/$name.txt
 else
     # 与答题器交互
     # interact with discriminator

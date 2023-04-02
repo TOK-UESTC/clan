@@ -9,8 +9,8 @@ template <typename T>
 class ObjectPool
 {
 private:
-    std::vector<T> pool;
-    std::unordered_set<T> used;
+    std::vector<T *> pool;
+    std::unordered_set<T *> used;
     std::function<T()> supplier;
 
 public:
@@ -22,13 +22,20 @@ public:
             pool.push_back(supplier());
         }
     }
-
-    T acquire()
+    ObjectPool(int initCount)
     {
-        T t;
+        // 先开辟池子，避免冷启动过慢
+        for (int i = 0; i < initCount; i++)
+        {
+            pool.push_back(new T());
+        }
+    }
+    T *acquire()
+    {
+        T *t;
         if (pool.empty())
         {
-            t = supplier();
+            t = new T();
         }
         else
         {
@@ -40,7 +47,7 @@ public:
         return t;
     }
 
-    void release(T t)
+    void release(T *t)
     {
         if (used.erase(t))
         {
