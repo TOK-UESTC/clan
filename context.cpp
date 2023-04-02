@@ -3,17 +3,16 @@
 Context::~Context()
 {
     // 释放机器人内存
-    for (Robot* rb : robotList)
+    for (Robot *rb : robotList)
     {
         delete rb;
     }
 
     // 释放工作台内存
-    for (Workbench* wb : workbenchList)
+    for (Workbench *wb : workbenchList)
     {
         delete wb;
     }
-
 }
 
 void Context::init()
@@ -35,7 +34,7 @@ void Context::init()
         }
 
         // 坐标
-        for (int col = 0; col < strlen(line)-1; col++)
+        for (int col = 0; col < strlen(line) - 1; col++)
         {
             // 存储地图信息
             map05[row][col] = line[col];
@@ -50,18 +49,18 @@ void Context::init()
                 break;
             // 机器人
             case 'A':
-                {
-                    Robot* robot = new Robot(robotCount++, x, y);
-                    robotList.push_back(robot);
-                    break;
-                }
+            {
+                Robot *robot = new Robot(robotCount++, x, y);
+                robotList.push_back(robot);
+                break;
+            }
             // 障碍
             case '#':
                 break;
             // 工作台
             default:
                 int workbenchType = line[col] - '0';
-                Workbench* workbench = new Workbench(workbenchCount++, x, y, workbenchType);
+                Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
 
                 // 将同一型号的工作台放置到map中
@@ -85,7 +84,6 @@ void Context::init()
         // fprintf(stderr, "\n");
         row++;
     }
-
 
     // sortRobotList.addAll(robotList);
 
@@ -125,13 +123,13 @@ void Context::update()
     int k;
     scanf("%d\n", &k);
     getchar();
-    for (Workbench* wb : workbenchList)
+    for (Workbench *wb : workbenchList)
     {
         wb->update();
     }
 
     // 更新机器人信息
-    for (Robot* rb : robotList)
+    for (Robot *rb : robotList)
     {
         rb->update(leftFrame);
     }
@@ -149,13 +147,32 @@ void Context::step(bool init)
     if (init)
     {
         // dispatcher->dispatch();
-        // for(Robot rb : robotList){
-        //     rb->step();
-        // }
+        for (Robot *rb : robotList)
+        {
+            rb->step();
+        }
     }
     else
     {
         // printLine
+
+        Robot *rb = robotList[0];
+        rb->step();
+        for (Action *action : rb->getActions())
+        {
+            printLine(action->toString(rb->getId()));
+        }
+        // for (Robot *rb : robotList)
+        // {
+        //     rb->step();
+        // }
+        // for (Robot *rb : robotList)
+        // {
+        //     for (Action *action : rb->getActions())
+        //     {
+        //         printLine(action->toString(rb->getId()));
+        //     }
+        // }
     }
 
     // 告知判题器操作结束
@@ -174,11 +191,20 @@ void Context::readLine()
     fgets(line, sizeof line, stdin);
 }
 
-void Context::printLine(char *out)
+void Context::printLine(const char *out)
 {
     printf("%s\n", out);
 }
-
+void Context::printLine(const std::string &out)
+{
+    printf("%s\n", out.c_str());
+}
+// 打印到标准错误
+void Context::printLineErr(const std::string &out)
+{
+    fprintf(stderr, "%s\n", out.c_str());
+    fflush(stderr);
+}
 void Context::endStep()
 {
     puts("OK");
