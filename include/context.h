@@ -21,6 +21,7 @@ private:
     char **map05;       // 原图
     char **map025;      // 转换后地图
     int **mapRoadWidth; // 路宽图
+    int **accessMap;    // 机器人可访问标志图
     Maps maps;          // 存放地图信息
 
 public:

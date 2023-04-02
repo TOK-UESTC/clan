@@ -170,9 +170,11 @@ int **Maps::mapRoadWidth(char **map)
     {
         mapRoadWidth[i] = new int[col];
     }
-    for(int i=0; i<row; i++){
-        for(int j=0; j<col; j++){
-            mapRoadWidth[i][j] = mapH[i][j]<mapV[i][j]?mapH[i][j]:mapV[i][j];
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
+            mapRoadWidth[i][j] = mapH[i][j] < mapV[i][j] ? mapH[i][j] : mapV[i][j];
         }
     }
     // 释放临时路宽图
@@ -257,4 +259,184 @@ void Maps::releaseMap(int **map)
         delete[] map[i];
     }
     delete[] map;
+}
+
+/*
+ * @brief 机器人可访问标志图 1000000, 表示机器人4负载可访问，01000001：表示机器人3负载可访问，机器人1空载可访问
+ * @param map: 用于路径规划的地图
+ * @param accessMap: 用于标记可访问性的地图
+ * @param r: 机器人所在行,map025地图
+ * @param c: 机器人所在列,map025地图
+ * @param id: 机器人id
+ */
+void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
+{
+    // 置0
+    int row = _msize(accessMap) / 8;
+    int col = _msize(accessMap[0]) / (sizeof(accessMap[0][0]));
+    bool **visit = new bool *[row];
+    for (int i = 0; i < row; i++)
+    {
+        visit[i] = new bool[col];
+        memset(visit[i], false, _msize(visit[i]));
+    }
+
+    std::queue<int> qx; // 存放遍历点x坐标
+    std::queue<int> qy; // 存放遍历点y坐标
+
+    // 将机器人位置加入队列
+    qx.push(r);
+    qy.push(c);
+
+    int dir[][2] = {
+        {-1, -1},
+        {-1, 0},
+        {-1, 1},
+        {0, -1},
+        {0, 1},
+        {1, -1},
+        {1, 0},
+        {1, 1}};
+
+    visit[r][c] = true;
+    while (!qx.empty())
+    {
+        // 当前的x,y坐标
+        int cx = qx.front();
+        int cy = qy.front();
+        qx.pop();
+        qy.pop();
+        if (isAccessible(map, cx, cy, true))
+        {
+            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHEFT_BIT + id));
+        }
+        if (isAccessible(map, cx, cy, false))
+        {
+            accessMap[cx][cy] = accessMap[cx][cy] | (1 << id);
+        }
+
+        // 将下一次节点加入队列
+        for (int i = 0; i < 8; i++)
+        {
+            int nx = dir[i][0] + cx;
+            int ny = dir[i][1] + cy;
+            if (map[nx][ny] == '#' || visit[nx][ny])
+            {
+                continue;
+            }
+            visit[nx][ny] = true;
+            qx.push(nx);
+            qy.push(ny);
+        }
+    }
+    // 释放bool数组
+    for (int i = 0; i < row; i++)
+    {
+        delete[] visit[i];
+    }
+    delete[] visit;
+    
+}
+
+/*
+ * @brief 释放堆内存
+ * @param map: 用于路径规划的地图，默认map025
+ * @param x: 横坐标位置
+ * @param y: 纵坐标位置
+ * @param isLoad: 负载或空载条件, true: 表示负载
+ */
+
+bool Maps::isAccessible(char **map, int x, int y, bool isLoad)
+{
+    int maxX = _msize(map) / 8 - 1;
+    int maxY = _msize(map[0]) - 1;
+    // 如果该点是障碍，那么该点不可访问
+    if (map[x][y] == '#')
+    {
+        return false;
+    }
+    // 下面分空载和负载讨论
+    if (isLoad)
+    {
+        int dir[][2] = {
+            {-1, -1},
+            {-2, 0},
+            {-1, 1},
+            {0, -2},
+            {0, 2},
+            {1, -1},
+            {2, 0},
+            {1, 1}};
+        // 负载情况下
+        if (map[x][y] == '.')
+        {
+            // 如果该点是空地, 那么2格内不包含障碍
+            for (int i = 0; i < 8; i++)
+            {
+                int tx = dir[i][0] + x;
+                int ty = dir[i][1] + y;
+                // 如果靠近边缘
+                if (tx <= 0 || tx >= maxX || ty <= 0 || ty >= maxY)
+                {
+                    return false;
+                }
+
+                if (map[tx][ty] == '#')
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if (map[x - 1][y - 1] == '#' && map[x + 1][y + 1] == '#')
+            {
+                return false;
+            }
+
+            if (map[x - 1][y + 1] == '#' && map[x + 1][y - 1] == '#')
+            {
+                return false;
+            }
+        }
+    }
+    else
+    {
+        int dir[][2] = {
+            {-1, -1},
+            {-1, 0},
+            {-1, 1},
+            {0, -1},
+            {0, 1},
+            {1, -1},
+            {1, 0},
+            {1, 1}};
+        // 空载情况下
+        if (map[x][y] == '.')
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                int tx = dir[i][0] + x;
+                int ty = dir[i][1] + y;
+                if (map[tx][ty] == '#')
+                {
+                    return false;
+                }
+            }
+        }
+        else
+        {
+            if (map[x][y - 1] == '#' && map[x][y + 1] == '#')
+            {
+                return false;
+            }
+
+            if (map[x - 1][y] == '#' && map[x + 1][y] == '#')
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }

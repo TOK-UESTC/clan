@@ -18,6 +18,7 @@ Context::~Context()
     maps.releaseMap(map05);
     maps.releaseMap(map025);
     maps.releaseMap(mapRoadWidth);
+    maps.releaseMap(accessMap);
 }
 
 void Context::init()
@@ -91,6 +92,14 @@ void Context::init()
     }
     // 获得转换后地图
     map025 = maps.convert025();
+    accessMap = maps.newMap(map025);
+    // 计算访问权限图
+    for (Robot *rb : robotList)
+    {
+        int row = ((int)((49.75 - rb->getPos().getY()) / 0.5)) * 2 + 1;
+        int col = ((int)((rb->getPos().getX() - 0.25) / 0.5)) * 2 + 1;
+        maps.accessible(map025, accessMap, row, col, rb->getId());
+    }
     // 获得路宽地图
     mapRoadWidth = maps.mapRoadWidth(map025);
 
@@ -98,6 +107,7 @@ void Context::init()
     maps.writeMaptoFile("log/map05.txt", map05);
     maps.writeMaptoFile("log/map025.txt", map025);
     maps.writeMaptoFile("log/mapRoadWidth.txt", mapRoadWidth);
+    maps.writeMaptoFile("log/accessMap.txt", accessMap);
     // sortRobotList.addAll(robotList);
 
     // for (int t = 1; t <= 9; t++)

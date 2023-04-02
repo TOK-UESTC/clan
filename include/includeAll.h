@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <sstream>
+#include <queue>
 
 #include "vec.h"
 #include "const.h"

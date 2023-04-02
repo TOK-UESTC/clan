@@ -55,7 +55,8 @@
         "concepts": "cpp",
         "numeric": "cpp",
         "random": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "queue": "cpp"
     },
     "[cpp]": {
         "editor.formatOnSave": true

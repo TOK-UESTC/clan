@@ -37,6 +37,10 @@ void Robot::checkDeal()
 {
 }
 
+int Robot::getId() const
+{
+    return id;
+}
 Vec Robot::getPos() const
 {
     return pos;
