@@ -39,7 +39,7 @@ void Workbench::update()
     int id;
     double x, y;
     this->lastMaterialStatus = this->materialStatus;
-    scanf("%d %f %f %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
+    scanf("%d %lf %lf %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
     getchar();
 }
 

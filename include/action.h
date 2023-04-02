@@ -62,7 +62,7 @@ public:
             break;
         case ROTATE:
             ss << "rotate"
-               << " " + robotId << " " << value;
+               << " " << robotId << " " << value;
             break;
         case BUY:
             ss << "buy"
@@ -79,7 +79,6 @@ public:
         default:
             return "";
         }
-
         return ss.str();
     }
     Action *update(ActionType type, double value)

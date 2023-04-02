@@ -12,7 +12,7 @@ using namespace std;
 static bool showTime = false;
 int main()
 {
-     // 打开调试器附加对话框
+    // 打开调试器附加对话框
     LPCWSTR waitMessage = L"等待附加调试器";
     LPCWSTR title = L"调试器";
 
