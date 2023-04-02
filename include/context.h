@@ -23,9 +23,6 @@ private:
     int **mapRoadWidth; // 路宽图
     int **accessMap;    // 机器人可访问标志图
     Maps maps;          // 存放地图信息
-    char **map05;
-    Maps maps; // 存放地图信息
-
 public:
     // Context();  // 构造函数
     ~Context(); // 析构函数

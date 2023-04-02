@@ -15,6 +15,7 @@
 #include "vec.h"
 #include "const.h"
 #include "utils.h"
+#include "objectPool.h"
 #include "workbench.h"
 #include "action.h"
 #include "actionModel.h"
@@ -29,7 +30,6 @@
 #include "task.h"
 #include "robot.h"
 #include "taskChain.h"
-#include "objectPool.h"
 #include "context.h"
 
 
