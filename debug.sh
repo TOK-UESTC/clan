@@ -23,14 +23,17 @@ uNames=`uname -s`
 osName=${uNames: 0: 4}
 if [ "$osName" == "Linu" ]
 then
-    executor="./Robot"
+    executor="../Robot"
 else
-    executor="./Robot_gui.exe"
+    executor="../Robot.exe"
 fi
 
 
 # 与答题器交互
-CURRENT_DIR=$(cd $(dirname $0); pwd)
-cd ../
-$executor  "$CURRENT_DIR/build/main.exe" -d -m ./maps/$name.txt
-cd $CURRENT_DIR
+$executor "./build/main.exe" -d -m ../maps/$name.txt
+# 搜索main程序的PID号
+# search main process id
+# pid=`ps -ef | grep "./CodeCraft2023/build/main" | grep -v "grep" | awk '{print $2}'`
+# 输出main程序的PID号
+# output main process id
+# echo $pid
