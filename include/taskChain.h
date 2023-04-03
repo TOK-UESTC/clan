@@ -16,8 +16,9 @@ private:
     double totalFrame;             // 在已有任务链的条件下，完成任务所需最快帧数
 
 public:
+    TaskChain();
     TaskChain(double totalFrame); // 通过任务总时间初始化任务链
-    ~TaskChain();                 // 清理内存
+    // ~TaskChain();                 // 清理内存
     // TaskChain(TaskChain &chain);  // 通过任务任务链初始化任务链
 
     void set(const TaskChain &s); // 通过任务链更新任务链
@@ -28,7 +29,7 @@ public:
     void removeTask(int index);   // 删除taskChain[index]
     double getProfit();           // 任务链的单位时间收益
 
-    bool operator<(const TaskChain &o); // 重载为降序排列
+    bool operator<(TaskChain &o); // 重载为降序排列
 };
 
 #endif

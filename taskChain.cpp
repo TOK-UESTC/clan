@@ -1,5 +1,9 @@
 #include "include/includeAll.h"
 
+TaskChain::TaskChain(){
+    
+}
+
 TaskChain::TaskChain(double totalFrame)
 {
     this->totalFrame = totalFrame;
@@ -21,11 +25,11 @@ void TaskChain::occupy()
 {
     for (Task *task : taskChain)
     {
-        Workbench *from = task->getFrom();
-        Workbench *to = task->getTo();
+        Workbench from = task->getFrom();
+        Workbench to = task->getTo();
 
-        from->setPlanProductStatus(1);
-        to->updatePlanMaterialStatus(from->getType(), false);
+        from.setPlanProductStatus(1);
+        to.updatePlanMaterialStatus(from.getType(), false);
     }
 }
 
@@ -36,9 +40,9 @@ bool TaskChain::isOccupied() const
     // 2. 消费工作台原料格未被占据: task.getTo().hasPlanMaterial(task.getFrom().getType())
     for (Task *task : taskChain)
     {
-        Workbench *from = task->getFrom();
-        Workbench *to = task->getTo();
-        if (from->getPlanProductStatus() != 0 || to->hasPlanMaterial(from->getType()))
+        Workbench from = task->getFrom();
+        Workbench to = task->getTo();
+        if (from.getPlanProductStatus() != 0 || to.hasPlanMaterial(from.getType()))
         {
             return true;
         }
@@ -58,3 +62,16 @@ void TaskChain::addTask(Task *task)
 // {
 //     this->taskChain.
 // }
+
+double TaskChain::getProfit(){
+    double profit = 0.;
+    for(Task* task: taskChain){
+        // TODO: 这里的计算是临时的
+        profit += task->getProfit(1., 1.);
+    }
+    return profit;
+}
+
+bool TaskChain::operator<(TaskChain &o){
+    return getProfit()< o.getProfit();
+}
