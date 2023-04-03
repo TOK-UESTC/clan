@@ -26,6 +26,7 @@
 #include "motionState.h"
 #include "actionModel.h"
 #include "maps.h"
+#include "dijkstra.h"
 #include "pathPlan.h"
 #include "pidModel.h"
 #include "task.h"

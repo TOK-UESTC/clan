@@ -16,6 +16,11 @@ bool Robot::isLoaded()
     return productType != 0;
 }
 
+bool Robot::isFree()
+{
+    return task == nullptr;
+}
+
 void Robot::control(MotionState *ms, Vec *pos, double &v, double &w)
 {
     pidModel.control(ms, pos, v, w);
@@ -36,6 +41,10 @@ void Robot::update(int leftFrame)
     this->leftFrame = leftFrame;
     pos.set(x, y);
     velocity.set(vx, vy);
+}
+
+size_t Robot::hash() const {
+    return id;
 }
 
 // TODO
@@ -64,6 +73,11 @@ bool Robot::operator<(const Robot &o) const
     return this->getPriority() < o.getPriority();
 }
 
+bool Robot::operator==(const Robot &o) const
+{
+    return this->id == o.id;
+}
+
 Task *Robot::getTask()
 {
     return task;
@@ -90,6 +104,12 @@ void Robot::addAction(Action *action)
 {
     actions.push_back(action);
 }
+
+void Robot::bindChain(TaskChain* taskChain)
+{
+    this->taskChain->set(*taskChain);
+}
+
 void Robot::step()
 {
     // 清空动作列表

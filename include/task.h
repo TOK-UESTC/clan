@@ -37,8 +37,8 @@ public:
         return to;
     }
 
-    double getDist()
-    {
+    double getDist(){
+        // TODO：根据dijkstra算法获得, 暂时用直线代替
         return computeDist(from.getPos(), to.getPos());
     }
 

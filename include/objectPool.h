@@ -2,7 +2,6 @@
 #define OBJECT_POOL_H
 
 #include <vector>
-#include <unordered_set>
 #include <functional>
 
 template <typename T>
@@ -10,7 +9,6 @@ class ObjectPool
 {
 private:
     std::vector<T *> pool;
-    std::unordered_set<T *> used;
 
 public:
     ObjectPool(int initCount)
@@ -25,11 +23,6 @@ public:
     ~ObjectPool()
     {
         for (auto t : pool)
-        {
-            delete t;
-        }
-
-        for (auto t : used)
         {
             delete t;
         }
@@ -48,26 +41,17 @@ public:
             t = pool.back();
             pool.pop_back();
         }
-        used.insert(t);
         return t;
     }
 
     void release(T *t)
     {
-        if (used.erase(t))
-        {
-            pool.push_back(t);
-        }
+        pool.push_back(t);
     }
 
     int availableSize()
     {
         return pool.size();
-    }
-
-    int usedSize()
-    {
-        return used.size();
     }
 };
 

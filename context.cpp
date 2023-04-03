@@ -103,7 +103,7 @@ void Context::init()
     }
     // 获得转换后地图
     map025 = maps.convert025();
-    accessMap = maps.newMap(map025);
+    accessMap = Maps::newMap(map025);
     // 计算访问权限图
     for (Robot *rb : robotList)
     {

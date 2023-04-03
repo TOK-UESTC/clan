@@ -107,7 +107,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthH[i][left] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthH[i][k] = width;
+                        mapRoadWidthH[i][k] = (k-left)<(right - k)?(k-left):(right - k);
                     }
                     mapRoadWidthH[i][right] = 0;
                 }
@@ -146,7 +146,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthV[left][j] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthV[k][j] = width;
+                        mapRoadWidthV[k][j] = (k-left)<(right - k)?(k-left):(right - k);
                     }
                     mapRoadWidthV[right][j] = 0;
                 }
@@ -329,6 +329,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
             qy.push(ny);
         }
     }
+
     // 释放bool数组
     for (int i = 0; i < row; i++)
     {
