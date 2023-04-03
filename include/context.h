@@ -12,7 +12,7 @@ class Context
 
 private:
     int leftFrame; // 剩余帧数
-    char line[1024];
+    char line[200];
     int frameId = 0;
     int money = 0;
     char **map05;       // 原图
