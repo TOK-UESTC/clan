@@ -11,17 +11,8 @@ class ObjectPool
 private:
     std::vector<T *> pool;
     std::unordered_set<T *> used;
-    std::function<T()> supplier;
 
 public:
-    ObjectPool(int initCount, std::function<T()> supplier) : supplier(supplier)
-    {
-        // 先开辟池子，避免冷启动过慢
-        for (int i = 0; i < initCount; i++)
-        {
-            pool.push_back(supplier());
-        }
-    }
     ObjectPool(int initCount)
     {
         // 先开辟池子，避免冷启动过慢
@@ -30,6 +21,20 @@ public:
             pool.push_back(new T());
         }
     }
+
+    ~ObjectPool()
+    {
+        for (auto t : pool)
+        {
+            delete t;
+        }
+
+        for (auto t : used)
+        {
+            delete t;
+        }
+    }
+
     T *acquire()
     {
         T *t;

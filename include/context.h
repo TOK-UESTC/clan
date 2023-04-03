@@ -2,7 +2,6 @@
 #define CONTEXT_H
 
 #include "includeAll.h"
-#include <iostream>
 /*
  * @brief 用于管理程序运行的上下文信息
  *
@@ -16,13 +15,15 @@ private:
     char line[200];
     int frameId = 0;
     int money = 0;
-    std::vector<Workbench *> workbenchList;
-    std::vector<Robot *> robotList;
     char **map05;       // 原图
     char **map025;      // 转换后地图
     int **mapRoadWidth; // 路宽图
     int **accessMap;    // 机器人可访问标志图
     Maps maps;          // 存放地图信息
+    std::vector<Workbench *> workbenchList; // 工作台列表
+    std::vector<Robot *> robotList; // 机器人列表
+    std::unordered_map<int, std::vector<Workbench *>*> workbenchTypeMap; // {工作台类型:工作台列表}字典
+    std::unordered_map<int, std::vector<Task *>*> workbenchIdTaskMap; // {工作台id:该id工作台发出的任务列表}字典
 public:
     // Context();  // 构造函数
     ~Context(); // 析构函数

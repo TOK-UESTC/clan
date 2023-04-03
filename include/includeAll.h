@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <sstream>
 #include <queue>
+#include <unordered_map>
 
 #include "vec.h"
 #include "const.h"
@@ -30,6 +31,7 @@
 #include "task.h"
 #include "robot.h"
 #include "taskChain.h"
+#include "dispatcher.h"
 #include "context.h"
 
 #endif
