@@ -39,9 +39,9 @@ public:
         return map05;
     }
 
-    int **newMap(char** map)
+    static int **newMap(char** map)
     {
-        int row = _msize(map)/8; 
+        int row = _msize(map) / 8;
         int col = _msize(map[0]);
         int **newMap = new int *[row];
         for (int i = 0; i < row; i++)

@@ -41,6 +41,11 @@ public:
     int getId();
     bool isBlocked();
     int getWorkbenchIdx();
+    int getMapRow();
+    int getMapCol();
+
+    bool operator==(const Workbench &o) const;
+    size_t hash() const;
 };
 
 #endif

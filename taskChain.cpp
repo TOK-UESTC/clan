@@ -50,6 +50,18 @@ bool TaskChain::isOccupied() const
     return false;
 }
 
+Task* TaskChain::getTask(int index) {
+    if (taskChain.size() == 0) {
+        return nullptr;
+    }
+
+    if (index == -1) {
+        return taskChain.at(taskChain.size() - 1);
+    }
+
+    return taskChain.at(index);
+}
+
 void TaskChain::addTask(Task *task)
 {
     this->taskChain.push_back(task);
@@ -72,6 +84,11 @@ double TaskChain::getProfit(){
     return profit;
 }
 
-bool TaskChain::operator<(TaskChain &o){
-    return getProfit()< o.getProfit();
+/** 完成任务预估需要的帧数 */
+double TaskChain::getTotalFrame() {
+    return totalFrame;
+}
+
+bool TaskChain::operator<(TaskChain *o){
+    return getProfit()< o->getProfit();
 }
