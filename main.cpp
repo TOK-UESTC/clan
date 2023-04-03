@@ -1,16 +1,12 @@
 #include <iostream>
-#include <ctime>
-// 方便调试
+#include <chrono>
 #include <signal.h>
 #include <unistd.h>
+
+#ifdef W_DEBUG
 #include <Windows.h>
 
-#include "include/includeAll.h"
-
-using namespace std;
-
-static bool showTime = false;
-int main()
+void showDialog()
 {
     // 打开调试器附加对话框
     LPCWSTR waitMessage = L"等待附加调试器";
@@ -28,25 +24,43 @@ int main()
 
     delete[] message;
     delete[] caption;
-    clock_t start, end;
+}
+#endif
+
+#include "include/includeAll.h"
+
+using namespace std;
+static bool showTime = false;
+
+int main(int argc, char *argv[])
+{
+#ifdef W_DEBUG
+    showDialog();
+#endif
+
+    auto start = chrono::steady_clock::now();
+    auto end = chrono::steady_clock::now();
 
     Context ctx;
     ctx.init();
     ctx.endStep(); // 预热
     while (ctx.getFrameId() < TOTAL_FRAME)
     {
-        // start = clock();
+        start = chrono::steady_clock::now();
         ctx.update();
         ctx.step(false);
-        // end = clock();
+        end = chrono::steady_clock::now();
 
         // 显示时间
-        // if (showTime)
-        // {
-        //     double cost = (double)(end - start) / CLOCKS_PER_SEC * 1000.0;
-        //     fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
-        //     fflush(stderr);
-        // }
+        if (showTime)
+        {
+            double cost = chrono::duration_cast<chrono::microseconds>(end - start).count() / 1000.0;
+            if (cost > 10.0)
+            {
+                fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
+                fflush(stderr);
+            }
+        }
     }
     return 0;
 }

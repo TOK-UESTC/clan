@@ -218,6 +218,7 @@ void Context::printLine(const char *out)
 {
     printf("%s\n", out);
 }
+
 void Context::printLine(const std::string &out)
 {
     printf("%s\n", out.c_str());

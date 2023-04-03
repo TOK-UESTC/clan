@@ -4,7 +4,7 @@
             "name": "(lldb) attatch",
             "type": "lldb",
             "request": "attach",
-            "program": "${workspaceFolder}/build/main",
+            "program": "${workspaceFolder}/build/main"
         }
 
     ],

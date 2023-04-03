@@ -97,14 +97,17 @@ void Robot::step()
     // 更新action列表
     actionModel.generate();
 }
+
 std::vector<Action *> Robot::getActions() const
 {
     return actions;
 }
+
 double Robot::getHeading() const
 {
     return heading;
 }
+
 double Robot::getW() const
 {
     return w;
