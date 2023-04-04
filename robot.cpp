@@ -143,3 +143,7 @@ int Robot::getMapCol()
 {
     return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
 }
+void Robot::addPathPoint(std::shared_ptr<Vec> point)
+{
+    actionModel.addPathPoint(point);
+}

@@ -66,3 +66,39 @@ void MotionState::update(Robot *rb)
     w = rb->getW();
     loaded = rb->isLoaded();
 }
+
+void MotionState::update(MotionState &ms)
+{
+    pos.set(ms.pos);
+    velocity.set(ms.velocity);
+    heading = ms.heading;
+    w = ms.w;
+    loaded = ms.loaded;
+}
+
+// setter and getter
+void MotionState::setTargetVelocity(double targetVelocity)
+{
+    this->targetVelocity = targetVelocity;
+}
+void MotionState::setTargetAngularVelocity(double targetAngularVelocity)
+{
+    this->targetAngularVelocity = targetAngularVelocity;
+}
+
+void MotionState::setPos(double x, double y)
+{
+    this->pos.set(x, y);
+}
+void MotionState::setHeading(double heading)
+{
+    this->heading = heading;
+}
+void MotionState::setW(double w)
+{
+    this->w = w;
+}
+void MotionState::setVelocity(double vx, double vy)
+{
+    this->velocity.set(vx, vy);
+}

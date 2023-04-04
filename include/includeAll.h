@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <sstream>
 #include <queue>
+#include <memory>
+#include <list>
 #include <stack>
 #include <unordered_map>
 #include <iterator>
@@ -32,8 +34,8 @@
 #include "pathPlan.h"
 #include "pidModel.h"
 #include "task.h"
-#include "robot.h"
 #include "taskChain.h"
+#include "robot.h"
 #include "dispatcher.h"
 #include "context.h"
 

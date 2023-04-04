@@ -24,6 +24,7 @@ private:
     std::vector<Robot *> robotList;                                       // 机器人列表
     std::unordered_map<int, std::vector<Workbench *> *> workbenchTypeMap; // {工作台类型:工作台列表}字典
     std::unordered_map<int, std::vector<Task *> *> workbenchIdTaskMap;    // {工作台id:该id工作台发出的任务列表}字典
+    Dispatcher *dispatcher;                                               // 调度器
 public:
     // Context();  // 构造函数
     ~Context(); // 析构函数

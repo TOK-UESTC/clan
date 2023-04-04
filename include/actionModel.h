@@ -19,8 +19,8 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    ObjectPool<MotionState> *statePool; // 动作状态池
-    // ObjectPool<Vec> coordinatePool;          // 坐标池
+    ObjectPool<MotionState> *statePool;    // 动作状态池
+    std::list<std::shared_ptr<Vec>> paths; // 路径序列,TODO:用对象池管理
 
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
@@ -30,9 +30,14 @@ public:
     // 构造函数
     // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针
 
-    /* 产生动作序列 */
-    void
-    generate()
+    // 更新动作序列
+    void addPathPoint(std::shared_ptr<Vec> v)
+    {
+        paths.push_back(v);
+    }
+
+    /* 产生动作 */
+    void generate()
     {
         // generateShopActions();
         generateMoveActions();

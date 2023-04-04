@@ -11,16 +11,18 @@ uNames=`uname -s`
 osName=${uNames: 0: 4}
 if [ "$osName" == "Linu" ]
 then
-    executor="../Robot"
+    executor="./Robot"
 else
-    executor="../Robot.exe"
+    executor="./Robot_gui.exe"
 fi
 
 if [ $# -eq 1 ]
 then
     name=$1
     # 与答题器交互
-    $executor -f -d -m ../maps/$name.txt "./build/main.exe"
+    cd ..
+    $executor -f -d -m ./maps/$name.txt "./clan/build/main.exe"
+    cd clan
 else
     echo "no map specified"
 fi
