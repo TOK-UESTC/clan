@@ -20,9 +20,11 @@ private:
     // 任务链池子
     ObjectPool<TaskChain> *chainPool;
     // ObjectPool<MotionState*> * statePool;
+    Dijkstra* dijkstra;  // Dijkstra算法
+    int** accessMap; // 可访问性地图
 
 public:
-    Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *> &workbenchList, std::unordered_map<int, std::vector<Workbench *> *> &workbenchTypeMap, std::unordered_map<int, std::vector<Task *> *> &workbenchIdTaskMap);
+    Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *> &workbenchList, std::unordered_map<int, std::vector<Workbench *> *> &workbenchTypeMap, std::unordered_map<int, std::vector<Task *> *> &workbenchIdTaskMap, int **accessMap);
     ~Dispatcher();
 
     void init();
@@ -32,7 +34,17 @@ public:
     void updateTaskChain();                                                                             // 添加任务链
     void copyQueue(std::priority_queue<TaskChain *> *source, std::priority_queue<TaskChain *> *target); // 复制任务链
     void updateFreeBot();                                                                               // 更新机器人列表
-    void dispatch();                                                                                    // 分配
+    void dispatch();
+                                                                              // 分配
+    void releaseMap(double **map)
+    {
+        int row = _msize(map) / 8;
+        for (int i = 0; i < row; i++)
+        {
+            delete[] map[i];
+        }
+        delete[] map;
+    }
 };
 
 #endif

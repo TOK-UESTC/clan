@@ -11,7 +11,9 @@
 #include <algorithm>
 #include <sstream>
 #include <queue>
+#include <stack>
 #include <unordered_map>
+#include <iterator>
 
 #include "vec.h"
 #include "const.h"

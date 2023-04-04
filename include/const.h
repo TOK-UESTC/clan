@@ -27,4 +27,24 @@
 #define MAP_WIDTH 100                                             // 字符地图宽度
 #define LOAD_SHIFT_BIT 4                                          // 机器人在load的情况下，可访问标志符向左移动LOAD_SHIFT_BIT位
 
+extern int unloadDir[][2] = {
+    {-1, 0},
+    {1, 0},
+    {0, -1},
+    {0, 1},
+    {1, -1},
+    {-1, -1},
+    {-1, 1},
+    {1, 1}};
+
+extern int loadedDir[][2] = {
+    {-1, -1},
+    {-2, 0},
+    {-1, 1},
+    {0, -2},
+    {0, 2},
+    {1, -1},
+    {2, 0},
+    {1, 1}};
+
 #endif

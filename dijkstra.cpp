@@ -20,7 +20,7 @@ bool Dijkstra::checkAccess(int r, int c, bool loaded, int id)
     return ((1 << shift) & status) != 0;
 }
 
-int **Dijkstra::getDistMap()
+double **Dijkstra::getDistMap()
 {
     return dist;
 }
@@ -28,15 +28,8 @@ int **Dijkstra::getDistMap()
 // 起点
 void Dijkstra::search(int r, int c, bool loaded, int id)
 {
-    dist = Maps::newMap(accessMap);
-
-    for (int i = 0; i < row; i++)
-    {
-        for (int j = 0; j < col; j++)
-        {
-            dist[i][j] = -1;
-        }
-    }
+    double fill = 1000000.;
+    dist = Maps::newDMap(accessMap, fill);
 
     dist[r][c] = 0; // 起点标志
 
@@ -46,19 +39,6 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
     // 将机器人位置加入队列
     qx.push(r);
     qy.push(c);
-
-    int dir[][2] = {
-        {-1, -1},
-        {-1, 0},
-        {-1, 1},
-        {0, -1},
-        {0, 1},
-        {1, -1},
-        {1, 0},
-        {1, 1}};
-
-    // 距离代价
-    int cost = 1;
 
     while (!qx.empty())
     {
@@ -72,23 +52,84 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
             qx.pop();
             qy.pop();
 
-            dist[currR][currC] = cost;
+            // 得到currR, currC周围最短距离
+            double increDist = 0.;
+            double minDist = dist[currR][currC];
 
             // 遍历所有方位
             for (int j = 0; j < 8; j++)
             {
-                int nr = dir[i][0] + currR;
-                int nc = dir[i][1] + currC;
+                int nr = unloadDir[i][0] + currR;
+                int nc = unloadDir[i][1] + currC;
 
                 // 是否遍历过，是否是有效坐标，根据是否Load进行判断
-                if (checkAccess(nr, nc, loaded, id) && dist[nr][nc] == -1)
+                if (checkAccess(nr, nc, loaded, id) && dist[nr][nc] > fill - 1)
                 {
                     qx.push(nr);
                     qy.push(nc);
                 }
+
+                if (j < 4) {
+                    increDist = 1.0;
+                } else {
+                    increDist = 1.4142135623730951;
+                }
+
+                // 找到最小距离
+                if(minDist > unloadDir[nr][nc] + increDist){
+                    minDist = unloadDir[nr][nc] + increDist;
+                }
+            }
+            dist[currR][currC] = minDist;
+        }
+    }
+}
+
+std::vector<Vec*>* Dijkstra::getKnee(int r, int c) {
+    std::vector<Vec*>* result = new std::vector<Vec*>();
+    // 根据dist进行拐点查找
+    int cr = r;
+    int cc = c;
+
+    // 添加开头
+    result->push_back(rc2Coord(cr, cc, 0.25));
+
+    // TODO: 如果多个方向有相同的代价
+    // ，根据上一次选择的下降方向去进行临近选择
+    while(dist[cr][cc] > 0.01){
+        // 寻找下个访问点
+        int lastDirect = -1;
+        int direct = -1;
+        double minCost = 1000000.;
+        for(int i = 0; i < 8; i++) {
+            int nr = unloadDir[i][0] + cr;
+            int nc = unloadDir[i][1] + cc;
+
+            if (dist[nr][nc] < minCost) {
+                minCost = dist[nr][nc];
+                direct = i;
             }
         }
 
-        cost += 1;
+        // 找到最小方向
+        if (lastDirect == -1) {
+            lastDirect = direct;
+        }
+
+        // 更新位置
+        cr += unloadDir[direct][0];
+        cc += unloadDir[direct][1];
+
+        // 方向发生了变化。则添加到拐点列表
+        if (direct != lastDirect) {
+            result->push_back(rc2Coord(cr, cc, 0.25));
+        }
     }
+    // 将结束工作台放置到列表中
+    result->push_back(rc2Coord(cr, cc, 0.25));
+
+    // 向量反转，方便进行遍历
+    std::reverse(result->begin(), result->end());
+
+    return result;
 }
