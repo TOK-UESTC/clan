@@ -19,7 +19,7 @@ private:
     double price;                      // 任务买入价格
     double sellPrice;                  // 任务售出价格
     double distance;                   // 任务距离
-    std::vector<Vec*>* road;                         // 任务路径
+    std::list<Vec*>* road;                         // 任务路径
     std::vector<Task *> *postTaskList; // 后继任务列表
 
 public:
@@ -50,7 +50,7 @@ public:
         return distance;
     }
 
-    std::vector<Vec*>* getRoad(){
+    std::list<Vec*>* getRoad(){
         return road;
     }
 
@@ -68,7 +68,7 @@ public:
         this->distance = dist;
     }
 
-    void setRoad(std::vector<Vec*>* road){
+    void setRoad(std::list<Vec*>* road){
         this->road = road;
     }
 

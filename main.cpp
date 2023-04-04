@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
 #ifdef W_DEBUG
     showDialog();
 #endif
-
     auto start = chrono::steady_clock::now();
     auto end = chrono::steady_clock::now();
 

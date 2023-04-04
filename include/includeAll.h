@@ -34,8 +34,8 @@
 #include "pathPlan.h"
 #include "pidModel.h"
 #include "task.h"
-#include "robot.h"
 #include "taskChain.h"
+#include "robot.h"
 #include "dispatcher.h"
 #include "context.h"
 

@@ -3,10 +3,10 @@
 void ActionModel::generateMoveActions()
 {
     // 首先判断是否有任务
-    // if (rb->getTask() == nullptr)
-    // {
-    //     return;
-    // }
+    if (rb->getTask() == nullptr)
+    {
+        return;
+    }
 
     // for (int i = 0; i < 10; i++)
     // {
@@ -25,25 +25,39 @@ void ActionModel::generateMoveActions()
     //     double yi = eval_spline(t, y, a2, ti);
     // }
 
-    // 如果目标点为空，则返回
-    if (paths.empty())
-    {
-        return;
-    }
+    // // 如果目标点为空，则返回
+    // if (paths.empty())
+    // {
+    //     return;
+    // }
 
     // // 获取state
     MotionState *state = statePool->acquire();
     state->update(rb);
 
+    // 获取下一个目标点
+    Task *task = rb->getTask();
+    std::list<Vec *> *road = task->getRoad();
+    if (road->empty())
+        return;
+    Vec *nextPos = road->front();
     // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    if (computeDist(state->getPos(), paths.front().get()) < 0.4)
+    if (computeDist(state->getPos(), nextPos) < 0.4)
     {
-        paths.pop_front();
-        if (paths.empty())
+        road->pop_front();
+        if (road->empty())
             return;
+        nextPos = road->front();
     }
 
-    Vec *nextPos = paths.front().get();
+    // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
+    // if (computeDist(state->getPos(), paths.front().get()) < 0.4)
+    // {
+    //     paths.pop_front();
+    //     if (paths.empty())
+    //         return;
+    // }
+    // Vec *nextPos = paths.front().get();
 
     // // TODO: 需要每帧都预测么？
     // Coordinate *next = rb.predict();

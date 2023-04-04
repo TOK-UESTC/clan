@@ -32,11 +32,15 @@ Dispatcher::~Dispatcher()
  */
 void Dispatcher::init()
 {
+    this->chainPool = new ObjectPool<TaskChain>(100);
+    this->tempQueue = new std::priority_queue<TaskChain *>();
+    this->dijkstra = new Dijkstra(accessMap);
+    this->accessMap = accessMap;
     for (Workbench *wb : workbenchList)
     {
         int wbType = wb->getType();
         // 如果工作台类型是8、9或者工作台在空载的时候不可访问，那么不生成任务
-        if (wbType == 8 || wbType == 9 || (accessMap[wb->getMapRow()][wb->getMapCol()]&0b1111)==0)
+        if (wbType == 8 || wbType == 9 || (accessMap[wb->getMapRow()][wb->getMapCol()] & 0b1111) == 0)
         {
             continue;
         }
@@ -53,7 +57,8 @@ void Dispatcher::init()
             for (Workbench *target : *(workbenchTypeMap.find(type)->second))
             {
                 // 如果目标点负载不可访问，那么不生成任务
-                if((accessMap[target->getMapRow()][target->getMapCol()]&0b11110000)){
+                if ((accessMap[target->getMapRow()][target->getMapCol()] & 0b11110000))
+                {
                     continue;
                 }
                 workbenchIdTaskMap[wb->getId()]->push_back(new Task(*wb, *target));
@@ -72,7 +77,7 @@ void Dispatcher::init()
     {
         int wbType = wb->getType();
         // 如果工作台类型是8、9或者工作台在空载的时候不可访问，那么不生成任务
-        if (wbType == 8 || wbType == 9 || (accessMap[wb->getMapRow()][wb->getMapCol()]&0b1111)==0 || workbenchIdTaskMap[wb->getId()]->size() == 0)
+        if (wbType == 8 || wbType == 9 || (accessMap[wb->getMapRow()][wb->getMapCol()] & 0b1111) == 0 || workbenchIdTaskMap[wb->getId()]->size() == 0)
         {
             continue;
         }
@@ -80,19 +85,21 @@ void Dispatcher::init()
         int col = wb->getMapCol();
         int access = accessMap[row][col];
         int id = 0;
-        for(;id<4;id++){
-            if(access&(1<<(id+LOAD_SHIFT_BIT))!=0){
+        for (; id < 4; id++)
+        {
+            if (access & (1 << (id + LOAD_SHIFT_BIT)) != 0)
+            {
                 break;
             }
         }
         dijkstra->search(row, col, true, id);
         double **dijkstraMap = dijkstra->getDistMap();
-        for(auto task:*(workbenchIdTaskMap[wb->getId()])){
+        for (auto task : *(workbenchIdTaskMap[wb->getId()]))
+        {
             Workbench to = task->getTo();
             task->setDist(dijkstraMap[to.getMapRow()][to.getMapCol()]);
             // 设置最短路径
             task->setRoad(dijkstra->getKnee(to.getMapRow(), to.getMapCol()));
-
         }
 
         releaseMap(dijkstraMap);
@@ -191,13 +198,14 @@ void Dispatcher::generateTaskChains()
                  * 规划应满足:
                  * 1. from工作台规划产品格没被占领:from.getPlanProductStatus() == 1 true表示被占据
                  * 2. to工作台的规划原料格(planMaterialStatus)没被占用:to.hasPlanMaterial(from.getType())
-                 * 
+                 *
                  * 访问应满足:
                  * 1. from工作台空载能访问 accessFrom&(1<<rb->getId())==0表示空载不能访问
                  * 2. to工作台负载能访问 accessTo&(1<<(rb->getId()+LOAD_SHIFT_BIT))==0 负载不能访问
                  */
                 // 环境判断
-                if(from.isFree() || to.hasMaterial(from.getType())){
+                if (from.isFree() || to.hasMaterial(from.getType()))
+                {
                     continue;
                 }
                 // 规划判断
@@ -208,7 +216,8 @@ void Dispatcher::generateTaskChains()
                 // 可访问性判断
                 int accessFrom = accessMap[from.getMapRow()][from.getMapCol()];
                 int accessTo = accessMap[to.getMapRow()][to.getMapCol()];
-                if(accessFrom&(1<<rb->getId())==0 || accessTo&(1<<(rb->getId()+LOAD_SHIFT_BIT))==0){
+                if (accessFrom & (1 << rb->getId()) == 0 || accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
+                {
                     continue;
                 }
 
@@ -231,7 +240,6 @@ void Dispatcher::generateTaskChains()
         }
         releaseMap(mapFromRb);
     }
-
 
     if (isQueueMapEmpty(nullptr))
     {
@@ -304,12 +312,13 @@ void Dispatcher::updateTaskChain()
                  * 2. postFrom工作台的规划原料格没被占用：postFrom.hasPlanMaterial(lastFrom.getType())
                  * true表示被占据
                  * 3. postTo工作台的规划原料格没被占用：postTo.hasPlanMaterial(postFrom.getType()) true表示被占据
-                 * 
+                 *
                  * 访问应满足
                  * 1. to负载能访问
                  */
                 // 环境判断
-                if(postFrom.isFree() || postTo.hasMaterial(postFrom.getType())){
+                if (postFrom.isFree() || postTo.hasMaterial(postFrom.getType()))
+                {
                     continue;
                 }
                 // 规划判断
@@ -319,7 +328,8 @@ void Dispatcher::updateTaskChain()
                 }
                 // 访问判断
                 int accessTo = accessMap[postTo.getMapRow()][postTo.getMapCol()];
-                if(accessTo&(1<<(rb->getId()+LOAD_SHIFT_BIT))==0){
+                if (accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
+                {
                     continue;
                 }
 
