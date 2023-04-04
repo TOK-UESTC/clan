@@ -107,7 +107,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthH[i][left] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthH[i][k] = (k-left)<(right - k)?(k-left):(right - k);
+                        mapRoadWidthH[i][k] = (k - left) < (right - k) ? (k - left) : (right - k);
                     }
                     mapRoadWidthH[i][right] = 0;
                 }
@@ -146,7 +146,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthV[left][j] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthV[k][j] = (k-left)<(right - k)?(k-left):(right - k);
+                        mapRoadWidthV[k][j] = (k - left) < (right - k) ? (k - left) : (right - k);
                     }
                     mapRoadWidthV[right][j] = 0;
                 }
@@ -308,7 +308,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         qy.pop();
         if (isAccessible(map, cx, cy, true))
         {
-            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHEFT_BIT + id));
+            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHIFT_BIT + id));
         }
         if (isAccessible(map, cx, cy, false))
         {
@@ -336,7 +336,6 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         delete[] visit[i];
     }
     delete[] visit;
-    
 }
 
 /*

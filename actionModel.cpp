@@ -61,7 +61,6 @@ void ActionModel::generateShopActions()
         return;
     }
 
-
     // 购买
     if (rb->getProductType() == 0)
     {

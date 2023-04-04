@@ -1,17 +1,27 @@
 #include "include/includeAll.h"
 
-bool Dijkstra::checkAccess(int r, int c, bool loaded, int id) {
+bool Dijkstra::checkAccess(int r, int c, bool loaded, int id)
+{
+    // 检查位置是否合法
+    if (r < 0 || r >= row || c < 0 || c >= col)
+    {
+        return false;
+    }
+
+    // 检查位置是否可通过
     int status = accessMap[r][c];
     int shift = id;
 
-    if (loaded) {
-        shift += LOAD_SHEFT_BIT;
+    if (loaded)
+    {
+        shift += LOAD_SHIFT_BIT;
     }
 
     return ((1 << shift) & status) != 0;
 }
 
-int** Dijkstra::getDistMap() {
+int **Dijkstra::getDistMap()
+{
     return dist;
 }
 
@@ -20,8 +30,10 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
 {
     dist = Maps::newMap(accessMap);
 
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < col; j++)
+        {
             dist[i][j] = -1;
         }
     }
@@ -48,11 +60,13 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
     // 距离代价
     int cost = 1;
 
-    while (!qx.empty()) {
+    while (!qx.empty())
+    {
         // 获取当前队列大小
         int size = qx.size();
 
-        for (int i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i)
+        {
             int currR = qx.front();
             int currC = qy.front();
             qx.pop();
@@ -61,12 +75,14 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
             dist[currR][currC] = cost;
 
             // 遍历所有方位
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < 8; j++)
+            {
                 int nr = dir[i][0] + currR;
                 int nc = dir[i][1] + currC;
 
                 // 是否遍历过，是否是有效坐标，根据是否Load进行判断
-                if (checkAccess(nr, nc, loaded, id) && dist[nr][nc] == -1 && validCoord(nr, nc)) {
+                if (checkAccess(nr, nc, loaded, id) && dist[nr][nc] == -1)
+                {
                     qx.push(nr);
                     qy.push(nc);
                 }

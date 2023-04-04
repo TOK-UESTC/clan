@@ -21,12 +21,15 @@ Context::~Context()
     maps.releaseMap(accessMap);
 
     // 释放map
-    for(auto iter=workbenchTypeMap.begin(); iter!=workbenchTypeMap.end(); iter++){
+    for (auto iter = workbenchTypeMap.begin(); iter != workbenchTypeMap.end(); iter++)
+    {
         delete iter->second;
     }
 
-    for(auto iter=workbenchIdTaskMap.begin(); iter!=workbenchIdTaskMap.end(); iter++){
-        for(auto t:*(iter->second)){
+    for (auto iter = workbenchIdTaskMap.begin(); iter != workbenchIdTaskMap.end(); iter++)
+    {
+        for (auto t : *(iter->second))
+        {
             delete t;
         }
         delete iter->second;
@@ -78,17 +81,21 @@ void Context::init()
             // 工作台
             default:
                 int workbenchType = line[col] - '0';
-                if(workbenchType != 8 && workbenchType != 9){
-                    workbenchIdTaskMap[workbenchCount] = new std::vector<Task*>();
+                if (workbenchType != 8 && workbenchType != 9)
+                {
+                    workbenchIdTaskMap[workbenchCount] = new std::vector<Task *>();
                 }
                 Workbench *workbench = new Workbench(workbenchCount++, x, y, workbenchType);
                 workbenchList.push_back(workbench);
 
                 // 将同一型号的工作台放置到map中
-                if(workbenchTypeMap.find(workbenchType) != workbenchTypeMap.end()){
+                if (workbenchTypeMap.find(workbenchType) != workbenchTypeMap.end())
+                {
                     workbenchTypeMap[workbenchType]->push_back(workbench);
-                }else{
-                    workbenchTypeMap[workbenchType] = new std::vector<Workbench*>();
+                }
+                else
+                {
+                    workbenchTypeMap[workbenchType] = new std::vector<Workbench *>();
                     workbenchTypeMap[workbenchType]->push_back(workbench);
                 }
                 break;

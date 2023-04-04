@@ -1,7 +1,7 @@
 #include "include/includeAll.h"
 
-TaskChain::TaskChain(){
-    
+TaskChain::TaskChain()
+{
 }
 
 TaskChain::TaskChain(double totalFrame)
@@ -50,12 +50,15 @@ bool TaskChain::isOccupied() const
     return false;
 }
 
-Task* TaskChain::getTask(int index) {
-    if (taskChain.size() == 0) {
+Task *TaskChain::getTask(int index)
+{
+    if (taskChain.size() == 0)
+    {
         return nullptr;
     }
 
-    if (index == -1) {
+    if (index == -1)
+    {
         return taskChain.at(taskChain.size() - 1);
     }
 
@@ -75,9 +78,11 @@ void TaskChain::addTask(Task *task)
 //     this->taskChain.
 // }
 
-double TaskChain::getProfit(){
+double TaskChain::getProfit()
+{
     double profit = 0.;
-    for(Task* task: taskChain){
+    for (Task *task : taskChain)
+    {
         // TODO: 这里的计算是临时的
         profit += task->getProfit(1., 1.);
     }
@@ -85,10 +90,12 @@ double TaskChain::getProfit(){
 }
 
 /** 完成任务预估需要的帧数 */
-double TaskChain::getTotalFrame() {
+double TaskChain::getTotalFrame()
+{
     return totalFrame;
 }
 
-bool TaskChain::operator<(TaskChain *o){
-    return getProfit()< o->getProfit();
+bool TaskChain::operator<(TaskChain *o)
+{
+    return getProfit() < o->getProfit();
 }

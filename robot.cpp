@@ -43,7 +43,8 @@ void Robot::update(int leftFrame)
     velocity.set(vx, vy);
 }
 
-size_t Robot::hash() const {
+size_t Robot::hash() const
+{
     return id;
 }
 
@@ -105,7 +106,7 @@ void Robot::addAction(Action *action)
     actions.push_back(action);
 }
 
-void Robot::bindChain(TaskChain* taskChain)
+void Robot::bindChain(TaskChain *taskChain)
 {
     this->taskChain->set(*taskChain);
 }
