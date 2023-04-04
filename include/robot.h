@@ -43,6 +43,8 @@ public:
     std::vector<Action *> getActions() const;
     double getHeading() const;
     double getW() const;
+    int getMapRow();
+    int getMapCol();
 
     void step();
     void checkDeal();

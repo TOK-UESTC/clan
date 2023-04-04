@@ -52,6 +52,24 @@ public:
         return newMap;
     }
 
+    static double **newDMap(int** map, double fill)
+    {
+        int row = _msize(map) / 8;
+        int col = _msize(map[0])/sizeof(map[0][0]);
+        double **newMap = new double *[row];
+        for (int i = 0; i < row; i++)
+        {
+            newMap[i] = new double[col];
+        }
+
+        for(int i=0;i<row;i++){
+            for(int j=0; j<col;j++){
+                newMap[i][j] = fill;
+            }
+        }
+        return newMap;
+    }
+
     char **convert025();                                                 // 地图转换, 详情见实现
     void accessible(char **map, int **accessMap, int x, int y, int id); // 得到地图上的元素可访问性
     bool isAccessible(char **map, int x, int y, bool isLoad);           // map上x,y处在load or unload情况下是否可访问

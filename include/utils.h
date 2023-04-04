@@ -70,4 +70,13 @@ inline void getDeliverableType(std::vector<int> types, int wbType)
     }
 }
 
+inline Vec* rc2Coord(int r, int c, double step) {
+    double x = c * step;
+    double y = 50.0 - r * step;
+
+    Vec *result = new Vec(x, y);
+
+    return result;
+}
+
 #endif

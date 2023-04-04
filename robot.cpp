@@ -133,3 +133,13 @@ double Robot::getW() const
 {
     return w;
 }
+
+/* 获取工作台在dijkstra算法获得的图中的坐标 */
+int Robot::getMapRow()
+{
+    return ((int)((49.75 - pos.getY()) / 0.5)) * 2 + 1;
+}
+int Robot::getMapCol()
+{
+    return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
+}
