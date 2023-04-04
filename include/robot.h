@@ -49,6 +49,7 @@ public:
     void updatePid(int count);
     void control(MotionState *ms, Vec *pos, double &v, double &w);
     void addAction(Action *action);
+    void addPathPoint(std::shared_ptr<Vec> point);
 
     bool isLoaded();
     bool operator<(const Robot &o) const; // 重载为降序排列

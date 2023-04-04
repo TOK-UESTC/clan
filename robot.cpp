@@ -109,3 +109,7 @@ double Robot::getW() const
 {
     return w;
 }
+void Robot::addPathPoint(std::shared_ptr<Vec> point)
+{
+    actionModel.addPathPoint(point);
+}

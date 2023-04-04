@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <sstream>
 #include <queue>
+#include <memory>
+#include <list>
 
 #include "vec.h"
 #include "const.h"
@@ -31,7 +33,6 @@
 #include "robot.h"
 #include "taskChain.h"
 #include "context.h"
-
 
 #include "context.h"
 

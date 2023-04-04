@@ -8,11 +8,6 @@ void ActionModel::generateMoveActions()
     //     return;
     // }
 
-    // 测试使用，一系列路径点，起点为(12.25,30.25),终点为(12.25, 0.25)
-    static double path[10][2] = {{12.25, 30.25}, {12.25, 29.75}, {12.25, 29.25}, {12.25, 28.75}, {12.25, 28.25}, {12.25, 27.75}, {12.25, 27.25}, {12.25, 26.75}, {12.25, 26.25}, {12.25, 25.75}};
-    std::vector<double> x, y;
-    std::vector<double> t;
-
     // for (int i = 0; i < 10; i++)
     // {
     //     x.push_back(path[i][0]);
@@ -30,9 +25,25 @@ void ActionModel::generateMoveActions()
     //     double yi = eval_spline(t, y, a2, ti);
     // }
 
+    // 如果目标点为空，则返回
+    if (paths.empty())
+    {
+        return;
+    }
+
     // // 获取state
     MotionState *state = statePool->acquire();
     state->update(rb);
+
+    // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
+    if (computeDist(state->getPos(), paths.front().get()) < 0.4)
+    {
+        paths.pop_front();
+        if (paths.empty())
+            return;
+    }
+
+    Vec *nextPos = paths.front().get();
 
     // // TODO: 需要每帧都预测么？
     // Coordinate *next = rb.predict();
@@ -42,8 +53,8 @@ void ActionModel::generateMoveActions()
     // // Calculate the control factors for the robot's movement
     // double *controlFactor = rb.control(state, nextPos);
     double v = 0, w = 0;
-    Vec target(12.25, 10.25);
-    rb->control(state, &target, v, w);
+
+    rb->control(state, nextPos, v, w);
 
     // // Release the acquired state
     statePool->release(state);
