@@ -16,6 +16,11 @@ bool Robot::isLoaded()
     return productType != 0;
 }
 
+bool Robot::isFree()
+{
+    return task == nullptr;
+}
+
 void Robot::control(MotionState *ms, Vec *pos, double &v, double &w)
 {
     pidModel.control(ms, pos, v, w);
@@ -36,6 +41,11 @@ void Robot::update(int leftFrame)
     this->leftFrame = leftFrame;
     pos.set(x, y);
     velocity.set(vx, vy);
+}
+
+size_t Robot::hash() const
+{
+    return id;
 }
 
 // TODO
@@ -64,6 +74,11 @@ bool Robot::operator<(const Robot &o) const
     return this->getPriority() < o.getPriority();
 }
 
+bool Robot::operator==(const Robot &o) const
+{
+    return this->id == o.id;
+}
+
 Task *Robot::getTask()
 {
     return task;
@@ -90,6 +105,12 @@ void Robot::addAction(Action *action)
 {
     actions.push_back(action);
 }
+
+void Robot::bindChain(TaskChain *taskChain)
+{
+    this->taskChain->set(*taskChain);
+}
+
 void Robot::step()
 {
     // 清空动作列表
@@ -97,17 +118,30 @@ void Robot::step()
     // 更新action列表
     actionModel.generate();
 }
+
 std::vector<Action *> Robot::getActions() const
 {
     return actions;
 }
+
 double Robot::getHeading() const
 {
     return heading;
 }
+
 double Robot::getW() const
 {
     return w;
+}
+
+/* 获取工作台在dijkstra算法获得的图中的坐标 */
+int Robot::getMapRow()
+{
+    return ((int)((49.75 - pos.getY()) / 0.5)) * 2 + 1;
+}
+int Robot::getMapCol()
+{
+    return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
 }
 void Robot::addPathPoint(std::shared_ptr<Vec> point)
 {

@@ -13,6 +13,9 @@
 #include <queue>
 #include <memory>
 #include <list>
+#include <stack>
+#include <unordered_map>
+#include <iterator>
 
 #include "vec.h"
 #include "const.h"
@@ -27,13 +30,13 @@
 #include "motionState.h"
 #include "actionModel.h"
 #include "maps.h"
+#include "dijkstra.h"
 #include "pathPlan.h"
 #include "pidModel.h"
 #include "task.h"
 #include "robot.h"
 #include "taskChain.h"
-#include "context.h"
-
+#include "dispatcher.h"
 #include "context.h"
 
 #endif

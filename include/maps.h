@@ -39,15 +39,33 @@ public:
         return map05;
     }
 
-    int **newMap(char** map)
+    static int **newMap(char** map)
     {
-        int row = _msize(map)/8; 
+        int row = _msize(map) / 8;
         int col = _msize(map[0]);
         int **newMap = new int *[row];
         for (int i = 0; i < row; i++)
         {
             newMap[i] = new int[col];
             memset(newMap[i], 0, _msize(newMap[i]));
+        }
+        return newMap;
+    }
+
+    static double **newDMap(int** map, double fill)
+    {
+        int row = _msize(map) / 8;
+        int col = _msize(map[0])/sizeof(map[0][0]);
+        double **newMap = new double *[row];
+        for (int i = 0; i < row; i++)
+        {
+            newMap[i] = new double[col];
+        }
+
+        for(int i=0;i<row;i++){
+            for(int j=0; j<col;j++){
+                newMap[i][j] = fill;
+            }
         }
         return newMap;
     }

@@ -72,15 +72,13 @@ void ActionModel::generateShopActions()
         return;
     }
 
-    Workbench *wb;
-
     // 购买
     if (rb->getProductType() == 0)
     {
-        wb = rb->getTask()->getFrom();
-        Workbench *to = rb->getTask()->getTo();
+        Workbench wb = rb->getTask()->getFrom();
+        Workbench to = rb->getTask()->getTo();
         // 判断是否在目标工作台附近，并且当前已经调转，开始朝向下一个工作台
-        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
+        if (rb->getWorkbenchIdx() == wb.getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
         {
             // 购买行为
             rb->addAction(this->buyAction.update(ActionType::BUY));
@@ -89,8 +87,8 @@ void ActionModel::generateShopActions()
     else
     {
         // 去售出
-        wb = rb->getTask()->getTo();
-        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx())
+        Workbench wb = rb->getTask()->getTo();
+        if (rb->getWorkbenchIdx() == wb.getWorkbenchIdx())
         {
             // 售出行为
             rb->addAction(this->sellAction.update(ActionType::SELL));

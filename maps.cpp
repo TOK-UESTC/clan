@@ -107,7 +107,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthH[i][left] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthH[i][k] = width;
+                        mapRoadWidthH[i][k] = (k - left) < (right - k) ? (k - left) : (right - k);
                     }
                     mapRoadWidthH[i][right] = 0;
                 }
@@ -146,7 +146,7 @@ int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
                     mapRoadWidthV[left][j] = 0;
                     for (int k = left + 1; k < right; k++)
                     {
-                        mapRoadWidthV[k][j] = width;
+                        mapRoadWidthV[k][j] = (k - left) < (right - k) ? (k - left) : (right - k);
                     }
                     mapRoadWidthV[right][j] = 0;
                 }
@@ -253,7 +253,6 @@ void Maps::releaseMap(char **map)
 void Maps::releaseMap(int **map)
 {
     int row = _msize(map) / 8;
-    int col = _msize(map[0]);
     for (int i = 0; i < row; i++)
     {
         delete[] map[i];
@@ -288,16 +287,6 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     qx.push(r);
     qy.push(c);
 
-    int dir[][2] = {
-        {-1, -1},
-        {-1, 0},
-        {-1, 1},
-        {0, -1},
-        {0, 1},
-        {1, -1},
-        {1, 0},
-        {1, 1}};
-
     visit[r][c] = true;
     while (!qx.empty())
     {
@@ -308,7 +297,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         qy.pop();
         if (isAccessible(map, cx, cy, true))
         {
-            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHEFT_BIT + id));
+            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHIFT_BIT + id));
         }
         if (isAccessible(map, cx, cy, false))
         {
@@ -318,8 +307,8 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         // 将下一次节点加入队列
         for (int i = 0; i < 8; i++)
         {
-            int nx = dir[i][0] + cx;
-            int ny = dir[i][1] + cy;
+            int nx = unloadDir[i][0] + cx;
+            int ny = unloadDir[i][1] + cy;
             if (map[nx][ny] == '#' || visit[nx][ny])
             {
                 continue;
@@ -329,13 +318,13 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
             qy.push(ny);
         }
     }
+
     // 释放bool数组
     for (int i = 0; i < row; i++)
     {
         delete[] visit[i];
     }
     delete[] visit;
-    
 }
 
 /*
@@ -358,23 +347,14 @@ bool Maps::isAccessible(char **map, int x, int y, bool isLoad)
     // 下面分空载和负载讨论
     if (isLoad)
     {
-        int dir[][2] = {
-            {-1, -1},
-            {-2, 0},
-            {-1, 1},
-            {0, -2},
-            {0, 2},
-            {1, -1},
-            {2, 0},
-            {1, 1}};
         // 负载情况下
         if (map[x][y] == '.')
         {
             // 如果该点是空地, 那么2格内不包含障碍
             for (int i = 0; i < 8; i++)
             {
-                int tx = dir[i][0] + x;
-                int ty = dir[i][1] + y;
+                int tx = loadedDir[i][0] + x;
+                int ty = loadedDir[i][1] + y;
                 // 如果靠近边缘
                 if (tx <= 0 || tx >= maxX || ty <= 0 || ty >= maxY)
                 {
@@ -402,22 +382,13 @@ bool Maps::isAccessible(char **map, int x, int y, bool isLoad)
     }
     else
     {
-        int dir[][2] = {
-            {-1, -1},
-            {-1, 0},
-            {-1, 1},
-            {0, -1},
-            {0, 1},
-            {1, -1},
-            {1, 0},
-            {1, 1}};
         // 空载情况下
         if (map[x][y] == '.')
         {
             for (int i = 0; i < 8; i++)
             {
-                int tx = dir[i][0] + x;
-                int ty = dir[i][1] + y;
+                int tx = unloadDir[i][0] + x;
+                int ty = unloadDir[i][1] + y;
                 if (map[tx][ty] == '#')
                 {
                     return false;

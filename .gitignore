@@ -1,6 +1,7 @@
 *.txt
 !CMakeLists.txt
 *.log*
+.vscode
 build
 CMakeFiles
 replay

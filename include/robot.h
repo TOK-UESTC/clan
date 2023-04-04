@@ -25,6 +25,7 @@ private:
     Vec velocity;                  // 线速度， 二维向量描述, m/s
     ActionModel actionModel;       // 机器人动作模型
     Task *task;                    // 机器人任务
+    TaskChain* taskChain;
     std::vector<Action *> actions; // 机器人动作序列
     PIDModel pidModel;             // 机器人PID模型
 
@@ -42,6 +43,8 @@ public:
     std::vector<Action *> getActions() const;
     double getHeading() const;
     double getW() const;
+    int getMapRow();
+    int getMapCol();
 
     void step();
     void checkDeal();
@@ -49,9 +52,13 @@ public:
     void updatePid(int count);
     void control(MotionState *ms, Vec *pos, double &v, double &w);
     void addAction(Action *action);
+    void bindChain(TaskChain* taskChain);
     void addPathPoint(std::shared_ptr<Vec> point);
 
     bool isLoaded();
+    bool isFree();
     bool operator<(const Robot &o) const; // 重载为降序排列
+    bool operator==(const Robot &o) const;
+    size_t hash() const;
 };
 #endif
