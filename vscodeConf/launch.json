@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "name": "(lldb) attatch",
+            "type": "lldb",
+            "request": "attach",
+            "program": "${workspaceFolder}/build/main"
+        }
+
+    ],
+    "version": "2.0.0"
+}
