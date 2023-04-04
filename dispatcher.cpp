@@ -183,6 +183,8 @@ void Dispatcher::generateTaskChains()
         // TODO:这里的map通过dijstra算法获得,用来获取到工作台的最短路径
         dijkstra->search(rb->getMapRow(), rb->getMapCol(), false, rb->getId());
         double **mapFromRb = dijkstra->getDistMap();
+
+        // Maps::writeMaptoFile("./log/map.txt", mapFromRb);
         // 遍历task
         for (auto taskListPair : taskTypeMap)
         {

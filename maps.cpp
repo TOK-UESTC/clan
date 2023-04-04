@@ -212,6 +212,31 @@ void Maps::writeMaptoFile(const char *file, char **map)
     outfile.close();
 }
 
+void Maps::writeMaptoFile(const char *file, double **map)
+{
+    int row = _msize(map) / 8;
+    int col = _msize(map[0]) / (sizeof(map[0][0]));
+
+    std::ofstream outfile;
+    // 打开文件
+    outfile.open(file);
+    // 写入文件
+    for (int i = 0; i < row; i++)
+    {
+        // 写入前刷新缓冲区
+        outfile.flush();
+        for (int j = 0; j < col; j++)
+        {
+            outfile << std::setw(10) << map[i][j];
+        }
+        outfile << std::endl;
+        // 写入后刷新缓冲区
+        outfile.flush();
+    }
+    // 关闭文件
+    outfile.close();
+}
+
 void Maps::writeMaptoFile(const char *file, int **map)
 {
     int row = _msize(map) / 8;

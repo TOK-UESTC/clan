@@ -2,12 +2,6 @@
 
 bool Dijkstra::checkAccess(int r, int c, bool loaded, int id)
 {
-    // 检查位置是否合法
-    if (r < 0 || r >= row || c < 0 || c >= col)
-    {
-        return false;
-    }
-
     // 检查位置是否可通过
     int status = accessMap[r][c];
     int shift = id;
@@ -25,20 +19,22 @@ double **Dijkstra::getDistMap()
     return dist;
 }
 
+bool Dijkstra::validCoord(int r, int c)
+{
+    // 检查位置是否合法
+    if (r < 0 || r >= row || c < 0 || c >= col)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 // 起点
 void Dijkstra::search(int r, int c, bool loaded, int id)
 {
     double fill = 1000000.;
     dist = Maps::newDMap(accessMap, fill);
-    // visited = Maps::newBMap(accessMap);
-    bool visited[201][201];
-    for (int i = 0; i < 201; i++)
-    {
-        for (int j = 0; j < 201; j++)
-        {
-            visited[i][j] = false;
-        }
-    }
     dist[r][c] = 0; // 起点标志
 
     std::queue<int> qx; // 存放遍历点x坐标
@@ -47,55 +43,46 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
     // 将机器人位置加入队列
     qx.push(r);
     qy.push(c);
-    visited[r][c] = true;
 
     while (!qx.empty())
     {
-        // 获取当前队列大小
-        int size = qx.size();
-        for (int i = 0; i < size; ++i)
+        int currR = qx.front();
+        int currC = qy.front();
+        qx.pop();
+        qy.pop();
+
+        // 得到currR, currC周围最短距离
+        double cost = 0.;
+
+        // 遍历所有方位
+        for (int j = 0; j < 8; j++)
         {
-            int currR = qx.front();
-            int currC = qy.front();
-            qx.pop();
-            qy.pop();
+            int nr = unloadDir[j][0] + currR;
+            int nc = unloadDir[j][1] + currC;
 
-            // 得到currR, currC周围最短距离
-            double increDist = 0.;
-            double minDist = dist[currR][currC];
-
-            // 遍历所有方位
-            for (int j = 0; j < 8; j++)
+            // 检查地址合法性
+            if (!validCoord(nr, nc) || !checkAccess(nr, nc, loaded, id))
             {
-                int nr = unloadDir[j][0] + currR;
-                int nc = unloadDir[j][1] + currC;
-
-                // 是否遍历过，是否是有效坐标，根据是否Load进行判断
-                // if (visited[cess(nr, nc, loaded, id) && dist[nr][nc] > fill - 1)
-                // if (checkAccess(nr, nc, loaded, id) !visit[nr][nc]- 1)
-                if (visited[nr][nc] == false && checkAccess(nr, nc, loaded, id))
-                {
-                    qx.push(nr);
-                    qy.push(nc);
-                    visited[nr][nc] = true;
-                }
-
-                if (j < 4)
-                {
-                    increDist = 1.0;
-                }
-                else
-                {
-                    increDist = 1.4142135623730951;
-                }
-
-                // 找到最小距离
-                if (minDist > dist[nr][nc] + increDist)
-                {
-                    minDist = dist[nr][nc] + increDist;
-                }
+                continue;
             }
-            dist[currR][currC] = minDist;
+
+            if (j < 4)
+            {
+                cost = 1.0;
+            }
+            else
+            {
+                cost = 1.4142135623730951;
+            }
+
+            // 找到最小距离
+            double newCost = dist[currR][currC] + cost;
+            if (newCost < dist[nr][nc])
+            {
+                dist[nr][nc] = newCost;
+                qx.push(nr);
+                qy.push(nc);
+            }
         }
     }
 }
@@ -122,6 +109,11 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
         {
             int nr = unloadDir[i][0] + cr;
             int nc = unloadDir[i][1] + cc;
+
+            if (!validCoord(nr, nc))
+            {
+                continue;
+            }
 
             if (dist[nr][nc] < minCost)
             {

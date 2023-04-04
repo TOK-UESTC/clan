@@ -52,30 +52,11 @@ public:
         return newMap;
     }
 
-    static bool **newBMap(int **map)
-    {
-        int row = _msize(map) / 8;
-        int col = _msize(map[0]) / sizeof(map[0][0]);
-        bool **newMap = new bool *[row];
-        for (int i = 0; i < row; i++)
-        {
-            newMap[i] = new bool[col];
-        }
-
-        for (int i = 0; i < row; i++)
-        {
-            for (int j = 0; j < col; j++)
-            {
-                newMap[i][j] = false;
-            }
-        }
-        return newMap;
-    }
-
     static double **newDMap(int **map, double fill)
     {
         int row = _msize(map) / 8;
         int col = _msize(map[0]) / sizeof(map[0][0]);
+
         double **newMap = new double *[row];
         for (int i = 0; i < row; i++)
         {
@@ -99,6 +80,8 @@ public:
     int **mapRoadWidth(char **map);                                     // 得到地图元素的
     void writeMaptoFile(const char *file, char **map);                  // 将map数据写入file文件
     void writeMaptoFile(const char *file, int **map);
+
+    static void writeMaptoFile(const char *file, double **map);
 
     void releaseMap(char **map); // 释放地图
     void releaseMap(int **map);

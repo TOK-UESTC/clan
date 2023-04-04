@@ -139,6 +139,7 @@ int Robot::getMapRow()
 {
     return ((int)((49.75 - pos.getY()) / 0.5)) * 2 + 1;
 }
+
 int Robot::getMapCol()
 {
     return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
