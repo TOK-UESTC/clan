@@ -6,6 +6,14 @@ Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *>
     this->tempQueue = new std::priority_queue<TaskChain *>();
     this->dijkstra = new Dijkstra(accessMap);
     this->accessMap = accessMap;
+    for (auto rb : robotList)
+    {
+        if (taskChainQueueMap.find(rb) == taskChainQueueMap.end())
+        {
+            taskChainQueueMap[rb] = new std::priority_queue<TaskChain *>();
+        }
+    }
+
     init();
 }
 
@@ -13,6 +21,11 @@ Dispatcher::~Dispatcher()
 {
     // 释放map
     for (auto iter = taskTypeMap.begin(); iter != taskTypeMap.end(); iter++)
+    {
+        delete iter->second;
+    }
+
+    for (auto iter = taskChainQueueMap.begin(); iter != taskChainQueueMap.end(); iter++)
     {
         delete iter->second;
     }
@@ -54,10 +67,10 @@ void Dispatcher::init()
                 continue;
             }
             // 生成任务
-            for (Workbench *target : *(workbenchTypeMap.find(type)->second))
+            for (Workbench *target : *((*workbenchTypeMap.find(type)).second))
             {
                 // 如果目标点负载不可访问，那么不生成任务
-                if ((accessMap[target->getMapRow()][target->getMapCol()] & 0b11110000))
+                if ((accessMap[target->getMapRow()][target->getMapCol()] & 0b11110000) == 0)
                 {
                     continue;
                 }
@@ -93,7 +106,10 @@ void Dispatcher::init()
             }
         }
         dijkstra->search(row, col, true, id);
+
         double **dijkstraMap = dijkstra->getDistMap();
+        Maps::writeMaptoFile("./log/temp.txt", dijkstraMap);
+
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
         {
             Workbench to = task->getTo();
@@ -101,7 +117,6 @@ void Dispatcher::init()
             // 设置最短路径
             task->setRoad(dijkstra->getKnee(to.getMapRow(), to.getMapCol()));
         }
-
         releaseMap(dijkstraMap);
     }
 
@@ -136,7 +151,7 @@ void Dispatcher::clearChainMap(Robot *rb)
     }
     else
     {
-        std::priority_queue<TaskChain *> *queue = taskChainQueueMap.find(rb)->second;
+        std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
         while (!queue->empty())
         {
             chainPool->release(queue->top());
@@ -164,7 +179,7 @@ bool Dispatcher::isQueueMapEmpty(Robot *rb)
         return true;
     }
 
-    std::priority_queue<TaskChain *> *queue = taskChainQueueMap.find(rb)->second;
+    std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
     return queue->size() == 0;
 }
 
@@ -181,8 +196,7 @@ void Dispatcher::generateTaskChains()
     for (Robot *rb : freeRobots)
     {
         // TODO:这里的map通过dijstra算法获得,用来获取到工作台的最短路径
-        dijkstra->search(rb->getMapRow(), rb->getMapCol(), false, rb->getId());
-        double **mapFromRb = dijkstra->getDistMap();
+        rb->getDij()->search(rb->getMapRow(), rb->getMapCol(), false, rb->getId());
 
         // Maps::writeMaptoFile("./log/map.txt", mapFromRb);
         // 遍历task
@@ -223,7 +237,7 @@ void Dispatcher::generateTaskChains()
                     continue;
                 }
 
-                double distance = mapFromRb[from.getMapRow()][from.getMapCol()];
+                double distance = rb->getDij()->getDistMap()[from.getMapRow()][from.getMapCol()];
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃
@@ -237,10 +251,10 @@ void Dispatcher::generateTaskChains()
                 taskChain->addTask(task);
 
                 // 保存任务链
+                // 检测taskChainQueueMap[rb]是否存在
                 taskChainQueueMap[rb]->push(taskChain);
             }
         }
-        releaseMap(mapFromRb);
     }
 
     if (isQueueMapEmpty(nullptr))
@@ -281,7 +295,8 @@ void Dispatcher::updateTaskChain()
         }
 
         // 将旧的queue内容拷贝一份，避免在遍历的过程中热更新产生错误
-        std::priority_queue<TaskChain *> *queue = taskChainQueueMap.find(rb)->second;
+        // auto temp = *taskChainQueueMap.find(rb);
+        std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
         copyQueue(queue, tempQueue);
 
         // 是否有更改
@@ -292,6 +307,8 @@ void Dispatcher::updateTaskChain()
 
             Task *lastTask = taskChain->getTask(-1);
 
+            assert(lastTask == nullptr);
+            assert(lastTask->getPostTaskList() == nullptr);
             if (lastTask->getPostTaskList()->size() == 0)
             {
                 queue->push(taskChain);

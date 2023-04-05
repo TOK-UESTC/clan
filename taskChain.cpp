@@ -56,7 +56,6 @@ Task *TaskChain::getTask(int index)
     {
         return nullptr;
     }
-
     if (index == -1)
     {
         return taskChain.at(taskChain.size() - 1);
@@ -98,4 +97,9 @@ double TaskChain::getTotalFrame()
 bool TaskChain::operator<(TaskChain *o)
 {
     return getProfit() < o->getProfit();
+}
+
+std::vector<Task *> TaskChain::getTaskChain()
+{
+    return taskChain;
 }
