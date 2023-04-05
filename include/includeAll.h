@@ -15,8 +15,10 @@
 #include <list>
 #include <stack>
 #include <unordered_map>
+#include <unordered_set>
 #include <iterator>
 #include <chrono>
+#include <cassert>
 
 #include "vec.h"
 #include "const.h"

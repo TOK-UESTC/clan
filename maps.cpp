@@ -299,19 +299,19 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     int row = _msize(accessMap) / 8;
     int col = _msize(accessMap[0]) / (sizeof(accessMap[0][0]));
     bool **visit = new bool *[row];
+    std::queue<int> qx; // 存放遍历点x坐标
+    std::queue<int> qy; // 存放遍历点y坐标
+    /* 下面空载搜索 */
     for (int i = 0; i < row; i++)
     {
         visit[i] = new bool[col];
         memset(visit[i], false, _msize(visit[i]));
     }
-
-    std::queue<int> qx; // 存放遍历点x坐标
-    std::queue<int> qy; // 存放遍历点y坐标
-
     // 将机器人位置加入队列
     qx.push(r);
     qy.push(c);
-
+    // 初始化起点可访问性
+    accessMap[r][c] = accessMap[r][c] | (1 << id);
     visit[r][c] = true;
     while (!qx.empty())
     {
@@ -320,11 +320,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         int cy = qy.front();
         qx.pop();
         qy.pop();
-        if (isAccessible(map, cx, cy, true))
-        {
-            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHIFT_BIT + id));
-        }
-        if (isAccessible(map, cx, cy, false))
+        if (isAccessible(map, accessMap, cx, cy, false))
         {
             accessMap[cx][cy] = accessMap[cx][cy] | (1 << id);
         }
@@ -344,12 +340,145 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         }
     }
 
+    /* 下面负载搜索 */
+    for (int i = 0; i < row; i++)
+    {
+        visit[i] = new bool[col];
+        memset(visit[i], false, _msize(visit[i]));
+    }
+    // 将机器人位置加入队列
+    qx.push(r);
+    qy.push(c);
+    // 初始化起点可访问性
+    accessMap[r][c] = accessMap[r][c] | (1 << (LOAD_SHIFT_BIT + id));
+    visit[r][c] = true;
+    while (!qx.empty())
+    {
+        // 当前的x,y坐标
+        int cx = qx.front();
+        int cy = qy.front();
+        qx.pop();
+        qy.pop();
+        if (isAccessible(map, accessMap, cx, cy, true))
+        {
+            accessMap[cx][cy] = accessMap[cx][cy] | (1 << (LOAD_SHIFT_BIT + id));
+        }
+
+        // 将下一次节点加入队列
+        for (int i = 0; i < 8; i++)
+        {
+            int nx = unloadDir[i][0] + cx;
+            int ny = unloadDir[i][1] + cy;
+            if (map[nx][ny] == '#' || visit[nx][ny] || !isAccessible(map, accessMap, cx, cy, true))
+            {
+                continue;
+            }
+            visit[nx][ny] = true;
+            qx.push(nx);
+            qy.push(ny);
+        }
+    }
+
     // 释放bool数组
     for (int i = 0; i < row; i++)
     {
         delete[] visit[i];
     }
     delete[] visit;
+}
+// 从当前的点开始，检查是否出现甬道情况
+void Maps::isWbAccessible(int **accessMap, int r, int c)
+{
+    // 从当前坐标出发，使用BFS检测最近的负载可访问点
+    // 如果说最近的负载可访问点距离当前点的距离大于5，那么当前点就是甬道
+    int minR = r;
+    int minC = c;
+    // bfs搜索,
+    std::queue<int> qx_init; // 存放遍历点坐标
+    std::queue<int> qy_init; // 存放遍历点坐标
+    // 将机器人位置加入队列
+    qx_init.push(r);
+    qy_init.push(c);
+
+    // 标记已经访问过的点,使用数组
+    std::unordered_map<int, std::unordered_set<int>> visited;
+
+    // TDOD:
+    int id = 0;
+
+    // 标记起点
+    visited[r].insert(c);
+    int len = 0;
+    // 开始搜索
+    while (!qx_init.empty() && len < 5)
+    {
+        int size = qx_init.size();
+
+        for (int i = 0; i < size; i++)
+        {
+            // 取出队首元素
+            int curr_x = qx_init.front();
+            int curr_y = qy_init.front();
+            qx_init.pop();
+            qy_init.pop();
+
+            // 检查是否是目标点
+            if ((accessMap[curr_x][curr_y] & (1 << (LOAD_SHIFT_BIT + id))) != 0)
+            {
+                minR = curr_x;
+                minC = curr_y;
+                break;
+            }
+
+            // 遍历所有方位
+            for (int j = 0; j < 8; j++)
+            {
+                int nr = unloadDir[j][0] + curr_x;
+                int nc = unloadDir[j][1] + curr_y;
+
+                // 检查地址合法性,同时检查是否已经访问过
+                if (!validCoord(nr, nc) && visited[nr].find(nc) != visited[nr].end())
+                {
+                    continue;
+                }
+
+                // 检查非负载情况下是否可以经过
+                if (accessMap[nr][nc] & 0b1111 == 0)
+                {
+                    continue;
+                }
+
+                // 将当前点加入队列
+                qx_init.push(nr);
+                qy_init.push(nc);
+
+                // 标记已经访问过的点
+                visited[nr].insert(nc);
+            }
+        }
+        ++len;
+    }
+    if (len >= 5)
+    {
+        // 修改访问过的点的可访问性为不可访问
+        for (auto it = visited.begin(); it != visited.end(); it++)
+        {
+            for (auto it2 = it->second.begin(); it2 != it->second.end(); it2++)
+            {
+                accessMap[it->first][*it2] = 0;
+            }
+        }
+    }
+}
+bool Maps::validCoord(int r, int c)
+{
+    // 检查位置是否合法
+    if (r < 0 || r >= MAP025_ROW || c < 0 || c >= MAP025_COL)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 /*
@@ -360,7 +489,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
  * @param isLoad: 负载或空载条件, true: 表示负载
  */
 
-bool Maps::isAccessible(char **map, int x, int y, bool isLoad)
+bool Maps::isAccessible(char **map, int **accessMap, int x, int y, bool isLoad)
 {
     int maxX = _msize(map) / 8 - 1;
     int maxY = _msize(map[0]) - 1;
@@ -403,6 +532,25 @@ bool Maps::isAccessible(char **map, int x, int y, bool isLoad)
             {
                 return false;
             }
+        }
+        // 如果周围没有负载可访问点，那么该点不可访问
+        bool noAccess = true;
+        if ((accessMap[x][y] & 0b11110000) != 0)
+        {
+            noAccess = false;
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            int tx = unloadDir[i][0] + x;
+            int ty = unloadDir[i][1] + y;
+            if ((accessMap[tx][ty] & 0b11110000) != 0)
+            {
+                noAccess = false;
+            }
+        }
+        if (noAccess)
+        {
+            return false;
         }
     }
     else
