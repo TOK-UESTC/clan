@@ -117,7 +117,16 @@ void Context::init()
         int row = ((int)((49.75 - rb->getPos().getY()) / 0.5)) * 2 + 1;
         int col = ((int)((rb->getPos().getX() - 0.25) / 0.5)) * 2 + 1;
         maps.accessible(map025, accessMap, row, col, rb->getId());
+        // 绑定dijkstra, 机器人维护
+        rb->setDij(new Dijkstra(accessMap));
     }
+
+    // 对每个工作台检查可达性
+    for (Workbench *wb : workbenchList)
+    {
+        maps.isWbAccessible(accessMap, wb->getMapRow(), wb->getMapCol());
+    }
+
     // 获得路宽地图
     mapRoadWidth = maps.mapRoadWidth(map025);
 
@@ -191,7 +200,7 @@ void Context::update()
 void Context::step(bool init)
 {
     printf("%d\n", frameId);
-    if (frameId == 83)
+    if (frameId == 50)
     {
         int i = 0;
     }

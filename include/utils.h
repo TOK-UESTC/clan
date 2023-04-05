@@ -26,7 +26,7 @@ inline double getAngleRanged(double angle)
     return angle;
 }
 
-inline void getDeliverableType(std::vector<int> types, int wbType)
+inline void getDeliverableType(std::vector<int>& types, int wbType)
 {
     switch (wbType)
     {

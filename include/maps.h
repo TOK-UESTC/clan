@@ -14,6 +14,7 @@ class Maps
 
 private:
     char **map05; // 最原始的地图, 每个elements代表0.5x0.5
+    bool validCoord(int r, int c);
 
 public:
     Maps()
@@ -73,12 +74,13 @@ public:
         return newMap;
     }
 
-    char **convert025();                                                // 地图转换, 详情见实现
-    void accessible(char **map, int **accessMap, int x, int y, int id); // 得到地图上的元素可访问性
-    bool isAccessible(char **map, int x, int y, bool isLoad);           // map上x,y处在load or unload情况下是否可访问
-    int **mapRoadWidthHV(char **map, bool isHorizon);                   // 得到地图元素的水平或垂直路宽
-    int **mapRoadWidth(char **map);                                     // 得到地图元素的
-    void writeMaptoFile(const char *file, char **map);                  // 将map数据写入file文件
+    char **convert025();                                                       // 地图转换, 详情见实现
+    void accessible(char **map, int **accessMap, int x, int y, int id);        // 得到地图上的元素可访问性
+    bool isAccessible(char **map, int **accessMap, int x, int y, bool isLoad); // map上x,y处在load or unload情况下是否可访问
+    void isWbAccessible(int **accessMap, int r, int c);                        // 得到地图上的元素可访问性
+    int **mapRoadWidthHV(char **map, bool isHorizon);                          // 得到地图元素的水平或垂直路宽
+    int **mapRoadWidth(char **map);                                            // 得到地图元素的
+    void writeMaptoFile(const char *file, char **map);                         // 将map数据写入file文件
     void writeMaptoFile(const char *file, int **map);
 
     static void writeMaptoFile(const char *file, double **map);

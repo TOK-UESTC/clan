@@ -5,6 +5,12 @@ Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this),
     productType = 0;
 }
 
+
+Robot::~Robot()
+{
+    // 释放dijkstra
+    delete dijkstra;
+}
 // 根据地图更改PID？？？
 void Robot::updatePid(int count)
 {
@@ -109,6 +115,24 @@ void Robot::addAction(Action *action)
 void Robot::bindChain(TaskChain *taskChain)
 {
     this->taskChain->set(*taskChain);
+    // 构建路径
+    // rb->from 路径
+    Workbench from = taskChain->getTask(0)->getFrom();
+    std::list<Vec *> * result = dijkstra->getKnee(from.getMapRow(), from.getMapCol());
+    for(auto p:*result){
+        addPathPoint(new Vec(p->getX(), p->getY()));
+        delete p;
+    }
+    delete result;
+    // 加入任务路径
+    for(auto t:taskChain->getTaskChain())
+    {
+        for(auto p:*(t->getRoad()))
+        {
+            addPathPoint(new Vec(p->getX(), p->getY()));
+        }
+    }
+
 }
 
 void Robot::step()
@@ -144,7 +168,17 @@ int Robot::getMapCol()
 {
     return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
 }
-void Robot::addPathPoint(std::shared_ptr<Vec> point)
+void Robot::addPathPoint(Vec* point)
 {
     actionModel.addPathPoint(point);
+}
+
+void Robot::setDij(Dijkstra *dijkstra)
+{
+    this->dijkstra = dijkstra;
+}
+
+Dijkstra *Robot::getDij()
+{
+    return dijkstra;
 }

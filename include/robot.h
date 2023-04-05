@@ -22,14 +22,16 @@ private:
     int leftFrame;                // 剩余帧数
     Vec pos;                      // 机器人坐标位置
     Vec velocity;                 // 线速度， 二维向量描述, m/s
+    Dijkstra *dijkstra;            // 用于每次分配任务时计算路径
     ActionModel actionModel;      // 机器人动作模型
     Task *task = nullptr;         // 机器人任务
-    TaskChain *taskChain;
+    TaskChain *taskChain;           
     std::vector<Action *> actions; // 机器人动作序列
     PIDModel pidModel;             // 机器人PID模型
 
 public:
     Robot(int id, double x, double y);
+    ~Robot();
 
     int getId() const;
     double getPriority() const;
@@ -44,6 +46,7 @@ public:
     double getW() const;
     int getMapRow();
     int getMapCol();
+    Dijkstra *getDij();
 
     void step();
     void checkDeal();
@@ -52,7 +55,8 @@ public:
     void control(MotionState *ms, Vec *pos, double &v, double &w);
     void addAction(Action *action);
     void bindChain(TaskChain *taskChain);
-    void addPathPoint(std::shared_ptr<Vec> point);
+    void addPathPoint(Vec* point);
+    void setDij(Dijkstra *dijkstra);
 
     bool isLoaded();
     bool isFree();

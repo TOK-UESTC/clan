@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # build project
-rm -r build
 cmake . -Bbuild -DCMAKE_BUILD_TYPE=Debug -G "MinGW Makefiles" -DCMAKE_CXX_FLAGS="-DW_DEBUG -g -O0"
 # make -DP_DEBUG -C build -j
 make -C build -j
