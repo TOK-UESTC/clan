@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # build project
-rm -r build
-cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
+cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DCMAKE_CXX_FLAGS=""
 make -C build -j
 
 # 判断系统类型
