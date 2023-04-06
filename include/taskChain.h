@@ -27,12 +27,12 @@ public:
     bool isOccupied() const;      // 判断该链条上是否有工作台被占用
     void addTask(Task *task);     // 为任务链添加任务，同时更新任务链完成所需要的总帧数
     void removeTask(int index);   // 删除taskChain[index]
+    Task *getNextTask();          // 得到下一个任务
     double getProfit();           // 任务链的单位时间收益
-    Task* getTask(int index);     // 根据下标获取任务
-    std::vector<Task *> getTaskChain(); 
+    Task *getTask(int index);     // 根据下标获取任务
+    std::vector<Task *> getTaskChain();
 
-
-    double getTotalFrame();       // 完成任务预估需要的帧数
+    double getTotalFrame(); // 完成任务预估需要的帧数
 
     bool operator<(TaskChain *o); // 重载为降序排列
 };

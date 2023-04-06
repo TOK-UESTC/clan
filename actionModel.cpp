@@ -36,18 +36,25 @@ void ActionModel::generateMoveActions()
     state->update(rb);
 
     // 获取下一个目标点
-    Task *task = rb->getTask();
-    std::list<Vec *> *road = task->getRoad();
-    if (road->empty())
-        return;
-    Vec *nextPos = road->front();
-    // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    if (computeDist(state->getPos(), nextPos) < 0.4)
+    // Task *task = rb->getTask();
+    // std::list<Vec *> *road = task->getRoad();
+    // std::list<Vec *> road = paths;
+    if (paths.empty())
     {
-        road->pop_front();
-        if (road->empty())
+        return;
+    }
+    Vec *nextPos = paths.front();
+    Workbench* wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
+    // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
+    while (computeDist(state->getPos(), nextPos) < 0.4 && computeDist(wb->getPos(), nextPos) > 0.1)
+    {
+        paths.pop_front();
+        delete nextPos;
+        if (paths.empty())
+        {
             return;
-        nextPos = road->front();
+        }
+        nextPos = paths.front();
     }
 
     // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
@@ -89,10 +96,10 @@ void ActionModel::generateShopActions()
     // 购买
     if (rb->getProductType() == 0)
     {
-        Workbench wb = rb->getTask()->getFrom();
-        Workbench to = rb->getTask()->getTo();
+        Workbench* wb = rb->getTask()->getFrom();
+        Workbench* to = rb->getTask()->getTo();
         // 判断是否在目标工作台附近，并且当前已经调转，开始朝向下一个工作台
-        if (rb->getWorkbenchIdx() == wb.getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
+        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
         {
             // 购买行为
             rb->addAction(this->buyAction.update(ActionType::BUY));
@@ -101,13 +108,20 @@ void ActionModel::generateShopActions()
     else
     {
         // 去售出
-        Workbench wb = rb->getTask()->getTo();
-        if (rb->getWorkbenchIdx() == wb.getWorkbenchIdx())
+        Workbench* wb = rb->getTask()->getTo();
+        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx())
         {
             // 售出行为
             rb->addAction(this->sellAction.update(ActionType::SELL));
         }
     }
+}
+
+void ActionModel::popPath()
+{
+    Vec *nextPos = paths.front();
+    paths.pop_front();
+    delete nextPos;
 }
 // 三次样条插值，x为自变量，y为因变量，a为三次样条的系数，a[0]为常数项，a[1]为一次项，a[2]为二次项，a[3]为三次项
 void ActionModel::spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a)

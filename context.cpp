@@ -192,6 +192,7 @@ void Context::update()
     for (Robot *rb : robotList)
     {
         rb->update(leftFrame);
+        rb->checkDeal();
     }
 
     readLine();
@@ -200,7 +201,7 @@ void Context::update()
 void Context::step(bool init)
 {
     printf("%d\n", frameId);
-    if (frameId == 50)
+    if (frameId == 950)
     {
         int i = 0;
     }

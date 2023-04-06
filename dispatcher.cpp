@@ -74,7 +74,7 @@ void Dispatcher::init()
                 {
                     continue;
                 }
-                workbenchIdTaskMap[wb->getId()]->push_back(new Task(*wb, *target));
+                workbenchIdTaskMap[wb->getId()]->push_back(new Task(wb, target));
             }
         }
 
@@ -112,10 +112,10 @@ void Dispatcher::init()
 
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
         {
-            Workbench to = task->getTo();
-            task->setDist(dijkstraMap[to.getMapRow()][to.getMapCol()]);
+            Workbench *to = task->getTo();
+            task->setDist(dijkstraMap[to->getMapRow()][to->getMapCol()]);
             // 设置最短路径
-            task->setRoad(dijkstra->getKnee(to.getMapRow(), to.getMapCol()));
+            task->setRoad(dijkstra->getKnee(to->getMapRow(), to->getMapCol()));
         }
         releaseMap(dijkstraMap);
     }
@@ -125,7 +125,7 @@ void Dispatcher::init()
     {
         for (auto task : *(tasks.second))
         {
-            task->setpostTaskList(workbenchIdTaskMap[task->getTo().getId()]);
+            task->setpostTaskList(workbenchIdTaskMap[task->getTo()->getId()]);
         }
     }
 }
@@ -204,8 +204,8 @@ void Dispatcher::generateTaskChains()
         {
             for (Task *task : *(taskListPair.second))
             {
-                Workbench from = task->getFrom();
-                Workbench to = task->getTo();
+                Workbench *from = task->getFrom();
+                Workbench *to = task->getTo();
                 /*
                  * 环境应满足：
                  * 1. from工作台必须已经投入生产: from.isFree() true 表示未生产
@@ -220,28 +220,28 @@ void Dispatcher::generateTaskChains()
                  * 2. to工作台负载能访问 accessTo&(1<<(rb->getId()+LOAD_SHIFT_BIT))==0 负载不能访问
                  */
                 // 环境判断
-                if (from.isFree() || to.hasMaterial(from.getType()))
+                if (from->isFree() || to->hasMaterial(from->getType()))
                 {
                     continue;
                 }
                 // 规划判断
-                if (from.getPlanProductStatus() == 1 || to.hasPlanMaterial(from.getType()))
+                if (from->getPlanProductStatus() == 1 || to->hasPlanMaterial(from->getType()))
                 {
                     continue;
                 }
                 // 可访问性判断
-                int accessFrom = accessMap[from.getMapRow()][from.getMapCol()];
-                int accessTo = accessMap[to.getMapRow()][to.getMapCol()];
+                int accessFrom = accessMap[from->getMapRow()][from->getMapCol()];
+                int accessTo = accessMap[to->getMapRow()][to->getMapCol()];
                 if (accessFrom & (1 << rb->getId()) == 0 || accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
                 {
                     continue;
                 }
 
-                double distance = rb->getDij()->getDistMap()[from.getMapRow()][from.getMapCol()];
+                double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()];
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃
-                if (receiveTaskFrame < from.getRest())
+                if (receiveTaskFrame < from->getRest())
                 {
                     continue;
                 }
@@ -306,10 +306,7 @@ void Dispatcher::updateTaskChain()
             tempQueue->pop();
 
             Task *lastTask = taskChain->getTask(-1);
-
-            assert(lastTask == nullptr);
-            assert(lastTask->getPostTaskList() == nullptr);
-            if (lastTask->getPostTaskList()->size() == 0)
+            if (lastTask->getPostTaskList() == nullptr)
             {
                 queue->push(taskChain);
                 continue;
@@ -317,7 +314,7 @@ void Dispatcher::updateTaskChain()
             bool addPost = false;
             for (Task *postTask : *(lastTask->getPostTaskList()))
             {
-                Workbench postFrom = postTask->getFrom(), postTo = postTask->getTo(), lastFrom = lastTask->getFrom();
+                Workbench *postFrom = postTask->getFrom(), *postTo = postTask->getTo(), *lastFrom = lastTask->getFrom();
                 // 未生产，直接访问下个后续任务 或者 lastTask生产的产品已经出现在产品格中
                 // 假设我们能够维护好预测的原料格状态和生产格状态，那么在生成任务链中
                 /*
@@ -336,24 +333,24 @@ void Dispatcher::updateTaskChain()
                  * 1. to负载能访问
                  */
                 // 环境判断
-                if (postFrom.isFree() || postTo.hasMaterial(postFrom.getType()))
+                if (postFrom->isFree() || postTo->hasMaterial(postFrom->getType()))
                 {
                     continue;
                 }
                 // 规划判断
-                if (postFrom.getPlanProductStatus() == 1 || postFrom.hasPlanMaterial(lastFrom.getType()) || postTo.hasPlanMaterial(postFrom.getType()))
+                if (postFrom->getPlanProductStatus() == 1 || postFrom->hasPlanMaterial(lastFrom->getType()) || postTo->hasPlanMaterial(postFrom->getType()))
                 {
                     continue;
                 }
                 // 访问判断
-                int accessTo = accessMap[postTo.getMapRow()][postTo.getMapCol()];
+                int accessTo = accessMap[postTo->getMapRow()][postTo->getMapCol()];
                 if (accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
                 {
                     continue;
                 }
 
                 // 开始生产, 如果生产剩余时间比机器人最快到达时间更久，说明会出现等待
-                if (postFrom.getRest() > taskChain->getTotalFrame())
+                if (postFrom->getRest() > taskChain->getTotalFrame())
                 {
                     continue;
                 }

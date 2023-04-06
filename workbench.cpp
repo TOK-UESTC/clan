@@ -74,11 +74,11 @@ void Workbench::updatePlanMaterialStatus(int type, bool Sell)
 {
     if (Sell)
     {
-        planMaterialStatus = planMaterialStatus & (~(1 << type));
+        this->planMaterialStatus = this->planMaterialStatus & (~(1 << type));
     }
     else
     {
-        planMaterialStatus |= (1 << type);
+        this->planMaterialStatus = this->planMaterialStatus|(1 << type);
     }
 }
 

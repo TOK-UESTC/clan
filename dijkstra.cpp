@@ -171,12 +171,12 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
 
     // TODO: 如果多个方向有相同的代价
     // ，根据上一次选择的下降方向去进行临近选择
+    // 寻找下个访问点
+    int lastDirect = -1;
+    int direct = -1;
     while (dist[cr][cc] > 0.01)
     {
 
-        // 寻找下个访问点
-        int lastDirect = -1;
-        int direct = -1;
         double minCost = 1000000.;
         for (int i = 0; i < 8; i++)
         {
@@ -199,12 +199,6 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
             int i = 0;
         }
 
-        // 找到最小方向
-        if (lastDirect == -1)
-        {
-            lastDirect = direct;
-        }
-
         // 更新位置
         cr += unloadDir[direct][0];
         cc += unloadDir[direct][1];
@@ -214,6 +208,8 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
         {
             result->push_back(rc2Coord(cr, cc, 0.25));
         }
+        // 找到最小方向
+        lastDirect = direct;
     }
     // 将结束工作台放置到列表中
     result->push_back(rc2Coord(cr, cc, 0.25));
