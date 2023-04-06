@@ -106,7 +106,7 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
         c = minC;
     }
     double fill = 1000000.;
-    dist = Maps::newDMap(accessMap, fill);
+    fillDist(fill);
     dist[r][c] = 0; // 起点标志
 
     std::queue<int> qx; // 存放遍历点x坐标
