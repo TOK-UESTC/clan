@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # build project
-rm -r build
-cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
+cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DCMAKE_CXX_FLAGS=""
 make -C build -j
 
 # 判断系统类型
@@ -18,7 +17,7 @@ fi
 if [ $# -eq 1 ]
 then
     name=$1
-    $executor "./build/main" -f -d -m ../maps/$name.txt
+    $executor "./build/main" -f  -m ../maps/$name.txt
 else
     echo "" > error.txt
     for i in $(seq 1 1 4)

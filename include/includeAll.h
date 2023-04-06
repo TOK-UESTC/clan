@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <iterator>
+#include <chrono>
 #include <cassert>
 
 #include "vec.h"
@@ -33,6 +34,7 @@
 #include "actionModel.h"
 #include "maps.h"
 #include "dijkstra.h"
+#include "dStarLite.h"
 #include "pathPlan.h"
 #include "pidModel.h"
 #include "task.h"
