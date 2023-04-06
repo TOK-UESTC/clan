@@ -45,8 +45,8 @@ public:
         this->tc = tc;
 
         this->accessMap = accessMap;
-        this->row = _msize(accessMap) / 8;
-        this->col = _msize(accessMap[0]) / sizeof(accessMap[0][0]);
+        this->row = MAP025;
+        this->col = MAP025;
 
         this->g = Maps::newDMap(accessMap, 9999);
         this->rhs = Maps::newDMap(accessMap, 9999);

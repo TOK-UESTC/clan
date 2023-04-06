@@ -14,8 +14,8 @@ public:
     Dijkstra(int **accessMap)
     {
         this->accessMap = accessMap;
-        this->row = _msize(accessMap) / 8;
-        this->col = _msize(accessMap[0]) / sizeof(accessMap[0][0]);
+        this->row = MAP025;
+        this->col = MAP025;
     }
 
     void search(int r, int c, bool loaded, int id); // 从起始点进行搜素，填充访问图
@@ -27,7 +27,7 @@ public:
     double **getDistMap();
     void freeDist()
     {
-        int row = _msize(dist) / 8;
+        int row = MAP025;
         for (int i = 0; i < row; i++)
         {
             delete[] dist[i];

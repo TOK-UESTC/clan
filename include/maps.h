@@ -42,21 +42,21 @@ public:
 
     static int **newMap(char **map)
     {
-        int row = _msize(map) / 8;
-        int col = _msize(map[0]);
+        int row = MAP025;
+        int col = MAP025;
         int **newMap = new int *[row];
         for (int i = 0; i < row; i++)
         {
             newMap[i] = new int[col];
-            memset(newMap[i], 0, _msize(newMap[i]));
+            memset(newMap[i], 0, MAP025*sizeof(int));
         }
         return newMap;
     }
 
     static double **newDMap(int **map, double fill)
     {
-        int row = _msize(map) / 8;
-        int col = _msize(map[0]) / sizeof(map[0][0]);
+        int row = MAP025;
+        int col = MAP025;
 
         double **newMap = new double *[row];
         for (int i = 0; i < row; i++)
@@ -85,7 +85,7 @@ public:
 
     static void writeMaptoFile(const char *file, double **map);
 
-    void releaseMap(char **map); // 释放地图
+    void releaseMap(char **map, int row); // 释放地图
     void releaseMap(int **map);
 };
 

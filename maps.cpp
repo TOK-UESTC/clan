@@ -26,8 +26,8 @@ char **Maps::convert025()
         // map025[MAP_HEIGHT * 2][j] = '#';
     }
 
-    int col = _msize(map05[0]);
-    int row = _msize(map05) / 8;
+    int col = MAP05;
+    int row = MAP05;
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < col; j++)
@@ -75,8 +75,8 @@ char **Maps::convert025()
  */
 int **Maps::mapRoadWidthHV(char **map, bool isHorizon)
 {
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]);
+    int row = MAP025;
+    int col = MAP025;
     if (isHorizon)
     {
         int **mapRoadWidthH = new int *[row];
@@ -162,8 +162,8 @@ int **Maps::mapRoadWidth(char **map)
 
     int **mapH = mapRoadWidthHV(map, true);
     int **mapV = mapRoadWidthHV(map, false);
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]);
+    int row = MAP025;
+    int col = MAP025;
 
     int **mapRoadWidth = new int *[row];
     for (int i = 0; i < row; i++)
@@ -189,8 +189,8 @@ int **Maps::mapRoadWidth(char **map)
  */
 void Maps::writeMaptoFile(const char *file, char **map)
 {
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]);
+    int row = MAP025;
+    int col = MAP025;
 
     std::ofstream outfile;
     // 打开文件
@@ -214,8 +214,8 @@ void Maps::writeMaptoFile(const char *file, char **map)
 
 void Maps::writeMaptoFile(const char *file, double **map)
 {
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]) / (sizeof(map[0][0]));
+    int row = MAP025;
+    int col = MAP025;
 
     std::ofstream outfile;
     // 打开文件
@@ -239,8 +239,8 @@ void Maps::writeMaptoFile(const char *file, double **map)
 
 void Maps::writeMaptoFile(const char *file, int **map)
 {
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]) / (sizeof(map[0][0]));
+    int row = MAP025;
+    int col = MAP025;
 
     std::ofstream outfile;
     // 打开文件
@@ -264,10 +264,8 @@ void Maps::writeMaptoFile(const char *file, int **map)
 /*
  * @brief 释放堆内存
  */
-void Maps::releaseMap(char **map)
+void Maps::releaseMap(char **map, int row)
 {
-    int row = _msize(map) / 8;
-    int col = _msize(map[0]);
     for (int i = 0; i < row; i++)
     {
         delete[] map[i];
@@ -277,7 +275,7 @@ void Maps::releaseMap(char **map)
 
 void Maps::releaseMap(int **map)
 {
-    int row = _msize(map) / 8;
+    int row = MAP025;
     for (int i = 0; i < row; i++)
     {
         delete[] map[i];
@@ -296,8 +294,8 @@ void Maps::releaseMap(int **map)
 void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
 {
     // 置0
-    int row = _msize(accessMap) / 8;
-    int col = _msize(accessMap[0]) / (sizeof(accessMap[0][0]));
+    int row = MAP025;
+    int col = MAP025;
     bool **visit = new bool *[row];
     std::queue<int> qx; // 存放遍历点x坐标
     std::queue<int> qy; // 存放遍历点y坐标
@@ -305,7 +303,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     for (int i = 0; i < row; i++)
     {
         visit[i] = new bool[col];
-        memset(visit[i], false, _msize(visit[i]));
+        memset(visit[i], false, MAP025);
     }
     // 将机器人位置加入队列
     qx.push(r);
@@ -344,7 +342,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     for (int i = 0; i < row; i++)
     {
         visit[i] = new bool[col];
-        memset(visit[i], false, _msize(visit[i]));
+        memset(visit[i], false, MAP025);
     }
     // 将机器人位置加入队列
     qx.push(r);
@@ -473,7 +471,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
 bool Maps::validCoord(int r, int c)
 {
     // 检查位置是否合法
-    if (r < 0 || r >= MAP025_ROW || c < 0 || c >= MAP025_COL)
+    if (r < 0 || r >= MAP025 || c < 0 || c >= MAP025)
     {
         return false;
     }
@@ -491,8 +489,8 @@ bool Maps::validCoord(int r, int c)
 
 bool Maps::isAccessible(char **map, int **accessMap, int x, int y, bool isLoad)
 {
-    int maxX = _msize(map) / 8 - 1;
-    int maxY = _msize(map[0]) - 1;
+    int maxX = MAP025 - 1;
+    int maxY = MAP025 - 1;
     // 如果该点是障碍，那么该点不可访问
     if (map[x][y] == '#')
     {
