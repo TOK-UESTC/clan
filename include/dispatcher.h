@@ -39,7 +39,7 @@ public:
     // 分配
     void releaseMap(double **map)
     {
-        int row = _msize(map) / 8;
+        int row = MAP025;
         for (int i = 0; i < row; i++)
         {
             delete[] map[i];

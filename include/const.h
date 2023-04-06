@@ -26,8 +26,8 @@
 #define MAP_HEIGHT 100                                              // 字符地图高度
 #define MAP_WIDTH 100                                               // 字符地图宽度
 #define LOAD_SHIFT_BIT 4                                            // 机器人在load的情况下，可访问标志符向左移动LOAD_SHIFT_BIT位
-#define MAP025_ROW 201                                              // 地图行数
-#define MAP025_COL 201                                              // 地图列数
+#define MAP05 100                                              
+#define MAP025 201                                             
 static int unloadDir[][2] = {
     {-1, 0},
     {1, 0},

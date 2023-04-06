@@ -112,7 +112,7 @@ double TaskChain::getTotalFrame()
 
 bool TaskChain::operator<(TaskChain *o)
 {
-    return getProfit() < o->getProfit();
+    return o->getProfit() < getProfit();
 }
 
 std::vector<Task *> TaskChain::getTaskChain()

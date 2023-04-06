@@ -58,8 +58,8 @@ public:
     DStarLite(int **accessMap)
     {
         this->accessMap = accessMap;
-        this->row = _msize(accessMap) / 8;
-        this->col = _msize(accessMap[0]) / sizeof(accessMap[0][0]);
+        this->row = MAP025;
+        this->col = MAP025;
     }
 
     void search(int r, int c, bool loaded, int id); // 从起始点进行搜素，填充访问图

@@ -15,8 +15,8 @@ Context::~Context()
     }
 
     // 释放地图内存
-    maps.releaseMap(map05);
-    maps.releaseMap(map025);
+    maps.releaseMap(map05, MAP05);
+    maps.releaseMap(map025, MAP025);
     maps.releaseMap(mapRoadWidth);
     maps.releaseMap(accessMap);
 
@@ -127,7 +127,6 @@ void Context::init()
     mapRoadWidth = maps.mapRoadWidth(map025);
 
     // 将地图写入log
-    maps.writeMaptoFile("./log/map05.txt", map05);
     maps.writeMaptoFile("./log/map025.txt", map025);
     maps.writeMaptoFile("./log/mapRoadWidth.txt", mapRoadWidth);
     maps.writeMaptoFile("./log/accessMap.txt", accessMap);
