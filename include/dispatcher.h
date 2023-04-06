@@ -20,8 +20,9 @@ private:
     // 任务链池子
     ObjectPool<TaskChain> *chainPool;
     // ObjectPool<MotionState*> * statePool;
-    Dijkstra *dijkstra; // Dijkstra算法
-    int **accessMap;    // 可访问性地图
+    Dijkstra *dijkstra;   // Dijkstra算法
+    DStarLite *dStarLite; // D* Lite算法
+    int **accessMap;      // 可访问性地图
 
 public:
     Dispatcher();
