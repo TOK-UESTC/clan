@@ -47,6 +47,10 @@ public:
 
     void generateMoveActions(); // 产生移动动作序列
     void generateShopActions(); // 产生交易动作序列
+    std::list<Vec *> getPaths()
+    {
+        return paths;
+    }
 private:
     double eval_spline(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &a, double xi);
     void spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a);

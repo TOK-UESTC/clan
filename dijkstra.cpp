@@ -212,7 +212,15 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
         lastDirect = direct;
     }
     // 将结束工作台放置到列表中
-    result->push_back(rc2Coord(cr, cc, 0.25));
+    Vec *lastVec = rc2Coord(cr, cc, 0.25);
+    if (computeDist(lastVec, result->back()) < 0.1)
+    {
+        delete lastVec;
+    }
+    else
+    {
+        result->push_back(lastVec);
+    }
 
     // 向量反转，方便进行遍历
     std::reverse(result->begin(), result->end());

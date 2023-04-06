@@ -83,6 +83,10 @@ void Robot::checkDeal()
         to->updatePlanMaterialStatus(from->getType(), true);
         taskChain->removeTask(0);
         task = taskChain->getNextTask();
+        if (task == nullptr)
+        {
+            taskChain = nullptr;
+        }
     }
 }
 
@@ -147,6 +151,7 @@ void Robot::bindChain(TaskChain *taskChain)
     // rb->from 路径
     Workbench *from = taskChain->getTask(0)->getFrom();
     std::list<Vec *> *result = dijkstra->getKnee(from->getMapRow(), from->getMapCol());
+
     for (auto p : *result)
     {
         if (computeDist(from->getPos(), p) < 0.25)

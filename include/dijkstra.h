@@ -9,7 +9,6 @@ private:
     int **accessMap; // 访问图
     bool **visited;
     double **dist; // 距离图
-    int r, c;      // 起始位置，行列
     int row, col;  // 地图属性
 public:
     Dijkstra(int **accessMap)
@@ -26,6 +25,15 @@ public:
     bool checkAccess(int r, int c, bool loaded, int id); // 根据机器人状态判断是否可达
 
     double **getDistMap();
+    void freeDist()
+    {
+        int row = _msize(dist) / 8;
+        for (int i = 0; i < row; i++)
+        {
+            delete[] dist[i];
+        }
+        delete[] dist;
+    }
     int **getAccessMap()
     {
         return accessMap;
