@@ -14,13 +14,13 @@ class ActionModel
 {
 
 private:
-    Robot *rb; // 机器人指针
+    Robot *rb = nullptr; // 机器人指针
     Action rotateAction;
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    ObjectPool<MotionState> *statePool; // 动作状态池
-    std::list<Vec *> paths;             // 路径序列,TODO:用对象池管理
+    ObjectPool<MotionState> *statePool = nullptr; // 动作状态池
+    std::list<Vec *> paths;                       // 路径序列,TODO:用对象池管理
 
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
@@ -51,6 +51,7 @@ public:
     {
         return paths;
     }
+
 private:
     double eval_spline(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &a, double xi);
     void spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a);

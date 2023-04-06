@@ -384,6 +384,7 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     }
     delete[] visit;
 }
+
 // 从当前的点开始，检查是否出现甬道情况
 void Maps::isWbAccessible(int **accessMap, int r, int c)
 {
@@ -401,9 +402,6 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
     // 标记已经访问过的点,使用数组
     std::unordered_map<int, std::unordered_set<int>> visited;
 
-    // TDOD:
-    int id = 0;
-
     // 标记起点
     visited[r].insert(c);
     int len = 0;
@@ -420,8 +418,9 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
             qx_init.pop();
             qy_init.pop();
 
-            // 检查是否是目标点
-            if ((accessMap[curr_x][curr_y] & (1 << (LOAD_SHIFT_BIT + id))) != 0)
+            // 检查是否是目标点,目的是判断是否可以在负载情况下到达
+            // 只要有一个负载机器人可以访问，就不需要删除这个工作台
+            if ((accessMap[curr_x][curr_y] & 0b11110000) != 0)
             {
                 minR = curr_x;
                 minC = curr_y;
@@ -441,7 +440,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
                 }
 
                 // 检查非负载情况下是否可以经过
-                if (accessMap[nr][nc] & 0b1111 == 0)
+                if ((accessMap[nr][nc] & 0b1111) == 0)
                 {
                     continue;
                 }
@@ -468,7 +467,8 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
         }
     }
 }
-bool Maps::validCoord(int r, int c)
+
+inline bool Maps::validCoord(int r, int c)
 {
     // 检查位置是否合法
     if (r < 0 || r >= MAP025 || c < 0 || c >= MAP025)

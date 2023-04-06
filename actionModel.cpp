@@ -36,15 +36,12 @@ void ActionModel::generateMoveActions()
     state->update(rb);
 
     // 获取下一个目标点
-    // Task *task = rb->getTask();
-    // std::list<Vec *> *road = task->getRoad();
-    // std::list<Vec *> road = paths;
     if (paths.empty())
     {
         return;
     }
     Vec *nextPos = paths.front();
-    Workbench* wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
+    Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
     // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
     while (computeDist(state->getPos(), nextPos) < 0.4 && computeDist(wb->getPos(), nextPos) > 0.1)
     {
@@ -57,29 +54,12 @@ void ActionModel::generateMoveActions()
         nextPos = paths.front();
     }
 
-    // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    // if (computeDist(state->getPos(), paths.front().get()) < 0.4)
-    // {
-    //     paths.pop_front();
-    //     if (paths.empty())
-    //         return;
-    // }
-    // Vec *nextPos = paths.front().get();
-
-    // // TODO: 需要每帧都预测么？
-    // Coordinate *next = rb.predict();
-    // nextPos.setValue(next);
-    // coordPool.release(next);
-
-    // // Calculate the control factors for the robot's movement
-    // double *controlFactor = rb.control(state, nextPos);
+    // Calculate the control factors for the robot's movement
     double v = 0, w = 0;
-
     rb->control(state, nextPos, v, w);
 
-    // // Release the acquired state
+    // Release the acquired state
     statePool->release(state);
-    // double controlFactor[2] = {1.0, 1.0};
     // 产生转向动作
     rb->addAction(this->rotateAction.update(ActionType::ROTATE, w));
     // 产生前进动作
@@ -96,8 +76,8 @@ void ActionModel::generateShopActions()
     // 购买
     if (rb->getProductType() == 0)
     {
-        Workbench* wb = rb->getTask()->getFrom();
-        Workbench* to = rb->getTask()->getTo();
+        Workbench *wb = rb->getTask()->getFrom();
+        Workbench *to = rb->getTask()->getTo();
         // 判断是否在目标工作台附近，并且当前已经调转，开始朝向下一个工作台
         if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
         {
@@ -108,7 +88,7 @@ void ActionModel::generateShopActions()
     else
     {
         // 去售出
-        Workbench* wb = rb->getTask()->getTo();
+        Workbench *wb = rb->getTask()->getTo();
         if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx())
         {
             // 售出行为
@@ -123,6 +103,7 @@ void ActionModel::popPath()
     paths.pop_front();
     delete nextPos;
 }
+
 // 三次样条插值，x为自变量，y为因变量，a为三次样条的系数，a[0]为常数项，a[1]为一次项，a[2]为二次项，a[3]为三次项
 void ActionModel::spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a)
 {

@@ -1,7 +1,4 @@
-#include <iostream>
-#include <chrono>
-#include <signal.h>
-#include <unistd.h>
+#include "include/includeAll.h"
 
 #ifdef W_DEBUG
 #include <Windows.h>
@@ -27,10 +24,8 @@ void showDialog()
 }
 #endif
 
-#include "include/includeAll.h"
-
 using namespace std;
-static bool showTime = false;
+static bool showTime = true;
 
 int main(int argc, char *argv[])
 {
@@ -42,24 +37,23 @@ int main(int argc, char *argv[])
 
     Context ctx;
     ctx.init();
-    ctx.endStep(); // 预热
+    ctx.endStep();
     while (ctx.getFrameId() < TOTAL_FRAME)
     {
-        // std::cerr << "frame " << ctx.getFrameId() << std::endl;
         start = chrono::steady_clock::now();
         ctx.update();
-        ctx.step(false);
+        ctx.step();
         end = chrono::steady_clock::now();
 
         // 显示时间
         if (showTime)
         {
             double cost = chrono::duration_cast<chrono::microseconds>(end - start).count() / 1000.0;
-            // if (cost > 10.0)
-            // {
-            fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
-            fflush(stderr);
-            // }
+            if (cost > 10.0)
+            {
+                fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
+                fflush(stderr);
+            }
         }
     }
     return 0;

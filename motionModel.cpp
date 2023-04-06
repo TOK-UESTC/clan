@@ -35,7 +35,7 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
     double tV = (targetVelocity - v0) / tempLinearAcc;
 
     std::list<MotionFrag *> frags;
-    MotionFrag *frag = fragPool.acquire();
+    MotionFrag *frag = fragPool->acquire();
     if (tV >= FRAME_TIME && tAngle >= FRAME_TIME)
     {
         frag->update(FRAME_TIME, tempLinearAcc, tempAngularAcc);
@@ -60,11 +60,11 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
             frag->update(tAngle, tempLinearAcc, tempAngularAcc);
             frags.push_back(frag);
             // 第二段，角速度匀速，线速度加速
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(tV - tAngle, tempLinearAcc, 0);
             frags.push_back(frag);
             // 第三段，角速度匀速，线速度匀速
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(FRAME_TIME - tV, 0, 0);
             frags.push_back(frag);
         }
@@ -75,11 +75,11 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
             frag->update(tV, tempLinearAcc, tempAngularAcc);
             frags.push_back(frag);
             // 第二段，线速度匀速，角速度加速
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(tAngle - tV, 0, tempAngularAcc);
             frags.push_back(frag);
             // 第三段，线速度匀速，角速度匀速
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(FRAME_TIME - tAngle, 0, 0);
             frags.push_back(frag);
         }
@@ -93,7 +93,7 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
             frag->update(tAngle, tempLinearAcc, tempAngularAcc);
             frags.push_back(frag);
 
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(FRAME_TIME - tAngle, tempLinearAcc, 0);
             frags.push_back(frag);
         }
@@ -103,19 +103,19 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
             frag->update(tV, tempLinearAcc, tempAngularAcc);
             frags.push_back(frag);
 
-            frag = fragPool.acquire();
+            frag = fragPool->acquire();
             frag->update(FRAME_TIME - tV, 0, tempAngularAcc);
             frags.push_back(frag);
         }
     }
 
-    MotionState *result = statePool.acquire();
+    MotionState *result = statePool->acquire();
     result->update(state);
     for (MotionFrag *item : frags)
     {
         predictFrag(result, item);
         // 将使用过的frag释放出来
-        fragPool.release(item);
+        fragPool->release(item);
     }
 
     // result同时也要记录所需的线速度与角速度指令

@@ -17,7 +17,7 @@ Context::~Context()
     // 释放地图内存
     maps.releaseMap(map05, MAP05);
     maps.releaseMap(map025, MAP025);
-    maps.releaseMap(mapRoadWidth);
+    // maps.releaseMap(mapRoadWidth);
     maps.releaseMap(accessMap);
 
     // 释放map
@@ -124,11 +124,11 @@ void Context::init()
     }
 
     // 获得路宽地图
-    mapRoadWidth = maps.mapRoadWidth(map025);
+    // mapRoadWidth = maps.mapRoadWidth(map025);
 
     // 将地图写入log
     maps.writeMaptoFile("./log/map025.txt", map025);
-    maps.writeMaptoFile("./log/mapRoadWidth.txt", mapRoadWidth);
+    // maps.writeMaptoFile("./log/mapRoadWidth.txt", mapRoadWidth);
     maps.writeMaptoFile("./log/accessMap.txt", accessMap);
 
     dispatcher = new Dispatcher(robotList, workbenchList, workbenchTypeMap, workbenchIdTaskMap, accessMap);
@@ -144,6 +144,7 @@ void Context::init()
     //     rb.updatePID(workbenchCount);
     // }
 }
+
 void Context::update()
 {
     // readLine();
@@ -171,35 +172,25 @@ void Context::update()
     readLine();
 }
 
-void Context::step(bool init)
+void Context::step()
 {
     printf("%d\n", frameId);
     if (frameId == 950)
     {
         int i = 0;
     }
-    if (init)
+
+    // printLine
+    dispatcher->dispatch();
+    for (Robot *rb : robotList)
     {
-        dispatcher->dispatch();
-        for (Robot *rb : robotList)
-        {
-            rb->step();
-        }
+        rb->step();
     }
-    else
+    for (Robot *rb : robotList)
     {
-        // printLine
-        dispatcher->dispatch();
-        for (Robot *rb : robotList)
+        for (Action *action : rb->getActions())
         {
-            rb->step();
-        }
-        for (Robot *rb : robotList)
-        {
-            for (Action *action : rb->getActions())
-            {
-                printLine(action->toString(rb->getId()));
-            }
+            printLine(action->toString(rb->getId()));
         }
     }
 

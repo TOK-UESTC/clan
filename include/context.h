@@ -31,9 +31,9 @@ public:
 
     int getFrameId();
 
-    void init();          // 初始化地图程序
-    void update();        // 与判题器交互
-    void step(bool init); // 发起决策过程
+    void init();   // 初始化地图程序
+    void update(); // 与判题器交互
+    void step();   // 发起决策过程
 
     // 辅助方法，直接在context定义
     void readLine();

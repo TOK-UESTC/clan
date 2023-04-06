@@ -26,8 +26,8 @@ private:
     double b0s;
     double c;
 
-    ObjectPool<MotionState> statePool;
-    ObjectPool<MotionFrag> fragPool;
+    ObjectPool<MotionState> *statePool;
+    ObjectPool<MotionFrag> *fragPool;
 
     double pow(double x, double p);
     double sqrt(double x);

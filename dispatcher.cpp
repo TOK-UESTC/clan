@@ -8,10 +8,7 @@ Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *>
     this->accessMap = accessMap;
     for (auto rb : robotList)
     {
-        if (taskChainQueueMap.find(rb) == taskChainQueueMap.end())
-        {
-            taskChainQueueMap[rb] = new std::priority_queue<TaskChain *>();
-        }
+        taskChainQueueMap[rb] = new std::priority_queue<TaskChain *>();
     }
 
     init();
@@ -53,6 +50,7 @@ void Dispatcher::init()
         {
             continue;
         }
+
         std::vector<int> types;
         getDeliverableType(types, wbType);
         for (auto type : types)
@@ -81,6 +79,7 @@ void Dispatcher::init()
         }
         taskTypeMap[wbType]->insert(taskTypeMap[wbType]->end(), workbenchIdTaskMap[wb->getId()]->begin(), workbenchIdTaskMap[wb->getId()]->end());
     }
+
     // 为每个任务添加最短距离
     for (Workbench *wb : workbenchList)
     {
@@ -94,15 +93,23 @@ void Dispatcher::init()
         int col = wb->getMapCol();
         int access = accessMap[row][col];
         int id = 0;
+        // 寻找可接收任务的机器人，判断是否可以访问工作台，非负载可以访问即可
         for (; id < 4; id++)
         {
-            if (access & (1 << (id + LOAD_SHIFT_BIT)) != 0)
+            // 如果机器人非负载可访问，那么就跳出循环
+            if ((access & (1 << id)) != 0)
             {
                 break;
             }
         }
-        dijkstra->search(row, col, true, id);
 
+        // 避免没有机器人可以接收任务
+        if (id == 5)
+        {
+            continue;
+        }
+
+        dijkstra->search(row, col, true, id);
         double **dijkstraMap = dijkstra->getDistMap();
 
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
@@ -356,12 +363,10 @@ void Dispatcher::updateTaskChain()
 
                 addPost = true;
                 // 更新任务最早完成时间，并把该任务加入到这条任务链中
-                TaskChain *newTaskChain = chainPool->acquire();
-                newTaskChain->set(*taskChain);
-                newTaskChain->addTask(postTask);
+                taskChain->addTask(postTask);
 
                 // 保存
-                queue->push(newTaskChain);
+                queue->push(taskChain);
             }
 
             if (!addPost)

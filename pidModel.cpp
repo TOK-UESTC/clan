@@ -58,7 +58,7 @@ void PIDModel::control(MotionState *ms, Vec *targetPos, double &v, double &w)
     double angleErr = angle - ms->getHeading();
     angleErr = getAngleRanged(angleErr);
 
-    /// 判断离墙是否太近
+    /// 判断离墙是否太近，TODO
     double minWallDist = 4;
     // 减速系数
     double deceleration = 0.3;

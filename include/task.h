@@ -13,17 +13,17 @@ class Task
 {
 
 private:
-    Workbench *from;                             // 任务来源
-    Workbench *to;                               // 任务目的
+    Workbench *from = nullptr;                   // 任务来源
+    Workbench *to = nullptr;                     // 任务目的
     double priority;                             // 任务优先级，值越大优先级越高
     double price;                                // 任务买入价格
     double sellPrice;                            // 任务售出价格
     double distance;                             // 任务距离
-    std::list<Vec *> *road;                      // 任务路径
+    std::list<Vec *> *road = nullptr;            // 任务路径
     std::vector<Task *> *postTaskList = nullptr; // 后继任务列表
 
 public:
-    Task(Workbench* from, Workbench* to) : from(from), to(to)
+    Task(Workbench *from, Workbench *to) : from(from), to(to)
     {
         this->price = priceMapper[from->getType()][0];
         this->sellPrice = priceMapper[from->getType()][1];

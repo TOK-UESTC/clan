@@ -7,9 +7,8 @@ class Dijkstra
 {
 private:
     int **accessMap; // 访问图
-    bool **visited;
-    double **dist; // 距离图
-    int row, col;  // 地图属性
+    double **dist;   // 距离图, TODO：float
+    int row, col;    // 地图属性
 public:
     Dijkstra(int **accessMap)
     {

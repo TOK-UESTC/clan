@@ -1,6 +1,6 @@
 #include "include/includeAll.h"
 
-Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this), pidModel(this)
+Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this), pidModel(this), taskChain()
 {
     productType = 0;
 }
@@ -53,7 +53,6 @@ size_t Robot::hash() const
     return id;
 }
 
-// TODO
 void Robot::checkDeal()
 {
     if (task == nullptr)
@@ -80,13 +79,8 @@ void Robot::checkDeal()
     if (lastProductType != 0 && productType == 0)
     {
         actionModel.popPath();
-        to->updatePlanMaterialStatus(from->getType(), true);
-        taskChain->removeTask(0);
-        task = taskChain->getNextTask();
-        if (task == nullptr)
-        {
-            taskChain = nullptr;
-        }
+        taskChain.removeTask(0);
+        task = taskChain.getNextTask();
     }
 }
 
@@ -145,11 +139,11 @@ void Robot::addAction(Action *action)
 
 void Robot::bindChain(TaskChain *taskChain)
 {
-    this->taskChain = taskChain;
-    this->task = taskChain->getTaskChain().at(0);
+    this->taskChain.set(taskChain);
+    this->task = taskChain->getTask(0);
     // 构建路径
     // rb->from 路径
-    Workbench *from = taskChain->getTask(0)->getFrom();
+    Workbench *from = task->getFrom();
     std::list<Vec *> *result = dijkstra->getKnee(from->getMapRow(), from->getMapCol());
 
     for (auto p : *result)

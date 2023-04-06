@@ -2,6 +2,7 @@
 
 TaskChain::TaskChain()
 {
+    this->totalFrame = 0;
 }
 
 TaskChain::TaskChain(double totalFrame)
@@ -9,10 +10,13 @@ TaskChain::TaskChain(double totalFrame)
     this->totalFrame = totalFrame;
 }
 
-void TaskChain::set(const TaskChain &s)
+void TaskChain::set(const TaskChain *s)
 {
-    this->taskChain = s.taskChain;
-    this->totalFrame = s.totalFrame;
+    for (Task *task : s->taskChain)
+    {
+        this->taskChain.push_back(task);
+    }
+    this->totalFrame = s->totalFrame;
 }
 
 void TaskChain::set(double totalFrame)
@@ -25,8 +29,8 @@ void TaskChain::occupy()
 {
     for (Task *task : taskChain)
     {
-        Workbench* from = task->getFrom();
-        Workbench* to = task->getTo();
+        Workbench *from = task->getFrom();
+        Workbench *to = task->getTo();
 
         from->setPlanProductStatus(1);
         to->updatePlanMaterialStatus(from->getType(), false);
@@ -40,8 +44,8 @@ bool TaskChain::isOccupied() const
     // 2. 消费工作台原料格未被占据: task.getTo().hasPlanMaterial(task.getFrom().getType())
     for (Task *task : taskChain)
     {
-        Workbench* from = task->getFrom();
-        Workbench* to = task->getTo();
+        Workbench *from = task->getFrom();
+        Workbench *to = task->getTo();
         if (from->getPlanProductStatus() != 0 || to->hasPlanMaterial(from->getType()))
         {
             return true;

@@ -26,7 +26,7 @@ inline double getAngleRanged(double angle)
     return angle;
 }
 
-inline void getDeliverableType(std::vector<int>& types, int wbType)
+static void getDeliverableType(std::vector<int> &types, int wbType)
 {
     switch (wbType)
     {
@@ -70,7 +70,8 @@ inline void getDeliverableType(std::vector<int>& types, int wbType)
     }
 }
 
-inline Vec* rc2Coord(int r, int c, double step) {
+inline Vec *rc2Coord(int r, int c, double step)
+{
     double x = c * step;
     double y = 50.0 - r * step;
 
@@ -79,4 +80,5 @@ inline Vec* rc2Coord(int r, int c, double step) {
     return result;
 }
 
+// TODO validCoord
 #endif
