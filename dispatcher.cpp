@@ -120,7 +120,6 @@ void Dispatcher::init()
             std::list<Vec *> *result = dijkstra->getKnee(to->getMapRow(), to->getMapCol());
             task->setRoad(result);
         }
-        releaseMap(dijkstraMap);
     }
 
     // 为每个任务添加后续任务
@@ -201,7 +200,6 @@ void Dispatcher::generateTaskChains()
         // TODO:这里的map通过dijstra算法获得,用来获取到工作台的最短路径
         rb->getDij()->search(rb->getMapRow(), rb->getMapCol(), false, rb->getId());
 
-        // Maps::writeMaptoFile("./log/map.txt", mapFromRb);
         // 遍历task
         for (auto taskListPair : taskTypeMap)
         {
@@ -240,7 +238,8 @@ void Dispatcher::generateTaskChains()
                     continue;
                 }
 
-                double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()];
+                // double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()];
+                double distance = 1.;
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃
@@ -463,7 +462,6 @@ void Dispatcher::dispatch()
 
             bindChain->occupy();
             receiver->bindChain(bindChain);
-            receiver->getDij()->freeDist();
             // 绑定后将原始chain删除
             clearChainMap(receiver);
         }
