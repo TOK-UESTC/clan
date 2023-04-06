@@ -78,7 +78,10 @@ void TaskChain::addTask(Task *task)
 // 删除Task，同时删除take的时间
 void TaskChain::removeTask(int index)
 {
-    this->taskChain.erase(this->taskChain.begin() + index);
+    if (taskChain.size() != 0)
+    {
+        this->taskChain.erase(this->taskChain.begin() + index);
+    }
 }
 
 Task *TaskChain::getNextTask()

@@ -1,6 +1,6 @@
 #include "include/includeAll.h"
 
-Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *> &workbenchList, std::unordered_map<int, std::vector<Workbench *> *> &workbenchTypeMap, std::unordered_map<int, std::vector<Task *> *> &workbenchIdTaskMap, int **accessMap) : robotList(robotList), workbenchList(workbenchList), workbenchTypeMap(workbenchTypeMap), workbenchIdTaskMap(workbenchIdTaskMap)
+Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *> &workbenchList, std::unordered_map<int, std::vector<Workbench *> *> &workbenchTypeMap, std::unordered_map<int, std::vector<Task *> *> &workbenchIdTaskMap, int **accessMap) : robotList(robotList), workbenchList(workbenchList), workbenchTypeMap(workbenchTypeMap), workbenchIdTaskMap(workbenchIdTaskMap), taskTypeMap{}, taskChainQueueMap{}
 {
     this->chainPool = new ObjectPool<TaskChain>(100);
     this->tempQueue = new std::priority_queue<TaskChain *>();
@@ -45,10 +45,6 @@ Dispatcher::~Dispatcher()
  */
 void Dispatcher::init()
 {
-    this->chainPool = new ObjectPool<TaskChain>(100);
-    this->tempQueue = new std::priority_queue<TaskChain *>();
-    this->dijkstra = new Dijkstra(accessMap);
-    this->accessMap = accessMap;
     for (Workbench *wb : workbenchList)
     {
         int wbType = wb->getType();
@@ -108,14 +104,14 @@ void Dispatcher::init()
         dijkstra->search(row, col, true, id);
 
         double **dijkstraMap = dijkstra->getDistMap();
-        Maps::writeMaptoFile("./log/temp.txt", dijkstraMap);
 
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
         {
             Workbench *to = task->getTo();
             task->setDist(dijkstraMap[to->getMapRow()][to->getMapCol()]);
             // 设置最短路径
-            task->setRoad(dijkstra->getKnee(to->getMapRow(), to->getMapCol()));
+            std::list<Vec *> *result = dijkstra->getKnee(to->getMapRow(), to->getMapCol());
+            task->setRoad(result);
         }
         releaseMap(dijkstraMap);
     }
@@ -232,7 +228,7 @@ void Dispatcher::generateTaskChains()
                 // 可访问性判断
                 int accessFrom = accessMap[from->getMapRow()][from->getMapCol()];
                 int accessTo = accessMap[to->getMapRow()][to->getMapCol()];
-                if (accessFrom & (1 << rb->getId()) == 0 || accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
+                if ((accessFrom & (1 << rb->getId())) == 0 || (accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT))) == 0)
                 {
                     continue;
                 }
@@ -344,7 +340,7 @@ void Dispatcher::updateTaskChain()
                 }
                 // 访问判断
                 int accessTo = accessMap[postTo->getMapRow()][postTo->getMapCol()];
-                if (accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT)) == 0)
+                if ((accessTo & (1 << (rb->getId() + LOAD_SHIFT_BIT))) == 0)
                 {
                     continue;
                 }
@@ -428,9 +424,9 @@ void Dispatcher::dispatch()
                 while (true)
                 {
                     TaskChain *chain = queue->top();
-                    if (chain == nullptr)
+                    if (chain == nullptr || queue->empty())
                     {
-                        bindChain = chain;
+                        bindChain = nullptr;
                         receiver = rb;
                         break;
                     }
@@ -462,6 +458,7 @@ void Dispatcher::dispatch()
 
             bindChain->occupy();
             receiver->bindChain(bindChain);
+            receiver->getDij()->freeDist();
             // 绑定后将原始chain删除
             clearChainMap(receiver);
         }

@@ -102,10 +102,6 @@ void Context::init()
             }
         }
 
-        // for(int i=0; i<_msize(map05[0]); i++){
-        //     fprintf(stderr, "%c", map05[row][i]);
-        // }
-        // fprintf(stderr, "\n");
         row++;
     }
     // 获得转换后地图
@@ -135,34 +131,12 @@ void Context::init()
     maps.writeMaptoFile("./log/map025.txt", map025);
     maps.writeMaptoFile("./log/mapRoadWidth.txt", mapRoadWidth);
     maps.writeMaptoFile("./log/accessMap.txt", accessMap);
-    // sortRobotList.addAll(robotList);
 
-    // for (int t = 1; t <= 9; t++)
-    // {
-    //     if (workbenchTypeMap.get(t) == null)
-    //     {
-    //         Const.workbenchMapper.put(t, 0);
-    //         continue;
-    //     }
-    //     Const.workbenchMapper.put(t, workbenchTypeMap.get(t).size());
-    // }
-
-    // dispatcher = new Dispatcher(robotList, workbenchList, workbenchTypeMap, chainPool, statePool);
-    // dispatcher->init(robotList, workbenchList, workbenchTypeMap, workbenchIdTaskMap, accessMap);
     dispatcher = new Dispatcher(robotList, workbenchList, workbenchTypeMap, workbenchIdTaskMap, accessMap);
     // 搜索参数时停止pid更改
     // if (args.length == 7)
     // {
     //     return;
-    // }
-
-    // // 测试用：为rb1添加目标路径点
-    // // 测试使用，一系列路径点，起点为(12.25,30.25),终点为(12.25, 0.25)
-    // static double path[10][2] = {{12.25, 30.25}, {10.25, 29.75}, {12.25, 29.25}, {14.25, 28.75}, {12.25, 28.25}, {10.25, 27.75}, {12.25, 27.25}, {12.25, 26.75}, {12.25, 26.25}, {12.25, 25.75}};
-    // for (size_t i = 0; i < sizeof(path) / sizeof(path[0]); i++)
-    // {
-    //     std::shared_ptr<Vec> vec = std::make_shared<Vec>(path[i][0], path[i][1]);
-    //     robotList[0]->addPathPoint(vec);
     // }
 
     // // 根据地图工作台情况，动态调整pid

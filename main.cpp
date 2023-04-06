@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
     ctx.endStep(); // 预热
     while (ctx.getFrameId() < TOTAL_FRAME)
     {
-        std::cerr << "frame " << ctx.getFrameId() << std::endl;
+        // std::cerr << "frame " << ctx.getFrameId() << std::endl;
         start = chrono::steady_clock::now();
         ctx.update();
         ctx.step(false);
