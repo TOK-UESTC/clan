@@ -25,11 +25,11 @@ void TaskChain::occupy()
 {
     for (Task *task : taskChain)
     {
-        Workbench from = task->getFrom();
-        Workbench to = task->getTo();
+        Workbench* from = task->getFrom();
+        Workbench* to = task->getTo();
 
-        from.setPlanProductStatus(1);
-        to.updatePlanMaterialStatus(from.getType(), false);
+        from->setPlanProductStatus(1);
+        to->updatePlanMaterialStatus(from->getType(), false);
     }
 }
 
@@ -40,9 +40,9 @@ bool TaskChain::isOccupied() const
     // 2. 消费工作台原料格未被占据: task.getTo().hasPlanMaterial(task.getFrom().getType())
     for (Task *task : taskChain)
     {
-        Workbench from = task->getFrom();
-        Workbench to = task->getTo();
-        if (from.getPlanProductStatus() != 0 || to.hasPlanMaterial(from.getType()))
+        Workbench* from = task->getFrom();
+        Workbench* to = task->getTo();
+        if (from->getPlanProductStatus() != 0 || to->hasPlanMaterial(from->getType()))
         {
             return true;
         }
@@ -58,6 +58,10 @@ Task *TaskChain::getTask(int index)
     }
     if (index == -1)
     {
+        if (taskChain.at(taskChain.size() - 1) == nullptr)
+        {
+            return nullptr;
+        }
         return taskChain.at(taskChain.size() - 1);
     }
 
@@ -72,10 +76,19 @@ void TaskChain::addTask(Task *task)
 }
 
 // 删除Task，同时删除take的时间
-// void TaskChain::removeTask(int index)
-// {
-//     this->taskChain.
-// }
+void TaskChain::removeTask(int index)
+{
+    this->taskChain.erase(this->taskChain.begin() + index);
+}
+
+Task *TaskChain::getNextTask()
+{
+    if (taskChain.size() != 0)
+    {
+        return taskChain.at(0);
+    }
+    return nullptr;
+}
 
 double TaskChain::getProfit()
 {
@@ -83,7 +96,7 @@ double TaskChain::getProfit()
     for (Task *task : taskChain)
     {
         // TODO: 这里的计算是临时的
-        profit += task->getProfit(1., 1.);
+        profit += task->getProfit();
     }
     return profit;
 }

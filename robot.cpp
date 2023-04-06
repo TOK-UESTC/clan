@@ -5,7 +5,6 @@ Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this),
     productType = 0;
 }
 
-
 Robot::~Robot()
 {
     // 释放dijkstra
@@ -35,11 +34,11 @@ void Robot::control(MotionState *ms, Vec *pos, double &v, double &w)
 void Robot::update(int leftFrame)
 {
 
-    int id;
     double x, y, vx, vy;
     // 读取信息
-    scanf("%d %d %lf %lf %lf %lf %lf %lf %lf %lf\n",
-          &id, &productType, &timeCoefficients, &collisionCoefficients,
+    lastProductType = productType;
+    scanf("%d %d %lf %lf %lf %lf %lf %lf %lf %lf",
+          &workbenchIdx, &productType, &timeCoefficients, &collisionCoefficients,
           &w, &vx, &vy, &heading, &x, &y);
     getchar();
 
@@ -57,6 +56,34 @@ size_t Robot::hash() const
 // TODO
 void Robot::checkDeal()
 {
+    if (task == nullptr)
+    {
+        return;
+    }
+
+    Workbench *from = task->getFrom();
+    Workbench *to = task->getTo();
+
+    // 买成功，不持有->持有
+    // 生产工作台规划产品格被释放:from.setPlanProductStatus(0);
+    // 如果这时规划原料格已满，那么清除原料格状态
+    if (lastProductType == 0 && productType != 0)
+    {
+        // 放开原料购买控制台
+        from->setPlanProductStatus(0);
+        // 弹出from地址
+        actionModel.popPath();
+    }
+
+    // 卖成功，持有->不持有
+    // 如果系统返回的原料格信息为0，那么清空规划原料格信息
+    if (lastProductType != 0 && productType == 0)
+    {
+        actionModel.popPath();
+        to->updatePlanMaterialStatus(from->getType(), true);
+        taskChain->removeTask(0);
+        task = taskChain->getNextTask();
+    }
 }
 
 Vec Robot::getPos() const
@@ -114,25 +141,30 @@ void Robot::addAction(Action *action)
 
 void Robot::bindChain(TaskChain *taskChain)
 {
-    this->taskChain->set(*taskChain);
+    this->taskChain = taskChain;
+    this->task = taskChain->getTaskChain().at(0);
     // 构建路径
     // rb->from 路径
-    Workbench from = taskChain->getTask(0)->getFrom();
-    std::list<Vec *> * result = dijkstra->getKnee(from.getMapRow(), from.getMapCol());
-    for(auto p:*result){
+    Workbench *from = taskChain->getTask(0)->getFrom();
+    std::list<Vec *> *result = dijkstra->getKnee(from->getMapRow(), from->getMapCol());
+    for (auto p : *result)
+    {
+        if (computeDist(from->getPos(), p) < 0.25)
+        {
+            continue;
+        }
         addPathPoint(new Vec(p->getX(), p->getY()));
         delete p;
     }
     delete result;
     // 加入任务路径
-    for(auto t:taskChain->getTaskChain())
+    for (auto t : taskChain->getTaskChain())
     {
-        for(auto p:*(t->getRoad()))
+        for (auto p : *(t->getRoad()))
         {
             addPathPoint(new Vec(p->getX(), p->getY()));
         }
     }
-
 }
 
 void Robot::step()
@@ -168,7 +200,7 @@ int Robot::getMapCol()
 {
     return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
 }
-void Robot::addPathPoint(Vec* point)
+void Robot::addPathPoint(Vec *point)
 {
     actionModel.addPathPoint(point);
 }
