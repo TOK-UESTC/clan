@@ -21,19 +21,27 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    std::list<Vec *> paths;                       // 路径序列,TODO:用对象池管理
-    Vec *pridictedPos = nullptr;                  // 预测位置
-    ObjectPool<MotionState> *statePool = nullptr; // 动作状态池
+    std::list<Vec *> paths; // 路径序列,TODO:用对象池管理
+    // Vec *pridictedPos = nullptr;                  // 预测位置
+
     MotionModel *motionModel = nullptr;
 
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
-        statePool = new ObjectPool<MotionState>(100);
+
         motionModel = new MotionModel();
     }
-    // 构造函数
-    // void setRobot(Robot *rb) { this->rb = rb; } // 设置机器人指针
+    // 获取MotionState对象
+    MotionState *getMotionState()
+    {
+        return motionModel->getMotionState();
+    }
+    // 释放MotionState对象
+    void releaseMotionState(MotionState *state)
+    {
+        motionModel->releaseMotionState(state);
+    }
 
     // 更新动作序列
     void addPathPoint(Vec *v)
@@ -55,6 +63,10 @@ public:
     std::list<Vec *> getPaths()
     {
         return paths;
+    }
+    MotionState *predict(MotionState *state, double targetVelocity, double targetAngularVelocity)
+    {
+        return motionModel->predict(*state, targetVelocity, targetAngularVelocity);
     }
 
 private:

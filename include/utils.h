@@ -80,5 +80,63 @@ inline Vec *rc2Coord(int r, int c, double step)
     return result;
 }
 
+/** 获取从from到to的直线连线角度 */
+inline double getAngle(Vec *from, Vec *to)
+{
+    double x = from->getX() - to->getX();
+    double y = from->getY() - to->getY();
+    double quadrant = 1.; // 象限
+    if (y < 0)
+    {
+        quadrant = -1.;
+    }
+
+    // 避免除0
+    double mod = sqrt(x * x + y * y);
+    if (mod < 0.0001)
+    {
+        return 0.;
+    }
+    else
+    {
+        return quadrant * acos(x / mod); // (-pi/2, pi/2)
+    }
+}
+
+/** 获取当前位置, 中间位置, 和目标位置连线夹角差 */
+inline double getAngleDiff(Vec *curr, Vec *middle, Vec *target)
+{
+    double diff = getAngle(middle, curr) - getAngle(target, middle);
+    if (diff > PI)
+    {
+        diff -= 2 * PI;
+    }
+    else if (diff < -PI)
+    {
+        diff += 2 * PI;
+    }
+
+    return diff;
+}
+
+/** 当前位置，中间位置和碰撞位置是否在同一条连线上，当前判断角度为10° */
+inline bool online(Vec *curr, Vec *pos, Vec *crash)
+{
+    return getAngleDiff(curr, pos, crash) < 10. * PI / 180.0;
+}
+/** 判断是否在地图外 */
+
+inline bool isOutMap(Vec *pos)
+{
+    double x = pos->getX();
+    double y = pos->getY();
+
+    if (x < 0.53 || x > 50 - 0.53 || y < 0.53 || y > 50 - 0.53)
+    {
+        return true;
+    }
+
+    return false;
+}
 // TODO validCoord
 #endif

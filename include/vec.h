@@ -28,6 +28,11 @@ public:
         this->y = y;
     }
 
+    void set(Vec *v)
+    {
+        this->x = v->x;
+        this->y = v->y;
+    }
     void set(const Vec &v)
     {
         this->x = v.x;

@@ -32,26 +32,25 @@ void ActionModel::generateMoveActions()
     // }
 
     // // 获取state
-    MotionState *state = statePool->acquire();
+    MotionState *state = getMotionState();
     state->update(rb);
-    static int frame = 0;
-    // 比较预测与实际的距离
-    if (pridictedPos != nullptr)
-    {
-        double error = computeDist(state->getPos(), pridictedPos);
-        // if (error > 0.05)
-        // {
-        //     std::cerr << "error: " << error << std::endl;
-        // }
-        std::ofstream outfile;
-        outfile.open("./log/error.txt", std::ios::app);
-        outfile << error << std::endl;
-        outfile.close();
-    }
-    else
-    {
-        pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
-    }
+    // // 比较预测与实际的距离
+    // if (pridictedPos != nullptr)
+    // {
+    //     // double error = computeDist(state->getPos(), pridictedPos);
+    //     // // if (error > 0.05)
+    //     // // {
+    //     // //     std::cerr << "error: " << error << std::endl;
+    //     // // }
+    //     // std::ofstream outfile;
+    //     // outfile.open("./log/error.txt", std::ios::app);
+    //     // outfile << error << std::endl;
+    //     // outfile.close();
+    // }
+    // else
+    // {
+    //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
+    // }
 
     // 获取下一个目标点
     if (paths.empty())
@@ -78,12 +77,12 @@ void ActionModel::generateMoveActions()
 
     // 使用motionModel计算下一时刻的state
     state->update(rb);
-    MotionState *nextState = motionModel->predict(*state, v, w);
-    pridictedPos = nextState->getPos();
+    // MotionState *nextState = motionModel->predict(*state, v, w);
+    // pridictedPos = nextState->getPos();
 
-    motionModel->releaseMotionState(nextState);
+    // motionModel->releaseMotionState(nextState);
     // Release the acquired state
-    statePool->release(state);
+    releaseMotionState(state);
     // 产生转向动作
     rb->addAction(this->rotateAction.update(ActionType::ROTATE, w));
     // 产生前进动作

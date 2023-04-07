@@ -51,6 +51,11 @@ public:
     MotionState *predict(MotionState &state, double targetVelocity, double targetAngularVelocity);
     void releaseMotionState(MotionState *state);
     void setAccessMap(int **accessMap);
+    // 提供motionstate对象
+    MotionState *getMotionState()
+    {
+        return statePool->acquire();
+    }
 };
 
 #endif

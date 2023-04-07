@@ -116,10 +116,11 @@ void Context::init()
         // 绑定dijkstra, 机器人维护
         rb->setDij(new Dijkstra(accessMap));
     }
-    // 为机器人传入可访问地图
+    // 为机器人传入可访问地图与机器人列表
     for (Robot *rb : robotList)
     {
         rb->setAccessMap(accessMap);
+        rb->setRobotList(&robotList);
     }
     // 对每个工作台检查可达性
     for (Workbench *wb : workbenchList)
@@ -169,7 +170,7 @@ void Context::update()
     // 更新机器人信息
     for (Robot *rb : robotList)
     {
-        rb->update(leftFrame);
+        rb->update(frameId);
         rb->checkDeal();
     }
 
