@@ -10,6 +10,7 @@ Robot::~Robot()
     // 释放dijkstra
     delete dijkstra;
 }
+
 // 根据地图更改PID？？？
 void Robot::updatePid(int count)
 {
@@ -212,4 +213,8 @@ void Robot::setDij(Dijkstra *dijkstra)
 Dijkstra *Robot::getDij()
 {
     return dijkstra;
+}
+void Robot::setAccessMap(int **accessMap)
+{
+    actionModel.setAccessMap(accessMap);
 }

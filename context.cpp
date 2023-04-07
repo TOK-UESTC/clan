@@ -116,7 +116,11 @@ void Context::init()
         // 绑定dijkstra, 机器人维护
         rb->setDij(new Dijkstra(accessMap));
     }
-
+    // 为机器人传入可访问地图
+    for (Robot *rb : robotList)
+    {
+        rb->setAccessMap(accessMap);
+    }
     // 对每个工作台检查可达性
     for (Workbench *wb : workbenchList)
     {
@@ -175,7 +179,7 @@ void Context::update()
 void Context::step()
 {
     printf("%d\n", frameId);
-    if (frameId == 950)
+    if (frameId == 52)
     {
         int i = 0;
     }

@@ -104,7 +104,7 @@ void Dispatcher::init()
         }
 
         // 避免没有机器人可以接收任务
-        if (id == 5)
+        if (id == 4)
         {
             continue;
         }
@@ -238,8 +238,8 @@ void Dispatcher::generateTaskChains()
                     continue;
                 }
 
-                // double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()];
-                double distance = 1.;
+                double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()] * 0.25;
+                // double distance = 1.;
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃

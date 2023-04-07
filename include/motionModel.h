@@ -1,10 +1,8 @@
 #ifndef MOTION_MODEL_H
 #define MOTION_MODEL_H
-#include "const.h"
-#include <cmath>
-#include "motionState.h"
-#include "motionFrag.h"
-#include <list>
+
+#include "includeAll.h"
+
 class MotionModel
 {
 private:
@@ -15,7 +13,7 @@ private:
     const double LOADED_ANGULAR_ACC = 20.130082965; // 单位：rad/s
 
     const double PI2 = PI * PI;
-    const double sqrtPI = sqrt(PI);
+    const double sqrtPI = std::sqrt(PI);
     const double MIN_ERROR = 0.0001;
     double a;
     double b;
@@ -26,8 +24,8 @@ private:
     double b0s;
     double c;
 
-    ObjectPool<MotionState> *statePool;
-    ObjectPool<MotionFrag> *fragPool;
+    ObjectPool<MotionState> *statePool = nullptr;
+    ObjectPool<MotionFrag> *fragPool = nullptr;
 
     double pow(double x, double p);
     double sqrt(double x);
@@ -40,10 +38,19 @@ private:
     double getIntegralYAngular0(double v0, double linearAcc, double theta0, double omega0, double t);
     double getIntegralXAngular0(double v0, double linearAcc, double theta0, double omega0, double t);
     double getAngularAcc(bool isloaded, double targetAngularVelocity, double w, double t);
-    void predictFrag(MotionState *state, MotionFrag *frag);
+    bool predictFrag(MotionState *state, MotionFrag *frag);
+    bool checkObstacle(MotionState *ms);
+    int **accessMap = nullptr;
 
 public:
+    MotionModel()
+    {
+        statePool = new ObjectPool<MotionState>(100);
+        fragPool = new ObjectPool<MotionFrag>(100);
+    }
     MotionState *predict(MotionState &state, double targetVelocity, double targetAngularVelocity);
+    void releaseMotionState(MotionState *state);
+    void setAccessMap(int **accessMap);
 };
 
 #endif

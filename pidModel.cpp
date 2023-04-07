@@ -124,12 +124,12 @@ void PIDModel::control(MotionState *ms, Vec *targetPos, double &v, double &w)
     angularVelocity = angularVelocity < -MAX_ANGULAR_VELOCITY ? -MAX_ANGULAR_VELOCITY : angularVelocity;
 
     // 策略：角度大就先停止
-    // if (abs(angleErr) > PI / 32) {
+    // if (fabs(angleErr) > PI / 32) {
     // lineVelocity = 0;
     // }
 
     // 策略:角度越大,速度越小
-    if (fabs(angleErr) > PI / 4)
+    if (fabs(angleErr) > PI / 32)
     {
         // lineVelocity = lineVelocity * deceleration / fabs(angleErr);
         lineVelocity = 0;

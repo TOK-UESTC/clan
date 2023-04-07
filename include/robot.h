@@ -57,7 +57,7 @@ public:
     void bindChain(TaskChain *taskChain);
     void addPathPoint(Vec *point);
     void setDij(Dijkstra *dijkstra);
-
+    void setAccessMap(int **accessMap); // 传入地图指针
     bool isLoaded();
     bool isFree();
     bool operator<(const Robot &o) const; // 重载为降序排列

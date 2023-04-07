@@ -1,4 +1,4 @@
-#include "include/motionModel.h"
+#include "include/includeAll.h"
 /**
  * 根据输入进行预测
  *
@@ -19,20 +19,20 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
         // tempAngularAcc = targetAngularVelocity > state.getW() ? ANGULAR_ACC :
         // -ANGULAR_ACC;
         tempAngularAcc = getAngularAcc(false, targetAngularVelocity, state.getW(), 0.02);
-        tempLinearAcc = targetVelocity > v0 ? LINEAR_ACC : -LINEAR_ACC;
+        tempLinearAcc = targetVelocity >= v0 ? LINEAR_ACC : -LINEAR_ACC;
     }
     else
     {
         // tempAngularAcc = targetAngularVelocity > state.getW() ? LOADED_ANGULAR_ACC :
         // -LOADED_ANGULAR_ACC;
         tempAngularAcc = getAngularAcc(true, targetAngularVelocity, state.getW(), 0.02);
-        tempLinearAcc = targetVelocity > v0 ? LOADED_LINEAR_ACC : -LOADED_LINEAR_ACC;
+        tempLinearAcc = targetVelocity >= v0 ? LOADED_LINEAR_ACC : -LOADED_LINEAR_ACC;
     }
 
     // 根据目标角速度与当前角速度以及加速度定值计算加速时间
-    double tAngle = (targetAngularVelocity - state.getW()) / tempAngularAcc;
+    double tAngle = fabs((targetAngularVelocity - state.getW()) / tempAngularAcc);
     // 根据加速时间计算线速度加速时间
-    double tV = (targetVelocity - v0) / tempLinearAcc;
+    double tV = fabs((targetVelocity - v0) / tempLinearAcc);
 
     std::list<MotionFrag *> frags;
     MotionFrag *frag = fragPool->acquire();
@@ -111,27 +111,60 @@ MotionState *MotionModel::predict(MotionState &state, double targetVelocity, dou
 
     MotionState *result = statePool->acquire();
     result->update(state);
+    bool crash = false;
     for (MotionFrag *item : frags)
     {
-        predictFrag(result, item);
-        // 将使用过的frag释放出来
-        fragPool->release(item);
+        if (!crash)
+        {
+            // double oldX = result->getPos()->getX();
+            // double oldY = result->getPos()->getY();
+
+            // 没有碰撞就继续预测
+            crash = predictFrag(result, item);
+
+            // double newX = result->getPos()->getX();
+            // double newY = result->getPos()->getY();
+
+            // double e = sqrt((newX - oldX) * (newX - oldX) + (newY - oldY) * (newY - oldY));
+            // if (e > 0.05)
+            // {
+            //     std::cerr << "error" << std::endl;
+            // }
+            // 将使用过的frag释放出来
+            fragPool->release(item);
+        }
+        else
+        {
+            // 有碰撞就不预测了，直接释放
+            // 将使用过的frag释放出来
+            fragPool->release(item);
+        }
     }
 
-    // result同时也要记录所需的线速度与角速度指令
-    result->setTargetVelocity(targetVelocity);
-    result->setTargetAngularVelocity(targetAngularVelocity);
-    return result;
+    if (!crash)
+    {
+        // 如果没有碰撞，将预测结果返回
+        result->setTargetVelocity(targetVelocity);
+        result->setTargetAngularVelocity(targetAngularVelocity);
+        return result;
+    }
+    else
+    {
+        // 如果碰撞了，需要重新给出线速度与角速度并开始预测
+        // 将使用过的state释放出来
+        statePool->release(result);
+        return nullptr;
+    }
 }
 
 /**
- * 根据输入进行预测
+ * 根据输入进行预测，返回是否会碰撞
  *
  * @param state: 机器人当前状态
  * @param frag:  机器人下一个切片
  */
 
-void MotionModel::predictFrag(MotionState *state, MotionFrag *frag)
+bool MotionModel::predictFrag(MotionState *state, MotionFrag *frag)
 {
     double heading = state->getHeading();
     double x = state->getPos()->getX();
@@ -176,8 +209,8 @@ void MotionModel::predictFrag(MotionState *state, MotionFrag *frag)
     else if (fragAcc < MIN_ERROR && w < MIN_ERROR)
     {
         // 加速度为0，且角速度为0
-        x += (stateV * fragT + fragLineAcc * (fragT * fragT)) * cos(heading);
-        y += (stateV * fragT + fragLineAcc * (fragT * fragT)) * sin(heading);
+        x += (stateV * fragT + 0.5 * fragLineAcc * (fragT * fragT)) * cos(heading);
+        y += (stateV * fragT + 0.5 * fragLineAcc * (fragT * fragT)) * sin(heading);
     }
 
     heading += w * fragT + 0.5 * fragAcc * fragT * fragT;
@@ -198,6 +231,9 @@ void MotionModel::predictFrag(MotionState *state, MotionFrag *frag)
     double newVy = (stateV + fragLineAcc * fragT) * sin(heading);
     state->setVelocity(newVx, newVy);
     state->setW(w + fragAcc * fragT);
+
+    // return checkObstacle(state);
+    return false;
 }
 
 /**
@@ -209,7 +245,7 @@ void MotionModel::predictFrag(MotionState *state, MotionFrag *frag)
  */
 double MotionModel::getAngularAcc(bool isloaded, double targetAngularVelocity, double w, double t)
 {
-    bool sign = abs(targetAngularVelocity) > abs(w);
+    bool sign = fabs(targetAngularVelocity) > fabs(w);
     if (sign)
     {
         double A = isloaded ? 20.150170343276994 : 38.773244625;
@@ -229,13 +265,12 @@ double MotionModel::getAngularAcc(bool isloaded, double targetAngularVelocity, d
     }
     else
     {
-
         double A = isloaded ? 20.313264124202313 : 39.087072;
         double eta = 3.89725;
         // 初始加速度
         double a;
         double MAX_W = 3.141420364;
-        if (w > 0)
+        if (w >= 0)
         {
             a = -sqrt(A * A - 2 * eta * (MAX_W - w));
         }
@@ -358,4 +393,32 @@ double MotionModel::sqrt(double x)
         return -std::sqrt(-x);
     }
     return std::sqrt(x);
+}
+
+void MotionModel::releaseMotionState(MotionState *state)
+{
+    if (state != nullptr)
+    {
+        statePool->release(state);
+    }
+}
+
+void MotionModel::setAccessMap(int **accessMap)
+{
+    this->accessMap = accessMap;
+}
+// 检查现在的位置是否有障碍物
+bool MotionModel::checkObstacle(MotionState *ms)
+{
+    // 查看当前位置对应的地图是否有障碍物
+    // 将x,y坐标转换为地图坐标
+    int row = ((int)((49.75 - ms->getPos()->getY()) / 0.5)) * 2 + 1;
+    int col = ((int)((ms->getPos()->getX() - 0.25) / 0.5)) * 2 + 1;
+    // 检查对应的state是否可达,由于dwa是从当前state进行搜索，且一帧不可能穿过障碍，因此只需要检查下一帧的state是否是可访问的即可
+    // 对应负载/非负载状态下任意机器人可访问即可，因为以当前state为出发点，不可能跨出当前机器人的可访问区
+    if ((accessMap[row][col] & (ms->isLoaded() ? 0b11110000 : 0b1111)) != 0)
+    {
+        return false;
+    }
+    return true;
 }

@@ -40,7 +40,6 @@ bool Dijkstra::validCoord(int r, int c)
 // 起点
 void Dijkstra::search(int r, int c, bool loaded, int id)
 {
-
     // 如果是负载情况，首先搜索最近的255的点作为起点
     if (loaded && (accessMap[r][c] & (1 << (LOAD_SHIFT_BIT + id))) == 0)
     {
@@ -176,7 +175,6 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
     int direct = -1;
     while (dist[cr][cc] > 0.01)
     {
-
         double minCost = 1000000.;
         for (int i = 0; i < 8; i++)
         {

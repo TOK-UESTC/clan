@@ -9,7 +9,12 @@ private:
     double angularAcc;
 
 public:
-    MotionFrag() {}
+    MotionFrag()
+    {
+        this->t = 0;
+        this->linearAcc = 0.0;
+        this->angularAcc = 0.0;
+    }
     MotionFrag(double t, double linearAcc, double angularAcc)
     {
         this->t = t;
