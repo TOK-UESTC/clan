@@ -12,6 +12,11 @@ Workbench::Workbench(int id, double x, double y, int type)
     this->planMaterialStatus = 0;
 }
 
+Workbench::~Workbench()
+{
+    delete dijkstra;
+}
+
 /* 初始化时返回工作台剩余生产时间 */
 int Workbench::getRestTime(int type)
 {
@@ -24,12 +29,12 @@ int Workbench::getRestTime(int type)
 
 void Workbench::setPlanProductStatus(int planProductStatus)
 {
-    this->planMaterialStatus = planMaterialStatus;
+    this->planProductStatus = planProductStatus;
 }
 
 int Workbench::getPlanProductStatus()
 {
-    return this->planMaterialStatus;
+    return this->planProductStatus;
 }
 
 /** 只更新剩余生产时间，原材料状态以及产品格状态 */
@@ -38,7 +43,7 @@ void Workbench::update()
     // 空白变量，用于接受用不到的内容
     int id;
     double x, y;
-    this->lastMaterialStatus = this->materialStatus;
+    lastMaterialStatus = materialStatus;
     scanf("%d %lf %lf %d %d %d", &id, &x, &y, &rest, &materialStatus, &productStatus);
     getchar();
 }
@@ -50,7 +55,6 @@ bool Workbench::hasMaterial(int type)
     {
         return false;
     }
-
     return ((1 << type) & materialStatus) != 0;
 }
 
@@ -78,7 +82,7 @@ void Workbench::updatePlanMaterialStatus(int type, bool Sell)
     }
     else
     {
-        this->planMaterialStatus = this->planMaterialStatus|(1 << type);
+        this->planMaterialStatus = this->planMaterialStatus | (1 << type);
     }
 }
 
@@ -104,6 +108,11 @@ int Workbench::getType()
 Vec *Workbench::getPos()
 {
     return &pos;
+}
+
+void Workbench::newDij(int **accessMap)
+{
+    this->dijkstra = new Dijkstra(accessMap);
 }
 
 /** 获取工作台剩余工作时间 */
@@ -168,6 +177,11 @@ int Workbench::getMapRow()
 int Workbench::getMapCol()
 {
     return ((int)((pos.getX() - 0.25) / 0.5)) * 2 + 1;
+}
+
+Dijkstra *Workbench::getDij()
+{
+    return this->dijkstra;
 }
 
 bool Workbench::operator==(const Workbench &o) const

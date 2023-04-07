@@ -113,8 +113,6 @@ void Context::init()
         int row = ((int)((49.75 - rb->getPos().getY()) / 0.5)) * 2 + 1;
         int col = ((int)((rb->getPos().getX() - 0.25) / 0.5)) * 2 + 1;
         maps.accessible(map025, accessMap, row, col, rb->getId());
-        // 绑定dijkstra, 机器人维护
-        rb->setDij(new Dijkstra(accessMap));
     }
     // 为机器人传入可访问地图与机器人列表
     for (Robot *rb : robotList)
@@ -126,6 +124,10 @@ void Context::init()
     for (Workbench *wb : workbenchList)
     {
         maps.isWbAccessible(accessMap, wb->getMapRow(), wb->getMapCol());
+        wb->newDij(accessMap);
+        // 初始化dijkstra地图
+        wb->getDij()->search(wb->getMapRow(), wb->getMapCol(), true);
+        wb->getDij()->search(wb->getMapRow(), wb->getMapCol(), false);
     }
 
     // 获得路宽地图
@@ -152,7 +154,6 @@ void Context::init()
 
 void Context::update()
 {
-    // readLine();
     // 快速读入
     scanf("%d %d", &frameId, &money);
     getchar();
@@ -180,10 +181,6 @@ void Context::update()
 void Context::step()
 {
     printf("%d\n", frameId);
-    if (frameId == 52)
-    {
-        int i = 0;
-    }
 
     // printLine
     dispatcher->dispatch();

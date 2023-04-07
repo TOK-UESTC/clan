@@ -1,23 +1,43 @@
 #include "include/includeAll.h"
 
-bool Dijkstra::checkAccess(int r, int c, bool loaded, int id)
+bool Dijkstra::checkAccess(int r, int c, bool loaded)
 {
     // 检查位置是否可通过
     int status = accessMap[r][c];
-    int shift = id;
+    int shift = 0b1111;
 
     if (loaded)
     {
-        shift += LOAD_SHIFT_BIT;
+        shift = 0b11110000;
     }
 
-    return ((1 << shift) & status) != 0;
+    return (shift & status) != 0;
 }
 
-double **Dijkstra::getDistMap()
+double **Dijkstra::getDistMap(bool isLoad)
 {
-    return dist;
+    return isLoad ? loadedDist : unloadDist;
 }
+
+void Dijkstra::fillDist(double fill, bool isLoad)
+{
+
+    for (int i = 0; i < this->row; i++)
+    {
+        for (int j = 0; j < this->col; j++)
+        {
+            if (isLoad)
+            {
+                loadedDist[i][j] = fill;
+            }
+            else
+            {
+                unloadDist[i][j] = fill;
+            }
+        }
+    }
+}
+
 struct pair_hash
 {
     template <class T1, class T2>
@@ -38,10 +58,17 @@ bool Dijkstra::validCoord(int r, int c)
 }
 
 // 起点
-void Dijkstra::search(int r, int c, bool loaded, int id)
+void Dijkstra::search(int r, int c, bool loaded)
 {
+    double fill = 1000000.;
+    fillDist(fill, loaded);
+    double **dist = loaded ? loadedDist : unloadDist;
+    if(accessMap[r][c] == 0)
+    {
+        return ;
+    }
     // 如果是负载情况，首先搜索最近的255的点作为起点
-    if (loaded && (accessMap[r][c] & (1 << (LOAD_SHIFT_BIT + id))) == 0)
+    if (loaded && (accessMap[r][c] & 0b11110000) == 0)
     {
         int minR = r;
         int minC = c;
@@ -68,7 +95,7 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
             qy_init.pop();
 
             // 检查是否是目标点
-            if ((accessMap[curr_x][curr_y] & (1 << (LOAD_SHIFT_BIT + id))) != 0)
+            if ((accessMap[curr_x][curr_y] & 0b11110000) != 0)
             {
                 minR = curr_x;
                 minC = curr_y;
@@ -88,7 +115,7 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
                 }
 
                 // 检查非负载情况下是否可以经过
-                if (!checkAccess(nr, nc, false, id))
+                if (!checkAccess(nr, nc, false))
                 {
                     continue;
                 }
@@ -104,8 +131,6 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
         r = minR;
         c = minC;
     }
-    double fill = 1000000.;
-    fillDist(fill);
     dist[r][c] = 0; // 起点标志
 
     std::queue<int> qx; // 存放遍历点x坐标
@@ -132,7 +157,7 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
             int nc = unloadDir[j][1] + currC;
 
             // 检查地址合法性
-            if (!validCoord(nr, nc) || !checkAccess(nr, nc, loaded, id))
+            if (!validCoord(nr, nc) || !checkAccess(nr, nc, loaded))
             {
                 continue;
             }
@@ -158,7 +183,7 @@ void Dijkstra::search(int r, int c, bool loaded, int id)
     }
 }
 
-std::list<Vec *> *Dijkstra::getKnee(int r, int c)
+std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
 {
     std::list<Vec *> *result = new std::list<Vec *>();
     // 根据dist进行拐点查找
@@ -173,6 +198,7 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
     // 寻找下个访问点
     int lastDirect = -1;
     int direct = -1;
+    double **dist = isLoad ? loadedDist : unloadDist;
     while (dist[cr][cc] > 0.01)
     {
         double minCost = 1000000.;
@@ -221,7 +247,10 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c)
     }
 
     // 向量反转，方便进行遍历
-    std::reverse(result->begin(), result->end());
+    if (isLoad)
+    {
+        std::reverse(result->begin(), result->end());
+    }
 
     return result;
 }

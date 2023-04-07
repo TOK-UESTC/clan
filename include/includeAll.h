@@ -27,7 +27,7 @@
 #include "utils.h"
 #include "motionFrag.h"
 #include "objectPool.h"
-
+#include "dijkstra.h"
 #include "workbench.h"
 #include "action.h"
 
@@ -35,7 +35,6 @@
 #include "motionState.h"
 #include "motionModel.h"
 #include "actionModel.h"
-#include "dijkstra.h"
 #include "dStarLite.h"
 #include "pathPlan.h"
 #include "pidModel.h"

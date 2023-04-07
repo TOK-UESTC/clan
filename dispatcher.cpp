@@ -4,7 +4,6 @@ Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *>
 {
     this->chainPool = new ObjectPool<TaskChain>(100);
     this->tempQueue = new std::priority_queue<TaskChain *>();
-    this->dijkstra = new Dijkstra(accessMap);
     this->accessMap = accessMap;
     for (auto rb : robotList)
     {
@@ -31,8 +30,6 @@ Dispatcher::~Dispatcher()
     delete chainPool;
     // 释放临时队列
     delete tempQueue;
-    // 释放dijkstra
-    delete dijkstra;
 }
 
 /*
@@ -63,8 +60,8 @@ void Dispatcher::init()
             // 生成任务
             for (Workbench *target : *((*workbenchTypeMap.find(type)).second))
             {
-                // 如果目标点负载不可访问，那么不生成任务
-                if ((accessMap[target->getMapRow()][target->getMapCol()] & 0b11110000) == 0)
+                // 从wb -> target 在负载的情况下不可达target，那么不生成任务
+                if (wb->getDij()->getDistMap(true)[target->getMapRow()][target->getMapCol()] > 999999.)
                 {
                     continue;
                 }
@@ -91,33 +88,15 @@ void Dispatcher::init()
         }
         int row = wb->getMapRow();
         int col = wb->getMapCol();
-        int access = accessMap[row][col];
-        int id = 0;
-        // 寻找可接收任务的机器人，判断是否可以访问工作台，非负载可以访问即可
-        for (; id < 4; id++)
-        {
-            // 如果机器人非负载可访问，那么就跳出循环
-            if ((access & (1 << id)) != 0)
-            {
-                break;
-            }
-        }
 
-        // 避免没有机器人可以接收任务
-        if (id == 4)
-        {
-            continue;
-        }
-
-        dijkstra->search(row, col, true, id);
-        double **dijkstraMap = dijkstra->getDistMap();
+        double **dijkstraMap = wb->getDij()->getDistMap(true);
 
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
         {
             Workbench *to = task->getTo();
             task->setDist(dijkstraMap[to->getMapRow()][to->getMapCol()]);
             // 设置最短路径
-            std::list<Vec *> *result = dijkstra->getKnee(to->getMapRow(), to->getMapCol());
+            std::list<Vec *> *result = wb->getDij()->getKnee(to->getMapRow(), to->getMapCol(), true);
             task->setRoad(result);
         }
     }
@@ -197,9 +176,6 @@ void Dispatcher::generateTaskChains()
     // 如果工作台可以投入生产，继续进行判断
     for (Robot *rb : freeRobots)
     {
-        // TODO:这里的map通过dijstra算法获得,用来获取到工作台的最短路径
-        rb->getDij()->search(rb->getMapRow(), rb->getMapCol(), false, rb->getId());
-
         // 遍历task
         for (auto taskListPair : taskTypeMap)
         {
@@ -238,8 +214,7 @@ void Dispatcher::generateTaskChains()
                     continue;
                 }
 
-                double distance = rb->getDij()->getDistMap()[from->getMapRow()][from->getMapCol()] * 0.25;
-                // double distance = 1.;
+                double distance = from->getDij()->getDistMap(false)[rb->getMapRow()][rb->getMapCol()] * 0.25;
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃
@@ -352,6 +327,11 @@ void Dispatcher::updateTaskChain()
                 }
 
                 // 开始生产, 如果生产剩余时间比机器人最快到达时间更久，说明会出现等待
+                double frame = taskChain->getTotalFrame();
+                if (postFrom->getType() == 7)
+                {
+                    int i = 0;
+                }
                 if (postFrom->getRest() > taskChain->getTotalFrame())
                 {
                     continue;
@@ -362,15 +342,21 @@ void Dispatcher::updateTaskChain()
 
                 addPost = true;
                 // 更新任务最早完成时间，并把该任务加入到这条任务链中
-                taskChain->addTask(postTask);
+                TaskChain *newTaskChain = chainPool->acquire();
+                newTaskChain->set(taskChain);
+                newTaskChain->addTask(postTask);
 
                 // 保存
-                queue->push(taskChain);
+                queue->push(newTaskChain);
             }
 
             if (!addPost)
             {
                 queue->push(taskChain);
+            }
+            else
+            {
+                chainPool->release(taskChain);
             }
         }
     }

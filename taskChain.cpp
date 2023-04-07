@@ -10,8 +10,9 @@ TaskChain::TaskChain(double totalFrame)
     this->totalFrame = totalFrame;
 }
 
-void TaskChain::set(const TaskChain *s)
+void TaskChain::set(TaskChain *s)
 {
+    this->taskChain.clear();
     for (Task *task : s->taskChain)
     {
         this->taskChain.push_back(task);
@@ -32,6 +33,9 @@ void TaskChain::occupy()
         Workbench *from = task->getFrom();
         Workbench *to = task->getTo();
 
+        if(from->getType() == 2){
+            int i=0;
+        }
         from->setPlanProductStatus(1);
         to->updatePlanMaterialStatus(from->getType(), false);
     }

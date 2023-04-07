@@ -367,7 +367,8 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
         {
             int nx = unloadDir[i][0] + cx;
             int ny = unloadDir[i][1] + cy;
-            if (map[nx][ny] == '#' || visit[nx][ny] || !isAccessible(map, accessMap, cx, cy, true))
+            // if (map[nx][ny] == '#' || visit[nx][ny] || !isAccessible(map, accessMap, cx, cy, true))
+            if (map[nx][ny] == '#' || visit[nx][ny])
             {
                 continue;
             }
@@ -392,6 +393,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
     // 如果说最近的负载可访问点距离当前点的距离大于5，那么当前点就是甬道
     int minR = r;
     int minC = c;
+    bool isDeleteWb=true;
     // bfs搜索,
     std::queue<int> qx_init; // 存放遍历点坐标
     std::queue<int> qy_init; // 存放遍历点坐标
@@ -406,7 +408,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
     visited[r].insert(c);
     int len = 0;
     // 开始搜索
-    while (!qx_init.empty() && len < 5)
+    while (!qx_init.empty() && len < 5 && isDeleteWb)
     {
         int size = qx_init.size();
 
@@ -424,6 +426,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
             {
                 minR = curr_x;
                 minC = curr_y;
+                isDeleteWb = false;
                 break;
             }
 
@@ -455,7 +458,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
         }
         ++len;
     }
-    if (len >= 5)
+    if (len >= 5 && isDeleteWb)
     {
         // 修改访问过的点的可访问性为不可访问
         for (auto it = visited.begin(); it != visited.end(); it++)
@@ -532,24 +535,24 @@ bool Maps::isAccessible(char **map, int **accessMap, int x, int y, bool isLoad)
             }
         }
         // 如果周围没有负载可访问点，那么该点不可访问
-        bool noAccess = true;
-        if ((accessMap[x][y] & 0b11110000) != 0)
-        {
-            noAccess = false;
-        }
-        for (int i = 0; i < 8; i++)
-        {
-            int tx = unloadDir[i][0] + x;
-            int ty = unloadDir[i][1] + y;
-            if ((accessMap[tx][ty] & 0b11110000) != 0)
-            {
-                noAccess = false;
-            }
-        }
-        if (noAccess)
-        {
-            return false;
-        }
+        // bool noAccess = true;
+        // if ((accessMap[x][y] & 0b11110000) != 0)
+        // {
+        //     noAccess = false;
+        // }
+        // for (int i = 0; i < 8; i++)
+        // {
+        //     int tx = unloadDir[i][0] + x;
+        //     int ty = unloadDir[i][1] + y;
+        //     if ((accessMap[tx][ty] & 0b11110000) != 0)
+        //     {
+        //         noAccess = false;
+        //     }
+        // }
+        // if (noAccess)
+        // {
+        //     return false;
+        // }
     }
     else
     {

@@ -7,8 +7,6 @@ Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this),
 
 Robot::~Robot()
 {
-    // 释放dijkstra
-    delete dijkstra;
 }
 
 Vec *Robot::predict()
@@ -137,6 +135,7 @@ void Robot::checkDeal()
     if (lastProductType != 0 && productType == 0)
     {
         actionModel.popPath();
+        to->updatePlanMaterialStatus(from->getType(), true);
         taskChain.removeTask(0);
         task = taskChain.getNextTask();
     }
@@ -202,7 +201,7 @@ void Robot::bindChain(TaskChain *taskChain)
     // 构建路径
     // rb->from 路径
     Workbench *from = task->getFrom();
-    std::list<Vec *> *result = dijkstra->getKnee(from->getMapRow(), from->getMapCol());
+    std::list<Vec *> *result = from->getDij()->getKnee(getMapRow(), getMapCol(), false);
 
     for (auto p : *result)
     {
@@ -214,11 +213,16 @@ void Robot::bindChain(TaskChain *taskChain)
         delete p;
     }
     delete result;
+    addPathPoint(new Vec(from->getPos()->getX(), from->getPos()->getY()));
     // 加入任务路径
     for (auto t : taskChain->getTaskChain())
     {
         for (auto p : *(t->getRoad()))
         {
+            if (computeDist(from->getPos(), p) < 0.25)
+            {
+                continue;
+            }
             addPathPoint(new Vec(p->getX(), p->getY()));
         }
     }
@@ -262,15 +266,6 @@ void Robot::addPathPoint(Vec *point)
     actionModel.addPathPoint(point);
 }
 
-void Robot::setDij(Dijkstra *dijkstra)
-{
-    this->dijkstra = dijkstra;
-}
-
-Dijkstra *Robot::getDij()
-{
-    return dijkstra;
-}
 void Robot::setAccessMap(int **accessMap)
 {
     actionModel.setAccessMap(accessMap);
