@@ -23,7 +23,6 @@ private:
     Vec pos;                      // 机器人坐标位置
     Vec velocity;                 // 线速度， 二维向量描述, m/s
     ActionModel actionModel;      // 机器人动作模型
-    Dijkstra *dijkstra = nullptr; // 用于每次分配任务时计算路径
     Task *task = nullptr;         // 机器人任务
     TaskChain taskChain;
     std::vector<Action *> actions; // 机器人动作序列
@@ -46,7 +45,6 @@ public:
     double getW() const;
     int getMapRow();
     int getMapCol();
-    Dijkstra *getDij();
 
     void step();
     void checkDeal();
@@ -56,7 +54,6 @@ public:
     void addAction(Action *action);
     void bindChain(TaskChain *taskChain);
     void addPathPoint(Vec *point);
-    void setDij(Dijkstra *dijkstra);
 
     bool isLoaded();
     bool isFree();

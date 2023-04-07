@@ -21,7 +21,7 @@ public:
     // ~TaskChain();                 // 清理内存
     // TaskChain(TaskChain &chain);  // 通过任务任务链初始化任务链
 
-    void set(const TaskChain *s); // 通过任务链更新任务链
+    void set(TaskChain *s); // 通过任务链更新任务链
     void set(double totalFrame);  // 通过任务时间更新任务链
     void occupy();                // 将该任务链上的工作台都置为使用中，避免后续机器人重复领取
     bool isOccupied() const;      // 判断该链条上是否有工作台被占用
