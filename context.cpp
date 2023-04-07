@@ -114,7 +114,12 @@ void Context::init()
         int col = ((int)((rb->getPos().getX() - 0.25) / 0.5)) * 2 + 1;
         maps.accessible(map025, accessMap, row, col, rb->getId());
     }
-
+    // 为机器人传入可访问地图与机器人列表
+    for (Robot *rb : robotList)
+    {
+        rb->setAccessMap(accessMap);
+        rb->setRobotList(&robotList);
+    }
     // 对每个工作台检查可达性
     for (Workbench *wb : workbenchList)
     {
@@ -166,7 +171,7 @@ void Context::update()
     // 更新机器人信息
     for (Robot *rb : robotList)
     {
-        rb->update(leftFrame);
+        rb->update(frameId);
         rb->checkDeal();
     }
 
@@ -176,10 +181,6 @@ void Context::update()
 void Context::step()
 {
     printf("%d\n", frameId);
-    if (frameId >= fastDebug)
-    {
-        fastDebug += 20;
-    }
 
     // printLine
     dispatcher->dispatch();

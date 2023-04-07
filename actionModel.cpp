@@ -32,8 +32,25 @@ void ActionModel::generateMoveActions()
     // }
 
     // // 获取state
-    MotionState *state = statePool->acquire();
+    MotionState *state = getMotionState();
     state->update(rb);
+    // // 比较预测与实际的距离
+    // if (pridictedPos != nullptr)
+    // {
+    //     // double error = computeDist(state->getPos(), pridictedPos);
+    //     // // if (error > 0.05)
+    //     // // {
+    //     // //     std::cerr << "error: " << error << std::endl;
+    //     // // }
+    //     // std::ofstream outfile;
+    //     // outfile.open("./log/error.txt", std::ios::app);
+    //     // outfile << error << std::endl;
+    //     // outfile.close();
+    // }
+    // else
+    // {
+    //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
+    // }
 
     // 获取下一个目标点
     if (paths.empty())
@@ -58,8 +75,14 @@ void ActionModel::generateMoveActions()
     double v = 0, w = 0;
     rb->control(state, nextPos, v, w);
 
+    // 使用motionModel计算下一时刻的state
+    state->update(rb);
+    // MotionState *nextState = motionModel->predict(*state, v, w);
+    // pridictedPos = nextState->getPos();
+
+    // motionModel->releaseMotionState(nextState);
     // Release the acquired state
-    statePool->release(state);
+    releaseMotionState(state);
     // 产生转向动作
     rb->addAction(this->rotateAction.update(ActionType::ROTATE, w));
     // 产生前进动作
@@ -167,4 +190,8 @@ double ActionModel::eval_spline(const std::vector<double> &x, const std::vector<
     double t = (xi - x[i]) / dx;
     double q = (1.0 - t) * y[i] + t * y[i + 1] + t * (1.0 - t) * (A * (1.0 - t) + B * t);
     return q;
+}
+void ActionModel::setAccessMap(int **accessMap)
+{
+    motionModel->setAccessMap(accessMap);
 }

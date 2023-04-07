@@ -88,6 +88,7 @@ void Dispatcher::init()
         }
         int row = wb->getMapRow();
         int col = wb->getMapCol();
+
         double **dijkstraMap = wb->getDij()->getDistMap(true);
 
         for (auto task : *(workbenchIdTaskMap[wb->getId()]))
@@ -212,6 +213,7 @@ void Dispatcher::generateTaskChains()
                 {
                     continue;
                 }
+
                 double distance = from->getDij()->getDistMap(false)[rb->getMapRow()][rb->getMapCol()] * 0.25;
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 

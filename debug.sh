@@ -19,7 +19,7 @@ then
     name=$1
     # 与答题器交互
     cd ..
-    $executor -f -d -m ./maps/$name.txt "./clan/build/main.exe"
+    $executor -f -d -m ./maps/$name.txt -s 0 "./clan/build/main.exe"
     cd clan
 else
     echo "no map specified"

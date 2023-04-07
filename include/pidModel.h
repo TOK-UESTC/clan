@@ -30,6 +30,25 @@ private:
     Robot *rb;
 
 public:
+    PIDModel()
+    {
+        KpAngle = 10;
+        KiAngle = 0.1;
+        KdAngle = 0.0;
+        lastErrAngle = 0.0;
+        intAngle = 0.0;
+        intMaxAngle = 0.5;
+
+        KpDist = 6.2;
+        KiDist = 0.1;
+        KdDist = 1.0;
+        KpDistLoad = 6.2;
+        KiDistLoad = 0.1;
+        KdDistLoad = 1.0;
+        lastErrDist = 0.0;
+        intDist = 0.0;
+        intMaxDist = 5.7;
+    }
     PIDModel(Robot *rb) : rb(rb)
     {
         KpAngle = 10;

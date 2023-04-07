@@ -2,6 +2,7 @@
 #define ROBOT_H
 
 #include "includeAll.h"
+#define SQRT2 1.4142135623730950488016887242097
 /*
  * @brief 机器人代理类
  *
@@ -19,18 +20,28 @@ private:
     double collisionCoefficients; // 碰撞价值系数 [0.8, 1]
     double w;                     // 角速度 单位：弧度每秒， 正数表示顺时针， 负数表示逆时针
     double heading;               // 朝向 [-pi, pi] 0 表示右方向, pi/2表示上方向
-    int leftFrame;                // 剩余帧数
+    int frameId;                  // 帧id
     Vec pos;                      // 机器人坐标位置
     Vec velocity;                 // 线速度， 二维向量描述, m/s
     ActionModel actionModel;      // 机器人动作模型
     Task *task = nullptr;         // 机器人任务
     TaskChain taskChain;
-    std::vector<Action *> actions; // 机器人动作序列
-    PIDModel pidModel;             // 机器人PID模型
+    std::vector<Action *> actions;                       // 机器人动作序列
+    PIDModel PID;                                        // 机器人PID模型
+    ObjectPool<PIDModel> *pidPool;                       // 机器人PID模型对象池
+    std::unordered_map<int, MotionState *> motionStates; // 用于记录机器人的运动状态序列
+    ObjectPool<Vec> *vecPool;                            // 用于记录机器人的运动状态序列
+    std::vector<Robot *> *robotList = nullptr;           // 机器人列表
+
+    void clearStates();
+    Vec *findMiddle(MotionState *crash);
+    void searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints);
 
 public:
     Robot(int id, double x, double y);
     ~Robot();
+
+    Vec *predict();
 
     int getId() const;
     double getPriority() const;
@@ -46,9 +57,12 @@ public:
     int getMapRow();
     int getMapCol();
 
+    MotionState *getMotionState();
+    void releaseMotionState(MotionState *ms);
+    void setRobotList(std::vector<Robot *> *robotList);
     void step();
     void checkDeal();
-    void update(int leftFrame);
+    void update(int frameId);
     void updatePid(int count);
     void control(MotionState *ms, Vec *pos, double &v, double &w);
     void addAction(Action *action);
