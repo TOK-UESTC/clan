@@ -17,7 +17,7 @@ fi
 if [ $# -eq 1 ]
 then
     name=$1
-    $executor "./build/main" -f  -m ../maps/$name.txt
+    $executor "./build/main" -f -d -m ../maps/$name.txt
 else
     echo "" > error.txt
     for i in $(seq 1 1 4)

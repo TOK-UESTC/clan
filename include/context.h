@@ -11,6 +11,7 @@ class Context
 {
 
 private:
+    int fastDebug = 0;
     char line[200];                                                       // 读取缓冲区
     int frameId = 0;                                                      // 当前帧数
     int money = 0;                                                        // 当前金额

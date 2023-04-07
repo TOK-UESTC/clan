@@ -6,46 +6,51 @@
 class Dijkstra
 {
 private:
-    int **accessMap; // 访问图
-    double **dist;   // 距离图, TODO：float
-    int row, col;    // 地图属性
+    int **accessMap;     // 访问图
+    double **loadedDist; // 负载距离图
+    double **unloadDist; // 空载距离图
+    int row, col;        // 地图属性
 public:
     Dijkstra(int **accessMap)
     {
         this->accessMap = accessMap;
         this->row = MAP025;
         this->col = MAP025;
-        dist = new double *[row];
+
+        loadedDist = new double *[row];
         for (int i = 0; i < this->row; i++)
         {
-            dist[i] = new double[this->col];
+            loadedDist[i] = new double[this->col];
+        }
+
+        unloadDist = new double *[row];
+        for (int i = 0; i < this->row; i++)
+        {
+            unloadDist[i] = new double[this->col];
         }
     }
 
-    ~Dijkstra(){
+    ~Dijkstra()
+    {
         int row = MAP025;
         for (int i = 0; i < row; i++)
         {
-            delete[] dist[i];
+            delete[] loadedDist[i];
+            delete[] unloadDist[i];
         }
-        delete[] dist;
+        delete[] loadedDist;
+        delete[] unloadDist;
     }
 
-    void search(int r, int c, bool loaded, int id); // 从起始点进行搜素，填充访问图
-    std::list<Vec *> *getKnee(int r, int c);        // 根据访问图获取拐点，输入为目标位置
+    void search(int r, int c, bool loaded); // 从起始点进行搜素，填充访问图
+    std::list<Vec *> *getKnee(int r, int c, bool isLoad);        // 根据访问图获取拐点，输入为目标位置
 
     bool validCoord(int r, int c);                       // 检查坐标是否合法
-    bool checkAccess(int r, int c, bool loaded, int id); // 根据机器人状态判断是否可达
+    bool checkAccess(int r, int c, bool loaded); // 根据机器人状态判断是否可达
 
-    double **getDistMap();
-    void fillDist(double fill)
-    {
-        for(int i=0; i<this->row; i++){
-            for(int j=0; j<this->row; j++){
-                dist[i][j] = fill;
-            }
-        }
-    }
+    double **getDistMap(bool isLoad);
+    void fillDist(double fill, bool isLoad);
+
     int **getAccessMap()
     {
         return accessMap;
