@@ -71,6 +71,7 @@ public:
 
     bool isLoaded();
     bool isFree();
+    void setAccessMap(int **accessMap);
     bool operator<(const Robot &o) const; // 重载为降序排列
     bool operator==(const Robot &o) const;
     size_t hash() const;
