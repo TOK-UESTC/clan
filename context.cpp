@@ -119,6 +119,7 @@ void Context::init()
     {
         rb->setAccessMap(accessMap);
         rb->setRobotList(&robotList);
+        sortedRobot.push_back(rb);
     }
     // 对每个工作台检查可达性
     for (Workbench *wb : workbenchList)
@@ -184,11 +185,18 @@ void Context::step()
 
     // printLine
     dispatcher->dispatch();
-    for (Robot *rb : robotList)
+
+    std::sort(sortedRobot.begin(), sortedRobot.end(), [](Robot *below, Robot *above)
+              { return below->getPriority() > above->getPriority(); });
+    for (Robot *rb : sortedRobot)
+    {
+        rb->clearStates();
+    }
+    for (Robot *rb : sortedRobot)
     {
         rb->step();
     }
-    for (Robot *rb : robotList)
+    for (Robot *rb : sortedRobot)
     {
         for (Action *action : rb->getActions())
         {

@@ -28,12 +28,11 @@ private:
     TaskChain taskChain;
     std::vector<Action *> actions;                       // 机器人动作序列
     PIDModel PID;                                        // 机器人PID模型
-    ObjectPool<PIDModel> *pidPool;                       // 机器人PID模型对象池
+    ObjectPool<PIDModel> *pidPool = nullptr;             // 机器人PID模型对象池
     std::unordered_map<int, MotionState *> motionStates; // 用于记录机器人的运动状态序列
-    ObjectPool<Vec> *vecPool;                            // 用于记录机器人的运动状态序列
-    std::vector<Robot *> *robotList = nullptr;           // 机器人列表
 
-    void clearStates();
+    std::vector<Robot *> *robotList = nullptr; // 机器人列表
+
     Vec *findMiddle(MotionState *crash);
     void searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints);
 
@@ -56,9 +55,12 @@ public:
     double getW() const;
     int getMapRow();
     int getMapCol();
+    void clearStates();
 
     MotionState *getMotionState();
     void releaseMotionState(MotionState *ms);
+    Vec *getVec();
+    void releaseVec(Vec *v);
     void setRobotList(std::vector<Robot *> *robotList);
     void step();
     void checkDeal();

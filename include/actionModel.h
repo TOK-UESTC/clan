@@ -29,7 +29,7 @@ private:
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
-
+        vecPool = new ObjectPool<Vec>(100);
         motionModel = new MotionModel();
     }
     // 获取MotionState对象
@@ -43,6 +43,15 @@ public:
         motionModel->releaseMotionState(state);
     }
 
+    Vec *getVec()
+    {
+        return vecPool->acquire();
+    }
+
+    void releaseVec(Vec *v)
+    {
+        vecPool->release(v);
+    }
     // 更新动作序列
     void addPathPoint(Vec *v)
     {
@@ -72,6 +81,8 @@ public:
 private:
     double eval_spline(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &a, double xi);
     void spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a);
+    ObjectPool<Vec> *vecPool = nullptr; // 用于记录机器人的运动状态序列
+    Vec nextPos;
 };
 
 #endif

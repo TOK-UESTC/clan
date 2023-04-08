@@ -2,6 +2,7 @@
 #define CONTEXT_H
 
 #include "includeAll.h"
+
 /*
  * @brief 用于管理程序运行的上下文信息
  *
@@ -23,6 +24,7 @@ private:
     Maps maps;                                                            // 存放地图信息
     std::vector<Workbench *> workbenchList;                               // 工作台列表
     std::vector<Robot *> robotList;                                       // 机器人列表
+    std::vector<Robot *> sortedRobot;                                     // 机器人根据queue排序
     std::unordered_map<int, std::vector<Workbench *> *> workbenchTypeMap; // {工作台类型:工作台列表}字典
     std::unordered_map<int, std::vector<Task *> *> workbenchIdTaskMap;    // {工作台id:该id工作台发出的任务列表}字典
     Dispatcher *dispatcher;                                               // 调度器
