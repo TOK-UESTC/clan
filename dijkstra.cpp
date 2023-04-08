@@ -191,7 +191,7 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
     int cc = c;
 
     // 添加开头
-    result->push_back(rc2Coord(cr, cc, 0.25));
+    // result->push_back(rc2Coord(cr, cc, 0.25));
 
     // TODO: 如果多个方向有相同的代价
     // ，根据上一次选择的下降方向去进行临近选择
@@ -223,6 +223,11 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
             int i = 0;
         }
 
+        // 方向发生了变化。则添加到拐点列表
+        if (direct != lastDirect)
+        {
+            result->push_back(rc2Coord(cr, cc, 0.25));
+        }
         // 更新位置
         cr += unloadDir[direct][0];
         cc += unloadDir[direct][1];

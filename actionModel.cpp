@@ -60,7 +60,7 @@ void ActionModel::generateMoveActions()
     Vec *nextPos = paths.front();
     Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
     // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    while (computeDist(state->getPos(), nextPos) < 0.4 && computeDist(wb->getPos(), nextPos) > 0.1)
+    while (computeDist(state->getPos(), nextPos) < 0.1 && computeDist(wb->getPos(), nextPos) > 0.1)
     {
         paths.pop_front();
         delete nextPos;
