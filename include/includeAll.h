@@ -29,6 +29,7 @@
 #include "objectPool.h"
 #include "pools.h"
 #include "dijkstra.h"
+#include "partDijk.h"
 #include "workbench.h"
 #include "action.h"
 
