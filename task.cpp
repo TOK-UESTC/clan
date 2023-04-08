@@ -4,10 +4,10 @@ double Task::getWeight()
 {
     // 先供给原料格占用多的工作台
     int status = to->getPlanMaterialStatus() | to->getMaterialStatus();
-    double weightCommand = 1;
+    double weightCommand = 1.0;
     for (int i = 1; i < 7; i++)
     {
-        weightCommand += (((status & (1 << i)) != 0) ? 1 : 0);
+        weightCommand += (((status & (1 << i)) != 0) ? 1.0 : 0.0);
     }
 
     // 添加跨生产线衰减
