@@ -52,35 +52,38 @@ void ActionModel::generateMoveActions()
     //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
     // }
 
-    // 获取下一个目标点
-    if (paths.empty())
-    {
-        return;
-    }
-    Vec *nextPos = paths.front();
-    Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
-    // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    while (computeDist(state->getPos(), nextPos) < 0.1 && computeDist(wb->getPos(), nextPos) > 0.1)
-    {
-        paths.pop_front();
-        delete nextPos;
-        if (paths.empty())
-        {
-            return;
-        }
-        nextPos = paths.front();
-    }
+    // // 获取下一个目标点
+    // if (paths.empty())
+    // {
+    //     return;
+    // }
+    // Vec *nextPos = paths.front();
+    // Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
+    // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
+    // while (computeDist(state->getPos(), nextPos) < 0.4 && computeDist(wb->getPos(), nextPos) > 0.1)
+    // {
+    //     paths.pop_front();
+    //     delete nextPos;
+    //     if (paths.empty())
+    //     {
+    //         return;
+    //     }
+    //     nextPos = paths.front();
+    // }
+
+    // TODO: 需要每帧都预测么？
+    Vec *next = rb->predict();
+    nextPos.set(next);
+    vecPool->release(next);
 
     // Calculate the control factors for the robot's movement
     double v = 0, w = 0;
-    rb->control(state, nextPos, v, w);
+    rb->control(state, &nextPos, v, w);
 
     // 使用motionModel计算下一时刻的state
-    state->update(rb);
     // MotionState *nextState = motionModel->predict(*state, v, w);
     // pridictedPos = nextState->getPos();
 
-    // motionModel->releaseMotionState(nextState);
     // Release the acquired state
     releaseMotionState(state);
     // 产生转向动作

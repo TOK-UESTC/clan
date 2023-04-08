@@ -3,7 +3,7 @@
 
 #include "includeAll.h"
 
-class Compare
+class CompareChain
 {
 public:
     bool operator()(TaskChain *below, TaskChain *above)
@@ -23,8 +23,8 @@ private:
 
     // key: 工作台种类, value: 以工作台产物为原料的所有任务
     std::unordered_map<int, std::vector<Task *> *> taskTypeMap;
-    std::unordered_map<Robot *, std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *> taskChainQueueMap;
-    std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *tempQueue;
+    std::unordered_map<Robot *, std::priority_queue<TaskChain *, std::vector<TaskChain *>, CompareChain> *> taskChainQueueMap;
+    std::priority_queue<TaskChain *, std::vector<TaskChain *>, CompareChain> *tempQueue;
 
     // 任务链池子
     ObjectPool<TaskChain> *chainPool;
@@ -39,10 +39,10 @@ public:
     void init();
     void clearChainMap(Robot *rb);
     bool isQueueMapEmpty(Robot *rb);
-    void generateTaskChains();                                                                                                                                                // 生成任务链
-    void updateTaskChain();                                                                                                                                                   // 添加任务链
-    void copyQueue(std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *source, std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *target); // 复制任务链
-    void updateFreeBot();                                                                                                                                                     // 更新机器人列表
+    void generateTaskChains();                                                                                                                                                          // 生成任务链
+    void updateTaskChain();                                                                                                                                                             // 添加任务链
+    void copyQueue(std::priority_queue<TaskChain *, std::vector<TaskChain *>, CompareChain> *source, std::priority_queue<TaskChain *, std::vector<TaskChain *>, CompareChain> *target); // 复制任务链
+    void updateFreeBot();                                                                                                                                                               // 更新机器人列表
     void dispatch();
     // 分配
     void releaseMap(double **map)
