@@ -53,33 +53,34 @@ void ActionModel::generateMoveActions()
     //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
     // }
     // // 获取下一个目标点
-    // if (paths.empty())
-    // {
-    //     return;
-    // }
+    if (paths.empty())
+    {
+        return;
+    }
 
-    // // TODO： 相同Pos删除
-    // Vec *nextPos = paths.front();
+    // TODO： 相同Pos删除
+    Vec *nextPos = paths.front();
     Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
-    // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    // while (computeDist(state->getPos(), nextPos) < 0.1 && computeDist(wb->getPos(), nextPos) > 0.1)
-    // {
-    //     paths.pop_front();
-    //     pools.release(nextPos);
-    //     if (paths.empty())
-    //     {
-    //         return;
-    //     }
-    //     nextPos = paths.front();
-    // }
+    // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
+    while (computeDist(state->getPos(), nextPos) < 0.1 && computeDist(wb->getPos(), nextPos) > 0.1)
+    {
+        paths.pop_front();
+        pools.release(nextPos);
+        if (paths.empty())
+        {
+            return;
+        }
+        nextPos = paths.front();
+    }
 
-    // // TODO: 需要每帧都预测么？
-    Vec *next = rb->predict(wb->getPos());
+    // TODO: 需要每帧都预测么？
+    Vec *next = rb->predict(nextPos);
+    // nextPos.set(next);
+    // vecPool->release(next);
 
     // Calculate the control factors for the robot's movement
     double v = 0, w = 0;
-    rb->control(state, next, v, w);
-    pools.release(next);
+    rb->control(state, nextPos, v, w);
 
     // // 使用motionModel计算下一时刻的state
     // MotionState *nextState = motionModel->predict(*state, v, w);
@@ -106,7 +107,7 @@ void ActionModel::generateShopActions()
         Workbench *wb = rb->getTask()->getFrom();
         Workbench *to = rb->getTask()->getTo();
         // 判断是否在目标工作台附近，并且当前已经调转，开始朝向下一个工作台
-        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx()) //&& computeDist(wb->getPos(), to->getPos()) / MAX_FORWARD_FRAME * 1.2 < Context::leftFrame)
+        if (rb->getWorkbenchIdx() == wb->getWorkbenchIdx() && ((rb->getTask()->getDist() / MAX_FORWARD_FRAME * 1.2) < leftFrame))
         {
             // 购买行为
             rb->addAction(this->buyAction.update(ActionType::BUY));

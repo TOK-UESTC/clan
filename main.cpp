@@ -1,5 +1,9 @@
 #include "include/includeAll.h"
 
+int workbenchMapper[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // 多出一个是为了和workbenchType对齐 balanceMap
+int balanceMapper[7] = {0, 0, 0, 0, 1, 1, 1};             // 工作台类型4，5，6的工作台均衡生产
+int leftFrame = 15000;
+
 #ifdef W_DEBUG
 #include <Windows.h>
 
@@ -48,11 +52,11 @@ int main(int argc, char *argv[])
         if (showTime)
         {
             double cost = chrono::duration_cast<chrono::microseconds>(end - start).count() / 1000.0;
-            if (cost > 10.0)
-            {
+            // if (cost > 10.0)
+            // {
                 fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
                 fflush(stderr);
-            }
+            // }
         }
     }
     return 0;

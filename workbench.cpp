@@ -37,6 +37,15 @@ int Workbench::getPlanProductStatus()
     return this->planProductStatus;
 }
 
+int Workbench::getPlanMaterialStatus()
+{
+    return planMaterialStatus;
+}
+int Workbench::getMaterialStatus()
+{
+    return materialStatus;
+}
+
 /** 只更新剩余生产时间，原材料状态以及产品格状态 */
 void Workbench::update()
 {

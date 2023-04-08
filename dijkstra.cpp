@@ -249,6 +249,10 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
     }
     // 将结束工作台放置到列表中
     Vec *lastVec = rc2Coord(cr, cc, 0.25);
+    if(result->size() == 0)
+    {
+        result->push_back(lastVec);
+    }
     if (computeDist(lastVec, result->back()) < 0.1)
     {
         pools.release(lastVec);

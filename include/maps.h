@@ -78,6 +78,7 @@ public:
     void accessible(char **map, int **accessMap, int x, int y, int id);        // 得到地图上的元素可访问性
     bool isAccessible(char **map, int **accessMap, int x, int y, bool isLoad); // map上x,y处在load or unload情况下是否可访问
     void isWbAccessible(int **accessMap, int r, int c);                        // 得到地图上的元素可访问性
+    void fixAccessMap(int **accessMap, int r, int c);                          // 处理accessMap的一些特殊情况
     int **mapRoadWidthHV(char **map, bool isHorizon);                          // 得到地图元素的水平或垂直路宽
     int **mapRoadWidth(char **map);                                            // 得到地图元素的
     void writeMaptoFile(const char *file, char **map);                         // 将map数据写入file文件

@@ -1,6 +1,5 @@
 #ifndef TASK_H
 #define TASK_H
-
 #include "includeAll.h"
 
 /*
@@ -71,7 +70,7 @@ public:
         {
             timeCoefficient = (1 - sqrt(1 - pow(1 - (predictedFrame / 9000), 2))) * (1 - 0.8) + 0.8;
         }
-        return sellPrice * timeCoefficient - price;
+        return getWeight() * (sellPrice * timeCoefficient - price);
     }
 
     void setpostTaskList(std::vector<Task *> *postTaskList)
@@ -93,5 +92,10 @@ public:
     {
         return this->postTaskList;
     }
+
+private:
+    double getWeight();
+    int getMinValue();
+    double isCross();
 };
 #endif
