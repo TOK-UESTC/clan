@@ -33,12 +33,14 @@ void TaskChain::occupy()
         Workbench *from = task->getFrom();
         Workbench *to = task->getTo();
 
-        if (from->getType() == 2)
-        {
-            int i = 0;
-        }
         from->setPlanProductStatus(1);
         to->updatePlanMaterialStatus(from->getType(), false);
+
+        // 更新balanceMapper
+        if (to->getType() == 4 || to->getType() == 5 || to->getType() == 6)
+        {
+            balanceMapper[to->getType()]++;
+        }
     }
 }
 
@@ -110,7 +112,7 @@ double TaskChain::getProfit()
         // TODO: 这里的计算是临时的
         profit += task->getProfit();
     }
-    return profit;
+    return profit/totalFrame;
 }
 
 /** 完成任务预估需要的帧数 */

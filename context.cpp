@@ -41,7 +41,7 @@ void Context::init()
     int row = 0;
     double x, y;            // 地图坐标
     int workbenchCount = 0; // 工作台数量
-    int robotCount = 0;     // 机器人数量
+    int robotCount = 0;     // 机器人数量 
     map05 = maps.getMap();
 
     while (true)
@@ -81,6 +81,7 @@ void Context::init()
             // 工作台
             default:
                 int workbenchType = line[col] - '0';
+                workbenchMapper[workbenchType]++;
                 if (workbenchType != 8 && workbenchType != 9)
                 {
                     workbenchIdTaskMap[workbenchCount] = new std::vector<Task *>();
@@ -125,6 +126,11 @@ void Context::init()
     for (Workbench *wb : workbenchList)
     {
         maps.isWbAccessible(accessMap, wb->getMapRow(), wb->getMapCol());
+        maps.fixAccessMap(accessMap, wb->getMapRow(), wb->getMapCol());
+    }
+
+    for (Workbench *wb : workbenchList)
+    {
         wb->newDij(accessMap);
         // 初始化dijkstra地图
         wb->getDij()->search(wb->getMapRow(), wb->getMapCol(), true);
@@ -183,6 +189,10 @@ void Context::step()
 {
     printf("%d\n", frameId);
 
+    if (frameId == 3041)
+    {
+        int i = 0;
+    }
     // printLine
     dispatcher->dispatch();
 

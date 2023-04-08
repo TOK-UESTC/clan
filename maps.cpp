@@ -386,6 +386,60 @@ void Maps::accessible(char **map, int **accessMap, int r, int c, int id)
     delete[] visit;
 }
 
+void Maps::fixAccessMap(int **accessMap, int r, int c)
+{
+    // 当工作台靠近墙并且负载可访问时，特殊处理周围空载能访问点
+    if ((accessMap[r][c] & 0b11110000) != 0)
+    {
+        bool flag = true;
+        for (int j = 0; j < 8; j++)
+        {
+            int nr = unloadDir[j][0] + r;
+            int nc = unloadDir[j][1] + c;
+            if ((accessMap[nr][nc] & 0b11110000) != 0)
+            {
+                flag = false;
+                break;
+            }
+        }
+        // 如果周围没有一个负载可访问的,把空载可访问的部分变成负载可访问
+        if (flag)
+        {
+            if ((accessMap[r - 1][c - 1] & 0b1111) != 0 && (accessMap[r][c - 1] & 0b1111) != 0 && (accessMap[r - 1][c] & 0b1111) != 0)
+            {
+                accessMap[r][c - 1] = accessMap[r][c];
+                accessMap[r - 1][c - 1] = accessMap[r][c];
+                accessMap[r - 1][c] = accessMap[r][c];
+                return ;
+            }
+
+            if ((accessMap[r - 1][c + 1] & 0b1111) != 0 && (accessMap[r][c + 1] & 0b1111) != 0 && (accessMap[r - 1][c] & 0b1111) != 0)
+            {
+                accessMap[r][c + 1] = accessMap[r][c];
+                accessMap[r - 1][c + 1] = accessMap[r][c];
+                accessMap[r - 1][c] = accessMap[r][c];
+                return ;
+            }
+
+            if ((accessMap[r + 1][c - 1] & 0b1111) != 0 && (accessMap[r][c - 1] & 0b1111) != 0 && (accessMap[r + 1][c] & 0b1111) != 0)
+            {
+                accessMap[r][c - 1] = accessMap[r][c];
+                accessMap[r + 1][c - 1] = accessMap[r][c];
+                accessMap[r + 1][c] = accessMap[r][c];
+                return ;
+            }
+
+            if ((accessMap[r + 1][c + 1] & 0b1111) != 0 && (accessMap[r][c + 1] & 0b1111) != 0 && (accessMap[r + 1][c] & 0b1111) != 0)
+            {
+                accessMap[r][c + 1] = accessMap[r][c];
+                accessMap[r + 1][c + 1] = accessMap[r][c];
+                accessMap[r + 1][c] = accessMap[r][c];
+                return ;
+            }
+        }
+    }
+}
+
 // 从当前的点开始，检查是否出现甬道情况
 void Maps::isWbAccessible(int **accessMap, int r, int c)
 {
@@ -393,7 +447,7 @@ void Maps::isWbAccessible(int **accessMap, int r, int c)
     // 如果说最近的负载可访问点距离当前点的距离大于5，那么当前点就是甬道
     int minR = r;
     int minC = c;
-    bool isDeleteWb=true;
+    bool isDeleteWb = true;
     // bfs搜索,
     std::queue<int> qx_init; // 存放遍历点坐标
     std::queue<int> qy_init; // 存放遍历点坐标
@@ -534,25 +588,6 @@ bool Maps::isAccessible(char **map, int **accessMap, int x, int y, bool isLoad)
                 return false;
             }
         }
-        // 如果周围没有负载可访问点，那么该点不可访问
-        // bool noAccess = true;
-        // if ((accessMap[x][y] & 0b11110000) != 0)
-        // {
-        //     noAccess = false;
-        // }
-        // for (int i = 0; i < 8; i++)
-        // {
-        //     int tx = unloadDir[i][0] + x;
-        //     int ty = unloadDir[i][1] + y;
-        //     if ((accessMap[tx][ty] & 0b11110000) != 0)
-        //     {
-        //         noAccess = false;
-        //     }
-        // }
-        // if (noAccess)
-        // {
-        //     return false;
-        // }
     }
     else
     {

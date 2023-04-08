@@ -16,7 +16,6 @@ private:
     char line[200];                                                       // 读取缓冲区
     int frameId = 0;                                                      // 当前帧数
     int money = 0;                                                        // 当前金额
-    int leftFrame;                                                        // 剩余帧数
     char **map05;                                                         // 原图
     char **map025;                                                        // 转换后地图
     int **mapRoadWidth;                                                   // 路宽图

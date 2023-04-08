@@ -18,12 +18,12 @@ fi
 if [ $# -eq 1 ]
 then
     name=$1
-    $executor "./build/main" -f -d -s 1234 -m ../maps/$name.txt
+    $executor "./build/main" -f -d -m ../maps/$name.txt
 else
     echo "" > error.txt
     for i in $(seq 1 1 4)
     do
-        $executor "./build/main" -f -m  ../maps/$i.txt >> error.txt
+        $executor "./build/main" -f -d -m  ../maps/$i.txt >> error.txt
     done
     # 读取error.txt文件的内容并输出其中的score行
     awk '{if(match($0, /"score":[0-9]+/)){sum+=substr($0,RSTART+8,RLENGTH-8)}} END {print sum}' error.txt

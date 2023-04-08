@@ -37,6 +37,8 @@ public:
     void updatePlanMaterialStatus(int type, bool Sell);
     void setPlanProductStatus(int planProductStatus);
     int getPlanProductStatus();
+    int getPlanMaterialStatus();
+    int getMaterialStatus();
     bool isFree();
     bool isReady();
     int getType();
@@ -47,6 +49,7 @@ public:
     int getMapRow();
     int getMapCol();
     Dijkstra *getDij();
+
 
     bool operator==(const Workbench &o) const;
     size_t hash() const;

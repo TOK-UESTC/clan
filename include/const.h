@@ -2,7 +2,7 @@
 #define CONST_H
 
 /*
- * @brief 程序用到的常量和枚举类型
+ * @brief 程序用到的常量和全局变量
  *
  *
  */
@@ -10,7 +10,7 @@
 #define PI 3.1415926535897932384626                                 // 圆周率
 #define DURATION_OF_GAME 300                                        // 比赛时长，单位: s
 #define ROBOT_NUMBER 4                                              // 机器人数量
-#define FRAME_PER_SECOND 50.0                                       // 每秒帧数
+#define FRAME_PER_SECOND 50                                         // 每秒帧数
 #define INIT_FUND 200000                                            // 初始资金
 #define ROBOT_IN_WORKBENCH 0.4                                      // 机器人在工作台范围判断， 单位 m
 #define ROBOT_RADIUS_UNLOAD 0.45                                    // 机器人空载半径
@@ -67,5 +67,9 @@ static int priceMapper[][2] = {
     {17200, 25000},
     {19200, 27500},
     {76000, 105000}};
+
+extern int workbenchMapper[]; // 多出一个是为了和workbenchType对齐 balanceMap
+extern int balanceMapper[]; // 工作台类型4，5，6的工作台均衡生产
+extern int leftFrame;
 
 #endif
