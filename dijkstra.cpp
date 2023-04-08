@@ -1,16 +1,5 @@
 #include "include/includeAll.h"
 
-Vec *Dijkstra::rc2Coord(int r, int c, double step)
-{
-    double x = c * step;
-    double y = 50.0 - r * step;
-
-    Vec *result = pools.getVec();
-    result->set(x, y);
-
-    return result;
-}
-
 bool Dijkstra::checkAccess(int r, int c, bool loaded)
 {
     // 检查位置是否可通过
@@ -74,6 +63,8 @@ void Dijkstra::search(int r, int c, bool loaded)
     double fill = 1000000.;
     fillDist(fill, loaded);
     double **dist = loaded ? loadedDist : unloadDist;
+
+    // 当wb对于rb是不可达的时候，退出
     if (accessMap[r][c] == 0)
     {
         return;

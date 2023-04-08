@@ -1,16 +1,5 @@
 #include "include/includeAll.h"
 
-Vec *PartDijk::rc2Coord(int r, int c, double step)
-{
-    double x = c * step;
-    double y = 50.0 - r * step;
-
-    Vec *result = pools.getVec();
-    result->set(x, y);
-
-    return result;
-}
-
 bool PartDijk::checkAccess(int r, int c, bool loaded)
 {
     // 检查位置是否可通过
@@ -69,16 +58,13 @@ bool PartDijk::validCoord(int r, int c)
 }
 
 // 起点
-std::vector<std::pair<int, int>*>* PartDijk::search(int r, int c, bool loaded, double range, int collideR, int collideC)
+std::vector<std::pair<int, int> *> *PartDijk::search(int r, int c, bool loaded, double range, int collideR, int collideC)
 {
-    std::vector<std::pair<int, int>*>* result = new std::vector<std::pair<int, int>*>();
+    std::vector<std::pair<int, int> *> *result = new std::vector<std::pair<int, int> *>();
     double fill = 1000000.;
     fillDist(fill, loaded);
     double **dist = loaded ? loadedDist : unloadDist;
-    if (accessMap[r][c] == 0)
-    {
-        return;
-    }
+
     // 如果是负载情况，首先搜索最近的255的点作为起点
     if (loaded && (accessMap[r][c] & 0b11110000) == 0)
     {
@@ -188,9 +174,10 @@ std::vector<std::pair<int, int>*>* PartDijk::search(int r, int c, bool loaded, d
             // newCost < dist[nr][nc]: 是否访问
             // newCost*0.25 < range: 搜索范围
             // sqrt((collideR - nr)*(collideR - nr) + (collideC - nc)*(collideC - nc))>1.06：过滤碰撞点
-            if (newCost < dist[nr][nc] && newCost*0.25 < range && (0.25*sqrt((collideR - nr)*(collideR - nr) + (collideC - nc)*(collideC - nc)))>1.06)
+            if (newCost < dist[nr][nc] && newCost * 0.25 < range && (0.25 * sqrt((collideR - nr) * (collideR - nr) + (collideC - nc) * (collideC - nc))) > 1.06)
             {
-                if(fabs(newCost*0.25 - range)<0.4){
+                if (fabs(newCost * 0.25 - range) < 0.4)
+                {
                     result->push_back(new std::pair<int, int>(nr, nc));
                 }
                 dist[nr][nc] = newCost;
@@ -200,10 +187,9 @@ std::vector<std::pair<int, int>*>* PartDijk::search(int r, int c, bool loaded, d
         }
     }
 
-    
     std::sort(result->begin(), result->end(), [collideR, collideC](std::pair<int, int> *p1, std::pair<int, int> *p2)
-              { return sqrt((p1->first - collideR)*(p1->first - collideR) + (p1->second - collideC)*(p1->second - collideC)) <  sqrt((p2->first - collideR)*(p2->first - collideR) + (p2->second - collideC)*(p2->second - collideC)); });
-    
+              { return sqrt((p1->first - collideR) * (p1->first - collideR) + (p1->second - collideC) * (p1->second - collideC)) < sqrt((p2->first - collideR) * (p2->first - collideR) + (p2->second - collideC) * (p2->second - collideC)); });
+
     return result;
 }
 
@@ -277,10 +263,7 @@ std::list<Vec *> *PartDijk::getKnee(int r, int c, bool isLoad)
     }
 
     // 向量反转，方便进行遍历
-    if (isLoad)
-    {
-        std::reverse(result->begin(), result->end());
-    }
+    std::reverse(result->begin(), result->end());
 
     return result;
 }

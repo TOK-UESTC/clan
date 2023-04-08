@@ -115,13 +115,6 @@ void Context::init()
         int col = ((int)((rb->getPos().getX() - 0.25) / 0.5)) * 2 + 1;
         maps.accessible(map025, accessMap, row, col, rb->getId());
     }
-    // 为机器人传入可访问地图与机器人列表
-    for (Robot *rb : robotList)
-    {
-        rb->setAccessMap(accessMap);
-        rb->setRobotList(&robotList);
-        sortedRobot.push_back(rb);
-    }
     // 对每个工作台检查可达性
     for (Workbench *wb : workbenchList)
     {
@@ -129,6 +122,13 @@ void Context::init()
         maps.fixAccessMap(accessMap, wb->getMapRow(), wb->getMapCol());
     }
 
+    // 为机器人传入可访问地图与机器人列表
+    for (Robot *rb : robotList)
+    {
+        rb->setAccessMap(accessMap);
+        rb->setRobotList(&robotList);
+        sortedRobot.push_back(rb);
+    }
     for (Workbench *wb : workbenchList)
     {
         wb->newDij(accessMap);
@@ -196,12 +196,16 @@ void Context::step()
     // printLine
     dispatcher->dispatch();
 
+    // 按照优先级进行排序
     std::sort(sortedRobot.begin(), sortedRobot.end(), [](Robot *below, Robot *above)
               { return below->getPriority() > above->getPriority(); });
+
+    // 清除所有机器人的状态
     for (Robot *rb : sortedRobot)
     {
         rb->clearStates();
     }
+
     for (Robot *rb : sortedRobot)
     {
         rb->step();

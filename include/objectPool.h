@@ -9,6 +9,7 @@ class ObjectPool
 {
 private:
     std::vector<T *> pool;
+    // std::unordered_set<T *> used;
 
 public:
     ObjectPool(int initCount)

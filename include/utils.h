@@ -3,6 +3,17 @@
 
 #include "includeAll.h"
 
+inline Vec *rc2Coord(int r, int c, double step)
+{
+    double x = c * step;
+    double y = 50.0 - r * step;
+
+    Vec *result = pools.getVec();
+    result->set(x, y);
+
+    return result;
+}
+
 // 计算坐标距离
 inline double computeDist(Vec *left, Vec *right)
 {

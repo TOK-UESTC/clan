@@ -6,11 +6,20 @@ Robot::Robot(int id, double x, double y) : id(id), pos(x, y), actionModel(this),
     pidPool = new ObjectPool<PIDModel>(100);
 }
 
-Robot::~Robot()
+void Robot::setDij(int **accessMap)
 {
+    partDijk = new PartDijk(accessMap);
 }
 
-Vec *Robot::predict(std::list<Vec *> paths)
+Robot::~Robot()
+{
+    if (partDijk != nullptr)
+    {
+        delete partDijk;
+    }
+}
+
+Vec *Robot::predict(std::list<Vec *> *paths)
 {
     if (task == nullptr)
     {
@@ -19,7 +28,7 @@ Vec *Robot::predict(std::list<Vec *> paths)
     clearStates();
 
     // 迭代器
-    std::list<Vec *>::iterator currIdx = paths.begin();
+    std::list<Vec *>::iterator currIdx = paths->begin();
 
     // 状态拷贝
     MotionState *state = getMotionState();
@@ -34,7 +43,7 @@ Vec *Robot::predict(std::list<Vec *> paths)
 
     for (int i = 0; i < predictFrameLength; i++)
     {
-        if (currIdx == paths.end())
+        if (currIdx == paths->end())
         {
             while (i < predictFrameLength)
             {
@@ -78,13 +87,20 @@ Vec *Robot::predict(std::list<Vec *> paths)
 
         if (isCollided)
         {
+            Vec *nextPos = findNext(state);
+
+            if (nextPos == nullptr)
+            {
+                break;
+            }
+
+            // TODO: objectpool防止重复释放
             pidPool->release(pidModel);
-            // TODO
-            return findMiddle(state);
+            return nextPos;
         }
 
         // 检测当前点位是否到达
-        if (isArrive(*currIdx, state->getPos(), 0.1))
+        while (currIdx != paths->end() && isArrive(*currIdx, state->getPos(), 0.2))
         {
             currIdx++;
         }
@@ -92,7 +108,7 @@ Vec *Robot::predict(std::list<Vec *> paths)
     }
     pidPool->release(pidModel);
     Vec *next = pools.getVec();
-    next->set(paths.front());
+    next->set(paths->front());
     return next;
 }
 
@@ -182,14 +198,21 @@ Vec Robot::getVelocity() const
 }
 
 // 优先级排序
-double Robot::getPriority() const
+double Robot::getPriority()
 {
-    return (double)id;
+    if (task == nullptr)
+    {
+        return 1000.;
+    }
+    Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
+
+    double dist = wb->getDij()->getDistMap(isLoaded())[getMapRow()][getMapCol()];
+    return dist;
 }
 
-bool Robot::operator<(const Robot &o) const
+bool Robot::operator<(Robot *o)
 {
-    return this->getPriority() < o.getPriority();
+    return this->getPriority() < o->getPriority();
 }
 
 bool Robot::operator==(const Robot &o) const
@@ -311,6 +334,8 @@ void Robot::addPathPoint(Vec *point)
 void Robot::setAccessMap(int **accessMap)
 {
     actionModel.setAccessMap(accessMap);
+    // 根据map初始化局部搜索
+    setDij(accessMap);
 }
 MotionState *Robot::getMotionState()
 {
@@ -337,6 +362,128 @@ void Robot::setRobotList(std::vector<Robot *> *robotList)
     this->robotList = robotList;
 }
 
+Vec *Robot::findNext(MotionState *crash)
+{
+    Vec *result = nullptr;
+    // 将x,y坐标转换为地图坐标
+    int crashR = ((int)((49.75 - crash->getPos()->getY()) / 0.5)) * 2 + 1;
+    int crashC = ((int)((crash->getPos()->getX() - 0.25) / 0.5)) * 2 + 1;
+    std::vector<std::pair<int, int> *> *node2BeSearched = partDijk->search(getMapRow(), getMapCol(), isLoaded(), 5.0, crashR, crashC);
+
+    Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
+    for (auto p : *node2BeSearched)
+    {
+        // 从当前位置到新的检测点的路径
+        std::list<Vec *> *newPath = getPartDij()->getKnee(p->first, p->second, isLoaded());
+        // 从新的中间点到目标工作台的路径
+        std::list<Vec *> *nextPaths = wb->getDij()->getKnee(p->first, p->second, isLoaded());
+
+        // 拼接路径
+        newPath->splice(newPath->end(), *nextPaths);
+        delete nextPaths;
+
+        // 进行预测
+        clearStates();
+        // 迭代器
+        std::list<Vec *>::iterator currIdx = newPath->begin();
+
+        // 状态拷贝
+        MotionState *state = getMotionState();
+        state->update(this);
+        PIDModel *pidModel = pidPool->acquire();
+        pidModel->set(PID);
+
+        motionStates[frameId] = state;
+
+        int nextFrameId = frameId + 1;
+        int predictFrameLength = 200;
+
+        bool isCollided = false;
+        for (int i = 0; i < predictFrameLength; i++)
+        {
+            if (currIdx == newPath->end())
+            {
+                while (i < predictFrameLength)
+                {
+                    MotionState *newState = getMotionState();
+                    newState->set(*state);
+                    motionStates[nextFrameId] = newState;
+                    i++;
+                    nextFrameId++;
+                }
+                break;
+            }
+            double targetVelocity, targetAngularVelocity;
+            // pidModel->control(state, nextPos, targetVelocity, targetAngularVelocity);
+            pidModel->control(state, *currIdx, targetVelocity, targetAngularVelocity);
+            state = actionModel.predict(state, targetVelocity, targetAngularVelocity);
+            motionStates[nextFrameId] = state;
+
+            MotionState *otherState = nullptr;
+            for (Robot *rb : *robotList)
+            {
+                if (rb == this)
+                {
+                    continue;
+                }
+
+                // 获取同一时刻其他机器人状态
+                if (rb->motionStates.find(nextFrameId) == rb->motionStates.end())
+                {
+                    continue;
+                }
+                otherState = rb->motionStates[nextFrameId];
+
+                // 检测是否碰撞， TODO: 碰撞距离
+                if (computeDist(state->getPos(), otherState->getPos()) < 1.06)
+                {
+                    isCollided = true;
+                    break;
+                }
+            }
+
+            // 碰撞直接跳过，查看下一个点
+            if (isCollided)
+            {
+                break;
+            }
+
+            // 检测当前点位是否到达
+            while (currIdx != newPath->end() && isArrive(*currIdx, state->getPos(), 0.2))
+            {
+                currIdx++;
+            }
+            nextFrameId++;
+        }
+
+        // 每一轮进行释放
+        pidPool->release(pidModel);
+
+        // for (auto item : *newPath)
+        // {
+        //     delete item;
+        // }
+        delete newPath;
+
+        // 200内没有碰撞，可以作为新路径
+        if (!isCollided)
+        {
+            result = rc2Coord(p->first, p->second, 0.25);
+
+            break;
+        }
+    }
+
+    // 释放所有搜索点
+    for (auto p : *node2BeSearched)
+    {
+        delete p;
+    }
+    delete node2BeSearched;
+
+    return result;
+}
+
 Vec *Robot::findMiddle(MotionState *crash)
 {
     int predictFrameLength = 200;
@@ -348,7 +495,7 @@ Vec *Robot::findMiddle(MotionState *crash)
         MotionState *s = getMotionState();
         s->update(this);
         std::vector<Vec *> *nextWaypoints = new std::vector<Vec *>();
-        searchNextWaypoints(s, crash, range, nextWaypoints, nextPos);
+        // searchNextWaypoints(s, crash, range, nextWaypoints, nextPos);
         // 寻找完后迅速释放
         releaseMotionState(s);
 

@@ -21,8 +21,8 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    std::list<Vec *> paths;      // 路径序列,TODO:用对象池管理
-    Vec *pridictedPos = nullptr; // 预测位置
+    std::list<Vec *> *paths = nullptr; // 路径序列,TODO:用对象池管理
+    Vec *pridictedPos = nullptr;       // 预测位置
 
     MotionModel *motionModel = nullptr;
 
@@ -30,6 +30,16 @@ public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
         motionModel = new MotionModel();
+        paths = new std::list<Vec *>();
+    }
+    ~ActionModel()
+    {
+        delete motionModel;
+        for (auto it = paths->begin(); it != paths->end(); it++)
+        {
+            delete *it;
+        }
+        delete paths;
     }
 
     // 获取MotionState对象
@@ -52,7 +62,7 @@ public:
     // 更新动作序列
     void addPathPoint(Vec *v)
     {
-        paths.push_back(v);
+        paths->push_back(v);
     }
 
     /* 产生动作 */
@@ -66,7 +76,7 @@ public:
     void setAccessMap(int **accessMap); // 为motionModel设置访问地图
     void generateMoveActions();         // 产生移动动作序列
     void generateShopActions();         // 产生交易动作序列
-    std::list<Vec *> getPaths()
+    std::list<Vec *> *getPaths()
     {
         return paths;
     }

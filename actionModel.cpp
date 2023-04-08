@@ -53,35 +53,95 @@ void ActionModel::generateMoveActions()
     //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
     // }
     // // 获取下一个目标点
-    if (paths.empty())
+    if (paths->empty())
     {
         return;
     }
 
     // TODO： 相同Pos删除
-    Vec *nextPos = paths.front();
+    Vec *nextPos = paths->front();
     Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
     // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    while (isArrive(state->getPos(), nextPos, 0.1) && !isArrive(wb->getPos(), nextPos, 0.1))
+    while (isArrive(state->getPos(), nextPos, 0.2) && !isArrive(wb->getPos(), nextPos, 0.1))
     {
-        paths.pop_front();
+        paths->pop_front();
         pools.release(nextPos);
-        if (paths.empty())
+        if (paths->empty())
         {
             return;
         }
-        nextPos = paths.front();
+        nextPos = paths->front();
     }
 
-    Vec *next = rb->predict(paths);
-    if (computeDist(nextPos, next) >= 0.25)
-    {
-        // TODO: 产生新的路径，更换path, 注意回收next
-    }
-    else
-    {
-        pools.release(next);
-    }
+    // Vec *predictNext = rb->predict(paths);
+
+    // 搜索的下一个点非原定位置，说明发生碰撞，重新生成paths
+    // if (computeDist(nextPos, predictNext) >= 0.25)
+    // {
+    //     int crashR = ((int)((49.75 - predictNext->getY()) / 0.5)) * 2 + 1;
+    //     int crashC = ((int)((predictNext->getX() - 0.25) / 0.5)) * 2 + 1;
+
+    //     std::list<Vec *> *newPath = rb->getPartDij()->getKnee(crashR, crashC, rb->isLoaded());
+    //     // 从新的中间点到目标工作台的路径
+    //     std::list<Vec *> *nextPaths = wb->getDij()->getKnee(crashR, crashC, rb->isLoaded());
+
+    //     // 拼接路径
+    //     newPath->splice(newPath->end(), *nextPaths);
+    //     delete nextPaths;
+
+    //     // 释放原来的路径
+    //     // 迭代器
+    //     std::list<Vec *>::iterator it = paths->begin();
+    //     while (it != paths->end())
+    //     {
+    //         if (computeDist(*it, newPath->back()) <= 0.25)
+    //         {
+    //             break;
+    //         }
+    //         pools.release(*it);
+    //         it++;
+    //     }
+    //     // 获得了paths中指向wb的第一个迭代器
+    //     //  弹出newPath中对应wb的点
+    //     for (auto jt = paths->rbegin(); jt != paths->rend(); jt++)
+    //     {
+    //         if (computeDist(*jt, newPath->back()) <= 0.25)
+    //         {
+    //             // 说明是工作台的点，进行删除
+    //             pools.release(*jt);
+    //             newPath->pop_back();
+    //         }
+    //         // 不是工作台的点，结束循环
+    //         else
+    //         {
+    //             break;
+    //         }
+    //     }
+    //     // 拼接路径
+    //     newPath->insert(newPath->end(), it, paths->end());
+    //     paths->clear();
+    //     paths = newPath;
+    //     // for (Vec *v : paths)
+    //     // {
+    //     //     if (computeDist(v, newPath->back()) >= 0.25)
+    //     //     {
+    //     //         pools.release(v);
+    //     //         continue;
+    //     //     }
+
+    //     //     newPath->pop_back();
+    //     //     newPath->push_back(v);
+    //     //     break;
+    //     // }
+
+    //     // paths.clear();
+    //     // for (newPath)
+    //     // paths = ;
+    //     nextPos = paths->front();
+    // }
+
+    // pools.release(predictNext);
+
     // Calculate the control factors for the robot's movement
     double v = 0, w = 0;
     rb->control(state, nextPos, v, w);
@@ -131,8 +191,8 @@ void ActionModel::generateShopActions()
 
 void ActionModel::popPath()
 {
-    Vec *nextPos = paths.front();
-    paths.pop_front();
+    Vec *nextPos = paths->front();
+    paths->pop_front();
     pools.release(nextPos);
 }
 

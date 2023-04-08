@@ -48,7 +48,7 @@ public:
         for (int i = 0; i < row; i++)
         {
             newMap[i] = new int[col];
-            memset(newMap[i], 0, MAP025*sizeof(int));
+            memset(newMap[i], 0, MAP025 * sizeof(int));
         }
         return newMap;
     }
