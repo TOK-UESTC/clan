@@ -41,7 +41,7 @@ void Context::init()
     int row = 0;
     double x, y;            // 地图坐标
     int workbenchCount = 0; // 工作台数量
-    int robotCount = 0;     // 机器人数量 
+    int robotCount = 0;     // 机器人数量
     map05 = maps.getMap();
 
     while (true)

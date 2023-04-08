@@ -10,31 +10,48 @@ Robot::~Robot()
 {
 }
 
-Vec *Robot::predict(Vec *nextPos)
+Vec *Robot::predict(std::list<Vec *> paths)
 {
     if (task == nullptr)
     {
         return nullptr;
     }
     clearStates();
-    Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
+
+    // 迭代器
+    std::list<Vec *>::iterator currIdx = paths.begin();
+
+    // 状态拷贝
     MotionState *state = getMotionState();
     state->update(this);
-    motionStates[frameId] = state;
-
     PIDModel *pidModel = pidPool->acquire();
     pidModel->set(PID);
+
+    motionStates[frameId] = state;
 
     int nextFrameId = frameId + 1;
     int predictFrameLength = 200;
 
     for (int i = 0; i < predictFrameLength; i++)
     {
+        if (currIdx == paths.end())
+        {
+            while (i < predictFrameLength)
+            {
+                MotionState *newState = getMotionState();
+                newState->set(*state);
+                motionStates[nextFrameId] = newState;
+                i++;
+                nextFrameId++;
+            }
+            break;
+        }
         double targetVelocity, targetAngularVelocity;
         // pidModel->control(state, nextPos, targetVelocity, targetAngularVelocity);
-        pidModel->control(state, wb->getPos(), targetVelocity, targetAngularVelocity);
+        pidModel->control(state, *currIdx, targetVelocity, targetAngularVelocity);
         state = actionModel.predict(state, targetVelocity, targetAngularVelocity);
         motionStates[nextFrameId] = state;
+
         bool isCollided = false;
         MotionState *otherState = nullptr;
         for (Robot *rb : *robotList)
@@ -43,12 +60,16 @@ Vec *Robot::predict(Vec *nextPos)
             {
                 continue;
             }
-            otherState = rb->motionStates[nextFrameId];
-            if (otherState == nullptr)
+
+            // 获取同一时刻其他机器人状态
+            if (rb->motionStates.find(nextFrameId) == rb->motionStates.end())
             {
                 continue;
             }
-            if (computeDist(state->getPos(), otherState->getPos()) < 1.5)
+            otherState = rb->motionStates[nextFrameId];
+
+            // 检测是否碰撞， TODO: 碰撞距离
+            if (computeDist(state->getPos(), otherState->getPos()) < 1.06)
             {
                 isCollided = true;
                 break;
@@ -58,14 +79,20 @@ Vec *Robot::predict(Vec *nextPos)
         if (isCollided)
         {
             pidPool->release(pidModel);
-            return findMiddle(state, nextPos);
+            // TODO
+            return findMiddle(state);
+        }
+
+        // 检测当前点位是否到达
+        if (isArrive(*currIdx, state->getPos(), 0.1))
+        {
+            currIdx++;
         }
         nextFrameId++;
     }
     pidPool->release(pidModel);
     Vec *next = pools.getVec();
-    // next->set(nextPos);
-    next->set(wb->getPos());
+    next->set(paths.front());
     return next;
 }
 
@@ -310,7 +337,7 @@ void Robot::setRobotList(std::vector<Robot *> *robotList)
     this->robotList = robotList;
 }
 
-Vec *Robot::findMiddle(MotionState *crash, Vec *nextPos)
+Vec *Robot::findMiddle(MotionState *crash)
 {
     int predictFrameLength = 200;
     double range = 1.5;

@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
         if (showTime)
         {
             double cost = chrono::duration_cast<chrono::microseconds>(end - start).count() / 1000.0;
-            // if (cost > 10.0)
-            // {
+            if (cost > 10.0)
+            {
                 fprintf(stderr, "%.3fms at frame %d\n", cost, ctx.getFrameId());
                 fflush(stderr);
-            // }
+            }
         }
     }
     return 0;

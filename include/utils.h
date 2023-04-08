@@ -12,9 +12,15 @@ inline double computeDist(Vec *left, Vec *right)
     return sqrt(x * x + y * y);
 }
 
+inline bool isArrive(Vec *left, Vec *right, double threshold)
+{
+    return computeDist(left, right) < threshold;
+}
+
 // 将w映射到题目范围内
 inline double getAngleRanged(double angle)
 {
+
     if (angle > PI)
     {
         angle = angle - 2 * PI;
