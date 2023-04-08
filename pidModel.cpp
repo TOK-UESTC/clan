@@ -129,6 +129,19 @@ void PIDModel::control(MotionState *ms, Vec *targetPos, double &v, double &w)
     // }
 
     // 策略:角度越大,速度越小
+    // TODO: 附近有障碍，需要减速，没有则可以直接冲
+    // if (fabs(angleErr) > PI / 32)
+    // {
+    //     if (rb->isLoaded())
+    //     {
+    //         lineVelocity = 0;
+    //     }
+    //     else
+    //     {
+    //         lineVelocity = lineVelocity * deceleration / fabs(angleErr);
+    //     }
+    // }
+
     if (fabs(angleErr) > PI / 4)
     {
         lineVelocity = lineVelocity * deceleration / fabs(angleErr);

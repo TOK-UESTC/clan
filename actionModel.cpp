@@ -34,38 +34,38 @@ void ActionModel::generateMoveActions()
     // // 获取state
     MotionState *state = getMotionState();
     state->update(rb);
+
     // // 比较预测与实际的距离
     // if (pridictedPos != nullptr)
     // {
-    //     // double error = computeDist(state->getPos(), pridictedPos);
-    //     // // if (error > 0.05)
-    //     // // {
-    //     // //     std::cerr << "error: " << error << std::endl;
-    //     // // }
-    //     // std::ofstream outfile;
-    //     // outfile.open("./log/error.txt", std::ios::app);
-    //     // outfile << error << std::endl;
-    //     // outfile.close();
+    //     double error = computeDist(state->getPos(), pridictedPos);
+    //     // if (error > 0.05)
+    //     // {
+    //     //     std::cerr << "error: " << error << std::endl;
+    //     // }
+    //     std::ofstream outfile;
+    //     outfile.open("./log/error.txt", std::ios::app);
+    //     outfile << error << std::endl;
+    //     outfile.close();
     // }
     // else
     // {
     //     pridictedPos = new Vec(state->getPos()->getX(), state->getPos()->getY());
     // }
-
     // // 获取下一个目标点
     // if (paths.empty())
     // {
     //     return;
     // }
 
-    // TODO： 相同Pos删除
+    // // TODO： 相同Pos删除
     // Vec *nextPos = paths.front();
-    // Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
+    Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
     // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点
-    // while (computeDist(state->getPos(), nextPos) < 0.4 && computeDist(wb->getPos(), nextPos) > 0.1)
+    // while (computeDist(state->getPos(), nextPos) < 0.1 && computeDist(wb->getPos(), nextPos) > 0.1)
     // {
     //     paths.pop_front();
-    //     delete nextPos;
+    //     pools.release(nextPos);
     //     if (paths.empty())
     //     {
     //         return;
@@ -73,16 +73,15 @@ void ActionModel::generateMoveActions()
     //     nextPos = paths.front();
     // }
 
-    // TODO: 需要每帧都预测么？
-    Vec *next = rb->predict();
-    nextPos.set(next);
-    vecPool->release(next);
+    // // TODO: 需要每帧都预测么？
+    Vec *next = rb->predict(wb->getPos());
 
     // Calculate the control factors for the robot's movement
     double v = 0, w = 0;
-    rb->control(state, &nextPos, v, w);
+    rb->control(state, next, v, w);
+    pools.release(next);
 
-    // 使用motionModel计算下一时刻的state
+    // // 使用motionModel计算下一时刻的state
     // MotionState *nextState = motionModel->predict(*state, v, w);
     // pridictedPos = nextState->getPos();
 
@@ -129,7 +128,7 @@ void ActionModel::popPath()
 {
     Vec *nextPos = paths.front();
     paths.pop_front();
-    delete nextPos;
+    pools.release(nextPos);
 }
 
 // 三次样条插值，x为自变量，y为因变量，a为三次样条的系数，a[0]为常数项，a[1]为一次项，a[2]为二次项，a[3]为三次项

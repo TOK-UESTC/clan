@@ -1,5 +1,16 @@
 #include "include/includeAll.h"
 
+Vec *DStarLite::rc2Coord(int r, int c, double step)
+{
+    double x = c * step;
+    double y = 50.0 - r * step;
+
+    Vec *result = pools.getVec();
+    result->set(x, y);
+
+    return result;
+}
+
 bool DStarLite::checkAccess(int r, int c, bool loaded, int id)
 {
     // 检查位置是否可通过

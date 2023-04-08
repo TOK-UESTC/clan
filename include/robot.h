@@ -33,14 +33,14 @@ private:
 
     std::vector<Robot *> *robotList = nullptr; // 机器人列表
 
-    Vec *findMiddle(MotionState *crash);
-    void searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints);
+    Vec *findMiddle(MotionState *crash, Vec *nextPos);
+    void searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints, Vec *nextPos);
 
 public:
     Robot(int id, double x, double y);
     ~Robot();
 
-    Vec *predict();
+    Vec *predict(Vec *nextPos);
 
     int getId() const;
     double getPriority() const;

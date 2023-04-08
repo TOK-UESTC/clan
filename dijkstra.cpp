@@ -1,5 +1,16 @@
 #include "include/includeAll.h"
 
+Vec *Dijkstra::rc2Coord(int r, int c, double step)
+{
+    double x = c * step;
+    double y = 50.0 - r * step;
+
+    Vec *result = pools.getVec();
+    result->set(x, y);
+
+    return result;
+}
+
 bool Dijkstra::checkAccess(int r, int c, bool loaded)
 {
     // 检查位置是否可通过
@@ -63,9 +74,9 @@ void Dijkstra::search(int r, int c, bool loaded)
     double fill = 1000000.;
     fillDist(fill, loaded);
     double **dist = loaded ? loadedDist : unloadDist;
-    if(accessMap[r][c] == 0)
+    if (accessMap[r][c] == 0)
     {
-        return ;
+        return;
     }
     // 如果是负载情况，首先搜索最近的255的点作为起点
     if (loaded && (accessMap[r][c] & 0b11110000) == 0)
@@ -228,15 +239,11 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
         {
             result->push_back(rc2Coord(cr, cc, 0.25));
         }
+
         // 更新位置
         cr += unloadDir[direct][0];
         cc += unloadDir[direct][1];
 
-        // 方向发生了变化。则添加到拐点列表
-        if (direct != lastDirect)
-        {
-            result->push_back(rc2Coord(cr, cc, 0.25));
-        }
         // 找到最小方向
         lastDirect = direct;
     }
@@ -244,7 +251,7 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
     Vec *lastVec = rc2Coord(cr, cc, 0.25);
     if (computeDist(lastVec, result->back()) < 0.1)
     {
-        delete lastVec;
+        pools.release(lastVec);
     }
     else
     {

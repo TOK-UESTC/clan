@@ -63,6 +63,7 @@ public:
     bool validCoord(int r, int c);                       // 检查坐标是否合法
     bool checkAccess(int r, int c, bool loaded, int id); // 根据机器人状态判断是否可达
     double cost(int r, int c, int nr, int nc);           // 移动代价
+    Vec *rc2Coord(int r, int c, double step);
 
     double **getG();
 

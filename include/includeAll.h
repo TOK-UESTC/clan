@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "motionFrag.h"
 #include "objectPool.h"
+#include "pools.h"
 #include "dijkstra.h"
 #include "workbench.h"
 #include "action.h"

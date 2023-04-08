@@ -21,22 +21,23 @@ private:
     Action forwardAction;
     Action buyAction;
     Action sellAction;
-    std::list<Vec *> paths; // 路径序列,TODO:用对象池管理
-    // Vec *pridictedPos = nullptr;                  // 预测位置
+    std::list<Vec *> paths;      // 路径序列,TODO:用对象池管理
+    Vec *pridictedPos = nullptr; // 预测位置
 
     MotionModel *motionModel = nullptr;
 
 public:
     ActionModel(Robot *r) : rb(r), rotateAction(ROTATE), forwardAction(FORWARD), buyAction(BUY), sellAction(SELL)
     {
-        vecPool = new ObjectPool<Vec>(100);
         motionModel = new MotionModel();
     }
+
     // 获取MotionState对象
     MotionState *getMotionState()
     {
         return motionModel->getMotionState();
     }
+
     // 释放MotionState对象
     void releaseMotionState(MotionState *state)
     {
@@ -45,13 +46,9 @@ public:
 
     Vec *getVec()
     {
-        return vecPool->acquire();
+        return pools.getVec();
     }
 
-    void releaseVec(Vec *v)
-    {
-        vecPool->release(v);
-    }
     // 更新动作序列
     void addPathPoint(Vec *v)
     {
@@ -81,7 +78,6 @@ public:
 private:
     double eval_spline(const std::vector<double> &x, const std::vector<double> &y, const std::vector<double> &a, double xi);
     void spline(const std::vector<double> &x, const std::vector<double> &y, std::vector<double> &a);
-    ObjectPool<Vec> *vecPool = nullptr; // 用于记录机器人的运动状态序列
     Vec nextPos;
 };
 

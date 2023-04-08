@@ -10,7 +10,7 @@ Robot::~Robot()
 {
 }
 
-Vec *Robot::predict()
+Vec *Robot::predict(Vec *nextPos)
 {
     if (task == nullptr)
     {
@@ -31,6 +31,7 @@ Vec *Robot::predict()
     for (int i = 0; i < predictFrameLength; i++)
     {
         double targetVelocity, targetAngularVelocity;
+        // pidModel->control(state, nextPos, targetVelocity, targetAngularVelocity);
         pidModel->control(state, wb->getPos(), targetVelocity, targetAngularVelocity);
         state = actionModel.predict(state, targetVelocity, targetAngularVelocity);
         motionStates[nextFrameId] = state;
@@ -57,12 +58,13 @@ Vec *Robot::predict()
         if (isCollided)
         {
             pidPool->release(pidModel);
-            return findMiddle(state);
+            return findMiddle(state, nextPos);
         }
         nextFrameId++;
     }
     pidPool->release(pidModel);
-    Vec *next = getVec();
+    Vec *next = pools.getVec();
+    // next->set(nextPos);
     next->set(wb->getPos());
     return next;
 }
@@ -155,7 +157,7 @@ Vec Robot::getVelocity() const
 // 优先级排序
 double Robot::getPriority() const
 {
-    return 1.0;
+    return (double)id;
 }
 
 bool Robot::operator<(const Robot &o) const
@@ -202,23 +204,29 @@ void Robot::bindChain(TaskChain *taskChain)
     // 构建路径
     // rb->from 路径
     Workbench *from = task->getFrom();
-    if(from->getType() == 1)
+    if (from->getType() == 1)
     {
-        int i=0;
+        int i = 0;
     }
     std::list<Vec *> *result = from->getDij()->getKnee(getMapRow(), getMapCol(), false);
 
+    // 在目标周围就不添加路径点
     for (auto p : *result)
     {
         if (computeDist(from->getPos(), p) < 0.25)
         {
+            pools.release(p);
             continue;
         }
-        addPathPoint(new Vec(p->getX(), p->getY()));
-        delete p;
+        Vec *next = pools.getVec();
+        next->set(p);
+        addPathPoint(next);
     }
+
     delete result;
-    addPathPoint(new Vec(from->getPos()->getX(), from->getPos()->getY()));
+    Vec *next = pools.getVec();
+    next->set(from->getPos());
+    addPathPoint(next);
     // 加入任务路径
     for (auto t : taskChain->getTaskChain())
     {
@@ -228,7 +236,9 @@ void Robot::bindChain(TaskChain *taskChain)
             {
                 continue;
             }
-            addPathPoint(new Vec(p->getX(), p->getY()));
+            next = pools.getVec();
+            next->set(p);
+            addPathPoint(next);
         }
     }
 }
@@ -300,7 +310,7 @@ void Robot::setRobotList(std::vector<Robot *> *robotList)
     this->robotList = robotList;
 }
 
-Vec *Robot::findMiddle(MotionState *crash)
+Vec *Robot::findMiddle(MotionState *crash, Vec *nextPos)
 {
     int predictFrameLength = 200;
     double range = 1.5;
@@ -311,7 +321,7 @@ Vec *Robot::findMiddle(MotionState *crash)
         MotionState *s = getMotionState();
         s->update(this);
         std::vector<Vec *> *nextWaypoints = new std::vector<Vec *>();
-        searchNextWaypoints(s, crash, range, nextWaypoints);
+        searchNextWaypoints(s, crash, range, nextWaypoints, nextPos);
         // 寻找完后迅速释放
         releaseMotionState(s);
 
@@ -397,13 +407,14 @@ Vec *Robot::findMiddle(MotionState *crash)
     }
     // 到这里什么都没有找到
     Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
-    // System.err.println(statePool.usedSize() + statePool.availableSize());
-    Vec *next = getVec();
+    // // System.err.println(statePool.usedSize() + statePool.availableSize());
+    Vec *next = pools.getVec();
+    // next->set(nextPos);
     next->set(wb->getPos());
     return next;
 }
 
-void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints)
+void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double range, std::vector<Vec *> *nextWaypoints, Vec *nextPos)
 {
     Vec *pos = state2->getPos();
     Vec *v = state2->getVelocity();
@@ -414,30 +425,30 @@ void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double
     {
         // 机器人当前状态为移动，速度为零
         // 沿速度方向的单位向量
-        Vec *eH = getVec();
+        Vec *eH = pools.getVec();
         eH->set(0, 1);
         // 沿速度垂直方向的单位向量
-        Vec *eV = getVec();
+        Vec *eV = pools.getVec();
         eV->set(1, 0);
         // 沿速度45方向的单位向量
-        Vec *e45 = getVec();
+        Vec *e45 = pools.getVec();
         e45->set(SQRT2 / 2, SQRT2 / 2);
         // 沿速度135方向的单位向量
-        Vec *e135 = getVec();
+        Vec *e135 = pools.getVec();
         e135->set(-SQRT2 / 2, SQRT2 / 2);
         double tempRange[]{-range, range};
         for (double offset : tempRange)
         {
-            Vec *item = getVec();
+            Vec *item = pools.getVec();
             item->set(pos->getX() + offset * eH->getX(), pos->getY() + offset * eH->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * eV->getX(), pos->getY() + offset * eV->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * e45->getX(), pos->getY() + offset * e45->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * e135->getX(), pos->getY() + offset * e135->getY());
             nextWaypoints->emplace_back(item);
         }
@@ -451,32 +462,32 @@ void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double
     {
         // 机器人当前状态为移动，速度为零
         // 沿速度方向的单位向量
-        Vec *eH = getVec();
+        Vec *eH = pools.getVec();
         eH->set(v->getX() / v->mod(), v->getY() / v->mod());
         // 沿速度垂直方向的单位向量
-        Vec *eV = getVec();
+        Vec *eV = pools.getVec();
         eV->set(-v->getY() / v->mod(), v->getX() / v->mod());
         // 沿速度45方向的单位向量
-        Vec *e45 = getVec();
+        Vec *e45 = pools.getVec();
         e45->set(SQRT2 / 2 * v->getX() / v->mod(), SQRT2 / 2 * v->getY() / v->mod());
         // 沿速度135方向的单位向量
-        Vec *e135 = getVec();
+        Vec *e135 = pools.getVec();
         e135->set(-SQRT2 / 2 * v->getY() / v->mod(), SQRT2 / 2 * v->getX() / v->mod());
 
         // 机器人当前状态正在移动，移动垂直方向搜索
         double tempRange[]{-range, range};
         for (double offset : tempRange)
         {
-            Vec *item = getVec();
+            Vec *item = pools.getVec();
             item->set(pos->getX() + offset * eH->getX(), pos->getY() + offset * eH->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * eV->getX(), pos->getY() + offset * eV->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * e45->getX(), pos->getY() + offset * e45->getY());
             nextWaypoints->emplace_back(item);
-            item = getVec();
+            item = pools.getVec();
             item->set(pos->getX() + offset * e135->getX(), pos->getY() + offset * e135->getY());
             nextWaypoints->emplace_back(item);
         }
@@ -491,9 +502,10 @@ void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double
     std::vector<std::vector<Vec *>> groupCoordinate;
     for (Vec *next : (*nextWaypoints))
     {
-        Vec *curr = getVec();
+        Vec *curr = pools.getVec();
         curr->set(state1->getPos());
-        Vec *target = getVec();
+        Vec *target = pools.getVec();
+        // target->set(nextPos);
         target->set(wb->getPos());
 
         // 在同一条线上或者超出地图，都抛弃掉
@@ -523,7 +535,7 @@ void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double
     nextWaypoints->clear();
     for (std::vector<Vec *> gc : groupCoordinate)
     {
-        Vec *nextpoint = getVec();
+        Vec *nextpoint = pools.getVec();
         // TODO:这里为什么是1?
         nextpoint->set(gc[1]);
         nextWaypoints->emplace_back(nextpoint);
@@ -535,11 +547,8 @@ void Robot::searchNextWaypoints(MotionState *state1, MotionState *state2, double
         }
     }
 }
-Vec *Robot::getVec()
-{
-    return actionModel.getVec();
-}
+
 void Robot::releaseVec(Vec *v)
 {
-    actionModel.releaseVec(v);
+    pools.release(v);
 }
