@@ -57,6 +57,8 @@ void ActionModel::generateMoveActions()
     // {
     //     return;
     // }
+
+    // TODO： 相同Pos删除
     // Vec *nextPos = paths.front();
     // Workbench *wb = rb->getProductType() == 0 ? rb->getTask()->getFrom() : rb->getTask()->getTo();
     // // 比较当前state与目标target的距离，如果距离小于一定值，则认为到达目标点

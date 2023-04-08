@@ -16,8 +16,8 @@
 #define ROBOT_RADIUS_UNLOAD 0.45                                    // 机器人空载半径
 #define ROBOT_RADIUS_LOADED 0.53                                    // 机器人负载半径
 #define ROBOT_DENSITY 20                                            // 机器人密度， 20kg/m^2
-#define MAX_FORWARD_VELOCITY 6.2                                    // 机器人最大前进速度
-#define MAX_BACKWARD_VELOCITY -2                                    // 机器人最大后退速度
+#define MAX_FORWARD_VELOCITY 6.0                                    // 机器人最大前进速度
+#define MAX_BACKWARD_VELOCITY -2.0                                  // 机器人最大后退速度
 #define MAX_ANGULAR_VELOCITY PI                                     // 机器人最大角速度
 #define MAX_DISTANCE 100                                            // 最大距离100， 大于50*sqrt(2)即可
 #define MAP_LENGTH 50.0                                             // 地图长度
