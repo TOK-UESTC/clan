@@ -42,8 +42,8 @@ public:
         delete[] unloadDist;
     }
 
-    std::vector<std::pair<int, int> *> *search(int r, int c, bool loaded, double range, int collideR, int collideC); // 从起始点进行搜素，填充访问图
-    std::list<Vec *> *getKnee(int r, int c, bool isLoad);                                                            // 根据访问图获取拐点，输入为目标位置
+    std::deque<std::pair<int, int> *> *search(int r, int c, bool loaded, double range, int collideR, int collideC); // 从起始点进行搜素，填充访问图
+    std::list<Vec *> *getKnee(int r, int c, bool isLoad);                                                           // 根据访问图获取拐点，输入为目标位置
 
     bool validCoord(int r, int c);               // 检查坐标是否合法
     bool checkAccess(int r, int c, bool loaded); // 根据机器人状态判断是否可达

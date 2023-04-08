@@ -371,7 +371,20 @@ Vec *Robot::findNext(MotionState *crash)
 
     double crashDist = computeDist(crash->getPos(), &pos);
 
-    std::vector<std::pair<int, int> *> *node2BeSearched = partDijk->search(getMapRow(), getMapCol(), isLoaded(), crashDist, crashR, crashC);
+    std::deque<std::pair<int, int> *> *node2BeSearched = partDijk->search(getMapRow(), getMapCol(), isLoaded(), crashDist, crashR, crashC);
+
+    // 进行稀疏化，去除比较近的点，从后向前遍历
+    for (int i = node2BeSearched->size() - 1; i > 0; i--)
+    {
+        auto p = node2BeSearched->at(i);
+        auto q = node2BeSearched->at(i - 1);
+        // 如果两个点的距离小于0.5，则删除后面的点
+        if ((p->first - q->first) * (p->first - q->first) + (p->second - q->second) * (p->second - q->second) <= 1.5)
+        {
+            delete p;
+            node2BeSearched->erase(node2BeSearched->begin() + i);
+        }
+    }
 
     Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
     for (auto p : *node2BeSearched)

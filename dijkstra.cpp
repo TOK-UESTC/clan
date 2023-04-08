@@ -259,6 +259,146 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad, bool reverse)
     {
         std::reverse(result->begin(), result->end());
     }
+    // // // 整理拐点
+    // removeKnee(result, isLoad);
 
     return result;
+}
+// 消除直线上的拐点
+void Dijkstra::removeKnee(std::list<Vec *> *knee, bool isLoad)
+{
+    // 只有两点，无需消除
+    if (knee->size() < 3)
+    {
+        return;
+    }
+    // 从第一个点开始与倒数的点进行比较，如果直线上没有障碍物，则删除中间的点
+    std::list<Vec *>::iterator it = knee->begin();
+    std::list<Vec *>::iterator it2 = knee->end();
+    it2--;
+    while (it != it2)
+    {
+        // 检查两点之间是否有障碍物
+        std::list<std::pair<int, int> *> *line = new std::list<std::pair<int, int> *>();
+        getLine(*it, *it2, line);
+        // anotherGetline(*it, *it2, line);
+        bool hasObstacle = false;
+        for (std::list<std::pair<int, int> *>::iterator it3 = line->begin(); it3 != line->end(); it3++)
+        {
+            // 如果当前负载状态下可以访问，则说明无障碍物
+            if (accessMap[(*it3)->first][(*it3)->second] & ((isLoad ? 0b11110000 : 0b00001111) != 0))
+            {
+                continue;
+            }
+            // 有障碍物，跳出循环
+            hasObstacle = true;
+            break;
+        }
+        // 释放内存
+        for (std::list<std::pair<int, int> *>::iterator it3 = line->begin(); it3 != line->end(); it3++)
+        {
+            delete *it3;
+        }
+        delete line;
+
+        // 如果没有障碍物，则删除中间的点
+        if (!hasObstacle)
+        {
+            // 释放内存
+            pools.release(*it);
+            // 删除it与it2之间的点
+            it = knee->erase(it, it2);
+        }
+        else
+        {
+            it++;
+        }
+    }
+}
+
+// Bresenham算法计算两点之间的所有格子
+void Dijkstra::getLine(Vec *start, Vec *end, std::list<std::pair<int, int> *> *result)
+{
+    double startX = start->getX();
+    double startY = start->getY();
+    double endX = end->getX();
+    double endY = end->getY();
+    int lineWidth = 0;
+
+    // 计算两个点之间的距离
+    double dist = std::sqrt((endX - startX) * (endX - startX) + (endY - startY) * (endY - startY));
+
+    // 计算线段的单位向量
+    double dx = (endX - startX) / dist;
+    double dy = (endY - startY) / dist;
+
+    // 计算线段上的所有点
+    for (int i = 0; i <= dist; i++)
+    {
+        // 计算当前点的坐标
+        double x = startX + dx * i;
+        double y = startY + dy * i;
+
+        // 将线段上的点加入到结果集合中
+        int row = ((int)((49.75 - y) / 0.5)) * 2 + 1;
+        int col = ((int)((x + 49.75) / 0.5)) * 2 + 1;
+        result->push_back(new std::pair<int, int>(row, col));
+        // 如果线段宽度大于1，需要将线段宽度范围内的点也加入到结果集合中
+        for (int j = 1; j <= lineWidth; j++)
+        {
+            double offsetX = dy * j;
+            double offsetY = dx * j;
+            row = ((int)((49.75 - (y + offsetY)) / 0.5)) * 2 + 1;
+            col = ((int)((x + offsetX + 49.75) / 0.5)) * 2 + 1;
+            result->push_back(new std::pair<int, int>(row, col));
+            row = ((int)((49.75 - (y - offsetY)) / 0.5)) * 2 + 1;
+            col = ((int)((x - offsetX + 49.75) / 0.5)) * 2 + 1;
+            result->push_back(new std::pair<int, int>(row, col));
+        }
+    }
+}
+void Dijkstra::anotherGetline(Vec *start, Vec *end, std::list<std::pair<int, int> *> *result)
+{
+    double x0 = start->getX();
+    double y0 = start->getY();
+    double x1 = end->getX();
+    double y1 = end->getY();
+
+    bool steep = std::abs(y1 - y0) > std::abs(x1 - x0); // 判断是否需要交换x和y
+    if (steep)
+    {
+        std::swap(x0, y0);
+        std::swap(x1, y1);
+    }
+    if (x0 > x1)
+    { // 确保x0小于等于x1
+        std::swap(x0, x1);
+        std::swap(y0, y1);
+    }
+
+    double dx = x1 - x0;
+    double dy = std::abs(y1 - y0);
+    double error = dx / 2.0;
+    double ystep = (y0 < y1) ? 1.0 : -1.0;
+    double y = y0;
+
+    // 使用Bresenham算法将直线段网格化
+    for (double x = x0; x <= x1; x += 1.0)
+    {
+        double real_x = x;
+        double real_y = y;
+        if (steep)
+        {
+            std::swap(real_x, real_y);
+        }
+        int col = ((int)((real_x - 0.25) / 0.5)) * 2 + 1;
+        int row = ((int)((49.75 - real_y) / 0.5)) * 2 + 1;
+        result->push_back(new std::pair<int, int>(row, col));
+        error -= dy;
+        if (error < 0)
+        {
+            y += ystep;
+            error += dx;
+        }
+    }
 }
