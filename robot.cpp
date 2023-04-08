@@ -202,6 +202,10 @@ void Robot::bindChain(TaskChain *taskChain)
     // 构建路径
     // rb->from 路径
     Workbench *from = task->getFrom();
+    if(from->getType() == 1)
+    {
+        int i=0;
+    }
     std::list<Vec *> *result = from->getDij()->getKnee(getMapRow(), getMapCol(), false);
 
     for (auto p : *result)
