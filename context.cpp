@@ -189,7 +189,7 @@ void Context::step()
 {
     printf("%d\n", frameId);
 
-    if (frameId == 3041)
+    if (frameId == 1000)
     {
         int i = 0;
     }
@@ -210,7 +210,7 @@ void Context::step()
     {
         rb->step();
     }
-    for (Robot *rb : sortedRobot)
+    for (Robot *rb : robotList)
     {
         for (Action *action : rb->getActions())
         {

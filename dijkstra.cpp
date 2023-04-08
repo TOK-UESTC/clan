@@ -185,7 +185,7 @@ void Dijkstra::search(int r, int c, bool loaded)
     }
 }
 
-std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
+std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad, bool reverse)
 {
     std::list<Vec *> *result = new std::list<Vec *>();
     // 根据dist进行拐点查找
@@ -255,7 +255,7 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad)
     }
 
     // 向量反转，方便进行遍历
-    if (isLoad)
+    if (reverse)
     {
         std::reverse(result->begin(), result->end());
     }

@@ -21,10 +21,6 @@ Robot::~Robot()
 
 Vec *Robot::predict(std::list<Vec *> *paths)
 {
-    if (task == nullptr)
-    {
-        return nullptr;
-    }
     clearStates();
 
     // 迭代器
@@ -40,19 +36,20 @@ Vec *Robot::predict(std::list<Vec *> *paths)
 
     int nextFrameId = frameId + 1;
     int predictFrameLength = 200;
+    Workbench *wb = getProductType() == 0 ? getTask()->getFrom() : getTask()->getTo();
 
     for (int i = 0; i < predictFrameLength; i++)
     {
-        if (currIdx == paths->end())
+        if (currIdx == paths->end() || isArrive(wb->getPos(), *currIdx, 0.4))
         {
-            while (i < predictFrameLength)
-            {
-                MotionState *newState = getMotionState();
-                newState->set(*state);
-                motionStates[nextFrameId] = newState;
-                i++;
-                nextFrameId++;
-            }
+            // while (i < predictFrameLength)
+            // {
+            //     MotionState *newState = getMotionState();
+            //     newState->set(*state);
+            //     motionStates[nextFrameId] = newState;
+            //     i++;
+            //     nextFrameId++;
+            // }
             break;
         }
         double targetVelocity, targetAngularVelocity;
@@ -87,6 +84,7 @@ Vec *Robot::predict(std::list<Vec *> *paths)
 
         if (isCollided)
         {
+            // 传输碰撞位置，进行检测
             Vec *nextPos = findNext(state);
 
             if (nextPos == nullptr)
@@ -202,11 +200,13 @@ double Robot::getPriority()
 {
     if (task == nullptr)
     {
-        return 1000.;
+        return 10000.;
     }
+
     Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
 
     double dist = wb->getDij()->getDistMap(isLoaded())[getMapRow()][getMapCol()];
+
     return dist;
 }
 
@@ -258,7 +258,7 @@ void Robot::bindChain(TaskChain *taskChain)
     {
         int i = 0;
     }
-    std::list<Vec *> *result = from->getDij()->getKnee(getMapRow(), getMapCol(), false);
+    std::list<Vec *> *result = from->getDij()->getKnee(getMapRow(), getMapCol(), false, false);
 
     // 在目标周围就不添加路径点
     for (auto p : *result)
@@ -368,7 +368,10 @@ Vec *Robot::findNext(MotionState *crash)
     // 将x,y坐标转换为地图坐标
     int crashR = ((int)((49.75 - crash->getPos()->getY()) / 0.5)) * 2 + 1;
     int crashC = ((int)((crash->getPos()->getX() - 0.25) / 0.5)) * 2 + 1;
-    std::vector<std::pair<int, int> *> *node2BeSearched = partDijk->search(getMapRow(), getMapCol(), isLoaded(), 5.0, crashR, crashC);
+
+    double crashDist = computeDist(crash->getPos(), &pos);
+
+    std::vector<std::pair<int, int> *> *node2BeSearched = partDijk->search(getMapRow(), getMapCol(), isLoaded(), crashDist, crashR, crashC);
 
     Workbench *wb = productType == 0 ? task->getFrom() : task->getTo();
     for (auto p : *node2BeSearched)
@@ -376,7 +379,7 @@ Vec *Robot::findNext(MotionState *crash)
         // 从当前位置到新的检测点的路径
         std::list<Vec *> *newPath = getPartDij()->getKnee(p->first, p->second, isLoaded());
         // 从新的中间点到目标工作台的路径
-        std::list<Vec *> *nextPaths = wb->getDij()->getKnee(p->first, p->second, isLoaded());
+        std::list<Vec *> *nextPaths = wb->getDij()->getKnee(p->first, p->second, isLoaded(), false);
 
         // 拼接路径
         newPath->splice(newPath->end(), *nextPaths);
@@ -401,20 +404,19 @@ Vec *Robot::findNext(MotionState *crash)
         bool isCollided = false;
         for (int i = 0; i < predictFrameLength; i++)
         {
-            if (currIdx == newPath->end())
+            if (currIdx == newPath->end() || isArrive(wb->getPos(), *currIdx, 0.4))
             {
-                while (i < predictFrameLength)
-                {
-                    MotionState *newState = getMotionState();
-                    newState->set(*state);
-                    motionStates[nextFrameId] = newState;
-                    i++;
-                    nextFrameId++;
-                }
+                // while (i < predictFrameLength)
+                // {
+                //     MotionState *newState = getMotionState();
+                //     newState->set(*state);
+                //     motionStates[nextFrameId] = newState;
+                //     i++;
+                //     nextFrameId++;
+                // }
                 break;
             }
             double targetVelocity, targetAngularVelocity;
-            // pidModel->control(state, nextPos, targetVelocity, targetAngularVelocity);
             pidModel->control(state, *currIdx, targetVelocity, targetAngularVelocity);
             state = actionModel.predict(state, targetVelocity, targetAngularVelocity);
             motionStates[nextFrameId] = state;
@@ -459,10 +461,10 @@ Vec *Robot::findNext(MotionState *crash)
         // 每一轮进行释放
         pidPool->release(pidModel);
 
-        // for (auto item : *newPath)
-        // {
-        //     delete item;
-        // }
+        for (auto item : *newPath)
+        {
+            pools.release(item);
+        }
         delete newPath;
 
         // 200内没有碰撞，可以作为新路径

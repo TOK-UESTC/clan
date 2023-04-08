@@ -96,7 +96,7 @@ void Dispatcher::init()
             Workbench *to = task->getTo();
             task->setDist(dijkstraMap[to->getMapRow()][to->getMapCol()]);
             // 设置最短路径
-            std::list<Vec *> *result = wb->getDij()->getKnee(to->getMapRow(), to->getMapCol(), true);
+            std::list<Vec *> *result = wb->getDij()->getKnee(to->getMapRow(), to->getMapCol(), true, true);
             task->setRoad(result);
         }
     }

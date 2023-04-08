@@ -131,8 +131,8 @@ void PIDModel::control(MotionState *ms, Vec *targetPos, double &v, double &w)
     // 策略:角度越大,速度越小
     if (fabs(angleErr) > PI / 4)
     {
-        // lineVelocity = lineVelocity * deceleration / fabs(angleErr);
-        lineVelocity = 0;
+        lineVelocity = lineVelocity * deceleration / fabs(angleErr);
+        // lineVelocity = 0;
     }
 
     v = lineVelocity;

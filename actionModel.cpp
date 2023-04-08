@@ -73,74 +73,53 @@ void ActionModel::generateMoveActions()
         nextPos = paths->front();
     }
 
-    // Vec *predictNext = rb->predict(paths);
+    Vec *predictNext = rb->predict(paths);
 
     // 搜索的下一个点非原定位置，说明发生碰撞，重新生成paths
-    // if (computeDist(nextPos, predictNext) >= 0.25)
-    // {
-    //     int crashR = ((int)((49.75 - predictNext->getY()) / 0.5)) * 2 + 1;
-    //     int crashC = ((int)((predictNext->getX() - 0.25) / 0.5)) * 2 + 1;
+    if (computeDist(nextPos, predictNext) >= 0.2)
+    {
+        int middleR = ((int)((49.75 - predictNext->getY()) / 0.5)) * 2 + 1;
+        int middleC = ((int)((predictNext->getX() - 0.25) / 0.5)) * 2 + 1;
 
-    //     std::list<Vec *> *newPath = rb->getPartDij()->getKnee(crashR, crashC, rb->isLoaded());
-    //     // 从新的中间点到目标工作台的路径
-    //     std::list<Vec *> *nextPaths = wb->getDij()->getKnee(crashR, crashC, rb->isLoaded());
+        std::list<Vec *> *newPath = rb->getPartDij()->getKnee(middleR, middleC, rb->isLoaded());
+        // 从新的中间点到目标工作台的路径
+        std::list<Vec *> *nextPaths = wb->getDij()->getKnee(middleR, middleC, rb->isLoaded(), false);
 
-    //     // 拼接路径
-    //     newPath->splice(newPath->end(), *nextPaths);
-    //     delete nextPaths;
+        // 拼接路径
+        newPath->splice(newPath->end(), *nextPaths);
+        delete nextPaths;
 
-    //     // 释放原来的路径
-    //     // 迭代器
-    //     std::list<Vec *>::iterator it = paths->begin();
-    //     while (it != paths->end())
-    //     {
-    //         if (computeDist(*it, newPath->back()) <= 0.25)
-    //         {
-    //             break;
-    //         }
-    //         pools.release(*it);
-    //         it++;
-    //     }
-    //     // 获得了paths中指向wb的第一个迭代器
-    //     //  弹出newPath中对应wb的点
-    //     for (auto jt = paths->rbegin(); jt != paths->rend(); jt++)
-    //     {
-    //         if (computeDist(*jt, newPath->back()) <= 0.25)
-    //         {
-    //             // 说明是工作台的点，进行删除
-    //             pools.release(*jt);
-    //             newPath->pop_back();
-    //         }
-    //         // 不是工作台的点，结束循环
-    //         else
-    //         {
-    //             break;
-    //         }
-    //     }
-    //     // 拼接路径
-    //     newPath->insert(newPath->end(), it, paths->end());
-    //     paths->clear();
-    //     paths = newPath;
-    //     // for (Vec *v : paths)
-    //     // {
-    //     //     if (computeDist(v, newPath->back()) >= 0.25)
-    //     //     {
-    //     //         pools.release(v);
-    //     //         continue;
-    //     //     }
+        // 释放原来的路径
+        // 迭代器
+        std::list<Vec *>::iterator it = paths->begin();
+        while (it != paths->end())
+        {
+            if (computeDist(*it, newPath->back()) <= 0.2)
+            {
+                break;
+            }
+            pools.release(*it);
+            it++;
+        }
 
-    //     //     newPath->pop_back();
-    //     //     newPath->push_back(v);
-    //     //     break;
-    //     // }
+        assert(it != paths->end());
+        // 获得了paths中指向wb的第一个迭代器
+        //  弹出newPath中对应wb的点
+        while (computeDist(newPath->back(), *it) <= 0.2)
+        {
+            pools.release(newPath->back());
+            newPath->pop_back();
+        }
 
-    //     // paths.clear();
-    //     // for (newPath)
-    //     // paths = ;
-    //     nextPos = paths->front();
-    // }
+        // 拼接路径
+        newPath->insert(newPath->end(), it, paths->end());
+        paths->clear();
+        paths = newPath;
 
-    // pools.release(predictNext);
+        nextPos = paths->front();
+    }
+
+    pools.release(predictNext);
 
     // Calculate the control factors for the robot's movement
     double v = 0, w = 0;

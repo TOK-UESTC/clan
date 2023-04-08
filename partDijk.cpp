@@ -187,8 +187,11 @@ std::vector<std::pair<int, int> *> *PartDijk::search(int r, int c, bool loaded, 
         }
     }
 
-    std::sort(result->begin(), result->end(), [collideR, collideC](std::pair<int, int> *p1, std::pair<int, int> *p2)
-              { return sqrt((p1->first - collideR) * (p1->first - collideR) + (p1->second - collideC) * (p1->second - collideC)) < sqrt((p2->first - collideR) * (p2->first - collideR) + (p2->second - collideC) * (p2->second - collideC)); });
+    std::sort(result->begin(), result->end(),
+              [collideR, collideC](std::pair<int, int> *p1, std::pair<int, int> *p2)
+              {
+                  return (p1->first - collideR) * (p1->first - collideR) + (p1->second - collideC) * (p1->second - collideC) < (p2->first - collideR) * (p2->first - collideR) + (p2->second - collideC) * (p2->second - collideC);
+              });
 
     return result;
 }
