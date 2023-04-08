@@ -3,11 +3,11 @@
 Dispatcher::Dispatcher(std::vector<Robot *> &robotList, std::vector<Workbench *> &workbenchList, std::unordered_map<int, std::vector<Workbench *> *> &workbenchTypeMap, std::unordered_map<int, std::vector<Task *> *> &workbenchIdTaskMap, int **accessMap) : robotList(robotList), workbenchList(workbenchList), workbenchTypeMap(workbenchTypeMap), workbenchIdTaskMap(workbenchIdTaskMap), taskTypeMap{}, taskChainQueueMap{}
 {
     this->chainPool = new ObjectPool<TaskChain>(100);
-    this->tempQueue = new std::priority_queue<TaskChain *>();
+    this->tempQueue = new std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare>();
     this->accessMap = accessMap;
     for (auto rb : robotList)
     {
-        taskChainQueueMap[rb] = new std::priority_queue<TaskChain *>();
+        taskChainQueueMap[rb] = new std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare>();
     }
 
     init();
@@ -132,7 +132,7 @@ void Dispatcher::clearChainMap(Robot *rb)
     }
     else
     {
-        std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
+        std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *queue = (*taskChainQueueMap.find(rb)).second;
         while (!queue->empty())
         {
             chainPool->release(queue->top());
@@ -160,7 +160,7 @@ bool Dispatcher::isQueueMapEmpty(Robot *rb)
         return true;
     }
 
-    std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
+    std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *queue = (*taskChainQueueMap.find(rb)).second;
     return queue->size() == 0;
 }
 
@@ -248,7 +248,7 @@ void Dispatcher::generateTaskChains()
  *
  *
  */
-void Dispatcher::copyQueue(std::priority_queue<TaskChain *> *source, std::priority_queue<TaskChain *> *target)
+void Dispatcher::copyQueue(std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *source, std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *target)
 {
     while (!target->empty())
     {
@@ -273,7 +273,7 @@ void Dispatcher::updateTaskChain()
 
         // 将旧的queue内容拷贝一份，避免在遍历的过程中热更新产生错误
         // auto temp = *taskChainQueueMap.find(rb);
-        std::priority_queue<TaskChain *> *queue = (*taskChainQueueMap.find(rb)).second;
+        std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *queue = (*taskChainQueueMap.find(rb)).second;
         copyQueue(queue, tempQueue);
 
         // 是否有更改
@@ -408,7 +408,7 @@ void Dispatcher::dispatch()
                     continue;
                 }
 
-                std::priority_queue<TaskChain *> *queue = taskChainQueueMap[rb];
+                std::priority_queue<TaskChain *, std::vector<TaskChain *>, Compare> *queue = taskChainQueueMap[rb];
 
                 // 进行分配，寻找所有可用的chain
                 while (true)

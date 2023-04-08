@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # build project
+rm -r build
 cmake . -Bbuild -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" -DCMAKE_CXX_FLAGS=""
 make -C build -j
 
@@ -17,7 +18,7 @@ fi
 if [ $# -eq 1 ]
 then
     name=$1
-    $executor "./build/main" -f -d -m ../maps/$name.txt -s 0
+    $executor "./build/main" -f -d -s 1234 -m ../maps/$name.txt
 else
     echo "" > error.txt
     for i in $(seq 1 1 4)

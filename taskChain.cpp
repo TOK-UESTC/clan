@@ -33,8 +33,9 @@ void TaskChain::occupy()
         Workbench *from = task->getFrom();
         Workbench *to = task->getTo();
 
-        if(from->getType() == 2){
-            int i=0;
+        if (from->getType() == 2)
+        {
+            int i = 0;
         }
         from->setPlanProductStatus(1);
         to->updatePlanMaterialStatus(from->getType(), false);
@@ -118,10 +119,10 @@ double TaskChain::getTotalFrame()
     return totalFrame;
 }
 
-bool TaskChain::operator<(TaskChain *o)
-{
-    return o->getProfit() < getProfit();
-}
+// bool TaskChain::operator<(TaskChain *o)
+// {
+//     return o->getProfit() < getProfit();
+// }
 
 std::vector<Task *> TaskChain::getTaskChain()
 {
