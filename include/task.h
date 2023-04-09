@@ -71,7 +71,6 @@ public:
             timeCoefficient = (1.0 - sqrt(1.0 - pow(1 - (predictedFrame / 9000), 2))) * (1 - 0.8) + 0.8;
         }
         return getWeight() * (sellPrice * timeCoefficient - price);
-        // return (sellPrice * timeCoefficient - price);
     }
 
     void setpostTaskList(std::vector<Task *> *postTaskList)

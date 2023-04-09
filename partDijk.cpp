@@ -174,11 +174,23 @@ std::deque<std::pair<int, int> *> *PartDijk::search(int r, int c, bool loaded, d
             // newCost < dist[nr][nc]: 是否访问
             // newCost*0.25 < range: 搜索范围
             // sqrt((collideR - nr)*(collideR - nr) + (collideC - nc)*(collideC - nc))>1.06：过滤碰撞点
-            if (newCost < dist[nr][nc] && newCost * 0.25 < range && (0.25 * sqrt((collideR - nr) * (collideR - nr) + (collideC - nc) * (collideC - nc))) > 1.06)
+            if (newCost < dist[nr][nc] && newCost * 0.25 < range && (0.25 * sqrt((collideR - nr) * (collideR - nr) + (collideC - nc) * (collideC - nc))) > 2.0)
             {
                 if (fabs(newCost * 0.25 - range) < 0.4)
                 {
-                    result->push_back(new std::pair<int, int>(nr, nc));
+                    bool isAdd = true;
+                    for (auto p : *result)
+                    {
+                        if ((nr - p->first) * (nr - p->first) + (nc - p->second) * (nc - p->second) < 9)
+                        {
+                            isAdd = false;
+                            break;
+                        }
+                    }
+                    if (isAdd)
+                    {
+                        result->push_back(new std::pair<int, int>(nr, nc));
+                    }
                 }
                 dist[nr][nc] = newCost;
                 qx.push(nr);
@@ -242,11 +254,6 @@ std::list<Vec *> *PartDijk::getKnee(int r, int c, bool isLoad)
         cr += unloadDir[direct][0];
         cc += unloadDir[direct][1];
 
-        // 方向发生了变化。则添加到拐点列表
-        if (direct != lastDirect)
-        {
-            result->push_back(rc2Coord(cr, cc, 0.25));
-        }
         // 找到最小方向
         lastDirect = direct;
     }

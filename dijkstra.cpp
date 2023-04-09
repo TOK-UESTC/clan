@@ -230,12 +230,6 @@ std::list<Vec *> *Dijkstra::getKnee(int r, int c, bool isLoad, bool reverse)
         // 更新位置
         cr += unloadDir[direct][0];
         cc += unloadDir[direct][1];
-
-        // 方向发生了变化。则添加到拐点列表
-        if (direct != lastDirect)
-        {
-            result->push_back(rc2Coord(cr, cc, 0.25));
-        }
         // 找到最小方向
         lastDirect = direct;
     }

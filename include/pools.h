@@ -30,6 +30,6 @@ public:
     };
 };
 
-static Pools pools;
+extern Pools pools;
 
 #endif

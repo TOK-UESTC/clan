@@ -3,6 +3,7 @@
 int workbenchMapper[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // 多出一个是为了和workbenchType对齐 balanceMap
 int balanceMapper[7] = {0, 0, 0, 0, 1, 1, 1};             // 工作台类型4，5，6的工作台均衡生产
 int leftFrame = 15000;
+Pools pools;
 
 #ifdef W_DEBUG
 #include <Windows.h>
