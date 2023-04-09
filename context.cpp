@@ -180,7 +180,7 @@ void Context::step()
 
     // 按照优先级进行排序
     std::sort(sortedRobot.begin(), sortedRobot.end(), [](Robot *below, Robot *above)
-              { return below->getPriority() > above->getPriority(); });
+              { return below->getPriority() < above->getPriority(); });
 
     // 清除所有机器人的状态
     // for (Robot *rb : sortedRobot)

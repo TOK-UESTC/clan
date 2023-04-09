@@ -58,9 +58,9 @@ bool PartDijk::validCoord(int r, int c)
 }
 
 // 起点
-std::vector<std::pair<int, int> *> *PartDijk::search(int r, int c, bool loaded, double range, int collideR, int collideC)
+std::deque<std::pair<int, int> *> *PartDijk::search(int r, int c, bool loaded, double range, int collideR, int collideC)
 {
-    std::vector<std::pair<int, int> *> *result = new std::vector<std::pair<int, int> *>();
+    std::deque<std::pair<int, int> *> *result = new std::deque<std::pair<int, int> *>();
     double fill = 1000000.;
     fillDist(fill, loaded);
     double **dist = loaded ? loadedDist : unloadDist;
