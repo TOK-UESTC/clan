@@ -119,7 +119,7 @@ void Context::init()
     for (Workbench *wb : workbenchList)
     {
         maps.isWbAccessible(accessMap, wb->getMapRow(), wb->getMapCol());
-        maps.fixAccessMap(accessMap, wb->getMapRow(), wb->getMapCol());
+        // maps.fixAccessMap(accessMap, wb->getMapRow(), wb->getMapCol());
     }
 
     // 为机器人传入可访问地图与机器人列表
@@ -137,26 +137,13 @@ void Context::init()
         wb->getDij()->search(wb->getMapRow(), wb->getMapCol(), false);
     }
 
-    // 获得路宽地图
-    // mapRoadWidth = maps.mapRoadWidth(map025);
 
     // 将地图写入log
-    maps.writeMaptoFile("./log/map025.txt", map025);
+    // maps.writeMaptoFile("./log/map025.txt", map025);
     // maps.writeMaptoFile("./log/mapRoadWidth.txt", mapRoadWidth);
-    maps.writeMaptoFile("./log/accessMap.txt", accessMap);
+    // maps.writeMaptoFile("./log/accessMap.txt", accessMap);
 
     dispatcher = new Dispatcher(robotList, workbenchList, workbenchTypeMap, workbenchIdTaskMap, accessMap);
-    // 搜索参数时停止pid更改
-    // if (args.length == 7)
-    // {
-    //     return;
-    // }
-
-    // // 根据地图工作台情况，动态调整pid
-    // for (Robot rb : robotList)
-    // {
-    //     rb.updatePID(workbenchCount);
-    // }
 }
 
 void Context::update()
@@ -189,11 +176,6 @@ void Context::step()
 {
     printf("%d\n", frameId);
 
-    if (frameId == 1000)
-    {
-        int i = 0;
-    }
-    // printLine
     dispatcher->dispatch();
 
     // 按照优先级进行排序
@@ -201,10 +183,10 @@ void Context::step()
               { return below->getPriority() > above->getPriority(); });
 
     // 清除所有机器人的状态
-    for (Robot *rb : sortedRobot)
-    {
-        rb->clearStates();
-    }
+    // for (Robot *rb : sortedRobot)
+    // {
+    //     rb->clearStates();
+    // }
 
     for (Robot *rb : sortedRobot)
     {
@@ -221,7 +203,6 @@ void Context::step()
     // 告知判题器操作结束
     printf("OK\n");
     fflush(stdout);
-    // endStep();
 }
 
 int Context::getFrameId()

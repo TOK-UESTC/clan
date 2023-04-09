@@ -31,6 +31,8 @@ private:
     PIDModel PID;                                        // 机器人PID模型
     ObjectPool<PIDModel> *pidPool = nullptr;             // 机器人PID模型对象池
     std::unordered_map<int, MotionState *> motionStates; // 用于记录机器人的运动状态序列
+    int count = 0;
+    int **accessMap;
 
     std::vector<Robot *> *robotList = nullptr; // 机器人列表
 

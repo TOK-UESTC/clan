@@ -214,7 +214,17 @@ void Dispatcher::generateTaskChains()
                     continue;
                 }
 
-                double distance = from->getDij()->getDistMap(false)[rb->getMapRow()][rb->getMapCol()] * 0.25;
+                double distance = from->getDij()->getDistMap(false)[rb->getMapRow()][rb->getMapCol()];
+                while(distance > 999999.)
+                {
+                    for(int i=0; i<8; i++)
+                    {
+                        int nr = rb->getMapRow() + unloadDir[i][0];
+                        int nc = rb->getMapCol() + unloadDir[i][1];
+                        distance = from->getDij()->getDistMap(false)[nr][nc];
+                    }
+                }
+                distance = distance * 0.25;
                 double receiveTaskFrame = distance / MAX_FORWARD_FRAME;
 
                 // 接收时间小于生产时间，需要等待，直接放弃
